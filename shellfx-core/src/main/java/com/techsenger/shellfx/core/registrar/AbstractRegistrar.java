@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registrar;
 
+import com.techsenger.shellfx.core.registry.ExtensionRegistry;
+import com.techsenger.shellfx.core.registry.Registration;
 import java.util.ArrayList;
 import java.util.List;
 

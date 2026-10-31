@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
+package com.techsenger.shellfx.demo.registrars;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.registries.AbstractControlRegistrar;
+import com.techsenger.shellfx.core.registrars.AbstractControlRegistrar;
 import com.techsenger.shellfx.core.registries.SimpleControlProvider;
 import com.techsenger.shellfx.core.registries.SimpleGroupProvider;
 import com.techsenger.shellfx.core.window.WindowArrangement;
 import com.techsenger.shellfx.demo.ApplicationType;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.demo.page.PageMenuType;
+import com.techsenger.shellfx.demo.slots.ShellSlots;
 import com.techsenger.shellfx.material.menu.DynamicMenu;
 import java.util.function.Function;
 import javafx.beans.value.ObservableValue;

@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
-
-import com.techsenger.shellfx.core.ShellView;
-import javafx.event.ActionEvent;
-
 /**
- *
- * @author Pavel Castornii
+ * The base registrars of a plugin for the slot and the control registries.
  */
-public class ExitItemHandler extends AbstractItemHandler {
-
-    public ExitItemHandler(ShellView<?> component) {
-        super(component);
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
-        getComponent().getViewModel().closeSafely();
-    }
-}
+package com.techsenger.shellfx.core.registrars;

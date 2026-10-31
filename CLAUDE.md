@@ -106,9 +106,12 @@ lookups silently fall back to defaults and mask regressions.
   plugin-style dynamic (un)registration in any order, and neither assembles a control. `AbstractSlotRegistrar` and
   `AbstractControlRegistrar` (over `AbstractRegistrar<R>`) wrap them for plugins; a plugin has
   one registrar of each kind per component it registers into, named after that component (`XSlotRegistrar`,
-  `XControlRegistrar`), not one per plugin; `RegistrarManager` registers a plugin's registrars in
-  order and withdraws them in the reverse order. `ControlBuilder` assembles the final menu tree or a
-  `ToolBar` (from its groups, or returns the `ControlGroup`s of a tool bar slot) from both registries.
+  `XControlRegistrar`), not one per plugin; `RegistrarManager` registers a plugin's registrars in order and withdraws
+  them in the reverse order. The base classes (`Registrar`, `AbstractRegistrar`, `RegistrarManager`) live in
+  `core.registrar`; the registrars of the concrete registries (`AbstractSlotRegistrar`, `AbstractControlRegistrar`)
+  live in `core.registrars`, mirroring `core.registry` and `core.registries`.
+  `ControlBuilder` assembles the final menu tree or a `ToolBar` (from its groups, or returns the `ControlGroup`s of a
+  tool bar slot) from both registries.
   The menu controls are plain JavaFX (`Menu`, `MenuItem`...) created and owned by their providers: a control keeps
   its own `visible`/`disable` state up to date (a provider binds it to the state of the focused component and unbinds
   it in `deinitialize`) and sets its own action, so a disabled item reacts neither to a click nor to an accelerator.

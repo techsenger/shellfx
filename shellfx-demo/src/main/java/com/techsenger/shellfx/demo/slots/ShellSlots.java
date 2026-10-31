@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
+package com.techsenger.shellfx.demo.slots;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.slot.GroupSlot;

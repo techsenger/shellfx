@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
-
-import com.techsenger.shellfx.core.ShellView;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+package com.techsenger.shellfx.core.registrar;
 
 /**
- * Base class of the action of a menu item of the demo shell.
+ * Registers a set of contributions with a registry, and withdraws all of them on demand.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractItemHandler implements EventHandler<ActionEvent> {
+public interface Registrar {
 
-    private final ShellView<?> component;
+    void register();
 
-    protected AbstractItemHandler(ShellView<?> component) {
-        this.component = component;
-    }
-
-    protected ShellView<?> getComponent() {
-        return component;
-    }
+    void unregister();
 }

@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.demo.registrars;
+
+import com.techsenger.shellfx.core.ShellView;
+import javafx.event.ActionEvent;
 
 /**
- * Registers a set of contributions with a registry, and withdraws all of them on demand.
  *
  * @author Pavel Castornii
  */
-public interface Registrar {
+public class ExitItemHandler extends AbstractItemHandler {
 
-    void register();
+    public ExitItemHandler(ShellView<?> component) {
+        super(component);
+    }
 
-    void unregister();
+    @Override
+    public void handle(ActionEvent event) {
+        getComponent().getViewModel().closeSafely();
+    }
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
+package com.techsenger.shellfx.demo.registrars;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.registries.AbstractSlotRegistrar;
+import com.techsenger.shellfx.core.registrars.AbstractSlotRegistrar;
+import com.techsenger.shellfx.demo.slots.ShellSlots;
 
 /**
  * Builds the tree of the slots of the demo shell: which menus the menu bar has, and which groups each

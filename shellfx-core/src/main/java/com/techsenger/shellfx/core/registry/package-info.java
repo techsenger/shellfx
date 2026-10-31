@@ -15,7 +15,6 @@
  */
 
 /**
- * The API of the registries of the extensions: a registry whose state changes, the registrations in it and the
- * registrars that make and withdraw them.
+ * The API of the registries of the extensions: a registry whose state changes and the registrations in it.
  */
 package com.techsenger.shellfx.core.registry;
