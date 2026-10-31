@@ -678,7 +678,13 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, (event) -> this.onMousePressed(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, (event) -> this.onMouseDragged(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, (event) -> this.onMouseReleased(event));
-            windowNode.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> windowNode.requestFocus());
+            windowNode.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> {
+                // A click gives the window focus only if it has none yet: taking focus from a control inside
+                // would, for example, collapse the selection of a text field before its context menu is built.
+                if (!windowNode.isFocusWithin()) {
+                    windowNode.requestFocus();
+                }
+            });
         }
     }
 
