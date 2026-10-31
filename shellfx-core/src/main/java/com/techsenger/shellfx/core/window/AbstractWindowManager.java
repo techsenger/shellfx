@@ -47,8 +47,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -605,8 +603,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         window.getViewModel().setY(Math.round(coordinates.getY() + yOffset));
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
-
     @Override
     public void alignWindowToStage(WindowView<?> window, WindowPosition pos,
             double xOffset, double yOffset) {
@@ -638,12 +634,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         // clamp to StackPane bounds — not always achievable relative to Stage
         x = Math.max(0, Math.min(x, spWidth - window.getNode().getWidth()));
         y = Math.max(0, Math.min(y, spHeight - window.getNode().getHeight()));
-
-        logger.debug("x={}, y={}, spOffsetX={}, spOffsetY={}, coordinates={},{}, windowSize={}x{}, sceneSize={}x{}",
-                x, y, spOffsetX, spOffsetY,
-                coordinates.getX(), coordinates.getY(),
-                window.getNode().getWidth(), window.getNode().getHeight(),
-                scene.getWidth(), scene.getHeight());
 
         window.getViewModel().setX(Math.round(x));
         window.getViewModel().setY(Math.round(y));
