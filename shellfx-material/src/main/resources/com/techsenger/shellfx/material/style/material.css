@@ -1248,6 +1248,16 @@
     -fx-font-family: 'Material Design Icons';
 }
 
+.tab-pane-pro > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.2em;
+    -fx-padding: 0;
+}
+
+.tab-pane-pro > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.2em;
+    -fx-fit-height: 1.2em;
+}
+
 .tab-pane-pro > .tab-header-area > .tab-drop-position {
     -fx-background-color: -color-accent-5;
     -fx-pref-width: 2px;
