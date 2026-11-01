@@ -18,10 +18,6 @@
     Author: Pavel Castornii
 */
 
-@font-face {
-    src: url('font/materialdesignicons-webfont.ttf');
-}
-
 .font-icon-view.select-icon {
     -fx-icon-code: 986366; /* cursor-default-click-outline */
 }

@@ -30,6 +30,14 @@
             <groupId>com.techsenger.annotations</groupId>
             <artifactId>annotations</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.techsenger.fontjars</groupId>
+            <artifactId>fontjars-mdi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.fontjars</groupId>
+            <artifactId>fontjars-techsenger-icons</artifactId>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

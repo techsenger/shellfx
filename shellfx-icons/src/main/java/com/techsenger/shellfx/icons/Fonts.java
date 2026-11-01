@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.icons;
 
+import com.techsenger.fontjars.mdi.Mdi;
+import com.techsenger.fontjars.techsengericons.TechsengerIcons;
 import javafx.scene.text.Font;
 
 /**
@@ -25,10 +27,10 @@ import javafx.scene.text.Font;
 public final class Fonts {
 
     public static final Font MATERIAL_DESIGN_ICONS =
-            Font.loadFont(Fonts.class.getResourceAsStream("font/materialdesignicons-webfont.ttf"), 12);
+            Font.loadFont(Mdi.WEBFONT.getUrl().toExternalForm(), 12);
 
     public static final Font TECHSENGER_ICONS_MDI =
-            Font.loadFont(Fonts.class.getResourceAsStream("font/techsenger-icons-mdi.ttf"), 12);
+            Font.loadFont(TechsengerIcons.MDI.getUrl().toExternalForm(), 12);
 
     private Fonts() {
         // empty

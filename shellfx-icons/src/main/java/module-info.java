@@ -18,10 +18,11 @@ module com.techsenger.shellfx.icons {
     requires org.slf4j;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.annotations;
+    requires com.techsenger.fontjars.mdi;
+    requires com.techsenger.fontjars.techsengericons;
     requires javafx.graphics;
 
     exports com.techsenger.shellfx.icons;
 
     opens com.techsenger.shellfx.icons;
-    opens com.techsenger.shellfx.icons.font;
 }

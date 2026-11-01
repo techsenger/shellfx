@@ -170,7 +170,8 @@ The platform consists of the following modules:
 * Core — includes the shell itself, base classes for component development, settings, and core utility classes.
 * Layout — offers abstract components for creating tabs with various layouts.
 * Shared — includes components that are used by other components from different modules.
-* Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
+* Icons — contains module-specific stylesheets that utilize the Material Design Icons font. The fonts come from the
+[FontJars](https://github.com/techsenger/fontjars) modules, and the license of a font is stored in its module. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
 * Storage — provides abstractions for working with file systems. The module includes a default implementation for the
 local file system. Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
