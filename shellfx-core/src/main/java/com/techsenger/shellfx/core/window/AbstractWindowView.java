@@ -23,16 +23,15 @@ import com.techsenger.patternfx.mvvm.AbstractChildView;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.patternfx.mvvm.ViewUtils;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.style.CoreIcons;
 import com.techsenger.shellfx.core.style.CssAnchor;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.style.Density;
-import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.style.Stylesheet;
-import com.techsenger.shellfx.material.style.StylesheetManager;
 import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
 import com.techsenger.shellfx.material.theme.JavaFxTheme;
 import com.techsenger.shellfx.material.theme.Theme;
@@ -91,6 +90,24 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         implements WindowView<VM> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractWindowView.class);
+
+    /**
+     * Creates the stylesheets that windows need to look right: the platform styles. The application registers them
+     * in the {@link StylesheetRegistry} before the first window is created and before the other stylesheets.
+     *
+     * @return the default stylesheets
+     */
+    public static @Unmodifiable List<Stylesheet> createDefaultStylesheets() {
+        Set<Theme> allThemes = Stream.concat(
+                Arrays.stream(AtlantaFxTheme.values()),
+                Arrays.stream(JavaFxTheme.values()))
+                .collect(Collectors.toSet());
+        List<Stylesheet> result = new ArrayList<>();
+        result.add(new Stylesheet(CssAnchor.class.getResource("core.css").toExternalForm(),
+                Set.of(AtlantaFxTheme.values())));
+        result.add(new Stylesheet(StyleClasses.class.getResource("material.css").toExternalForm(), allThemes));
+        return Collections.unmodifiableList(result);
+    }
 
     public class Composer extends AbstractChildView<VM>.Composer implements WindowView.Composer {
 
@@ -212,7 +229,9 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private final StackPane windowNode = new StackPane(windowBox);
 
-    private final StylesheetManager stylesheetManager;
+    private final StylesheetRegistry stylesheetRegistry;
+
+    private @Nullable StylesheetManager stylesheetManager;
 
     private @Nullable Pane blockPane;
 
@@ -260,8 +279,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
     };
 
-    public AbstractWindowView(VM viewModel) {
-        this(viewModel, null, null);
+    public AbstractWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        this(viewModel, stylesheetRegistry, null);
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(), () -> {
             if (viewModel.getWindowType() == WindowType.NESTED) {
                 return getNode().sceneProperty();
@@ -272,32 +291,18 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
     }
 
     /**
-     * Creates a new stage backed by the given {@link Stage}.
+     * Creates a new window backed by the given stage.
      *
      * <p>This constructor is intended for {@link WindowType#TOP_LEVEL} windows only.
      *
-     * @param viewModel   the view model of this window
-     * @param stage       the {@link Stage} that backs this stage
-     * @param stylesheets the initial list of stylesheets to apply to this stage
+     * @param viewModel the view model of this window
+     * @param stylesheetRegistry the registry of the stylesheets that every window applies
+     * @param stage the stage that backs this window
      */
-    public AbstractWindowView(VM viewModel, Stage stage, List<Stylesheet> stylesheets) {
+    public AbstractWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
         super(viewModel);
         this.stage = stage;
-        this.stylesheetManager = new StylesheetManager(
-                () -> getViewModel().getWindowType() == WindowType.TOP_LEVEL
-                        ? this.stage.getScene().getStylesheets()
-                        : this.windowNode.getStylesheets(),
-                () -> {
-                    var descriptor = getDescriptor();
-                    if (descriptor != null) {
-                        return descriptor.getLogPrefix();
-                    } else {
-                        return null;
-                    }
-                });
-        if (stylesheets != null) {
-            stylesheetManager.addStylesheets(stylesheets);
-        }
+        this.stylesheetRegistry = stylesheetRegistry;
     }
 
     @Override
@@ -318,17 +323,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
     }
 
     @Override
-    public void addStylesheets(List<Stylesheet> sheets) {
-        this.stylesheetManager.addStylesheets(sheets);
-    }
-
-    @Override
-    public void removeStylesheets(List<Stylesheet> sheets) {
-        this.stylesheetManager.removeStylesheets(sheets);
-    }
-
-    @Override
     public @Unmodifiable List<Stylesheet> getStylesheets() {
+        checkIfTopLevel();
         return this.stylesheetManager.getStylesheets();
     }
 
@@ -369,7 +365,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             stage.initStyle(StageStyle.EXTENDED);
             var scene = new Scene(windowNode);
             stage.setScene(scene);
-            this.stylesheetManager.addStylesheets(createDefaultStylesheets());
+            this.stylesheetManager = new StylesheetManager(scene.getStylesheets(), getDescriptor().getLogPrefix(),
+                    stylesheetRegistry);
             this.fontApplier = new FontApplier(windowNode);
             ViewUtils.setView(scene, this);
             if (viewModel.isModal()) {
@@ -598,8 +595,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
     private void updateTheme(Theme theme) {
         if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
+            this.stylesheetManager.setTheme(theme);
         }
-        this.stylesheetManager.setTheme(theme);
     }
 
     private void updateRegularFont(Font font) {
@@ -646,6 +643,14 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             }
         } else {
             this.windowNode.setLayoutY(y);
+        }
+    }
+
+    @Override
+    protected void removeListeners() {
+        super.removeListeners();
+        if (this.stylesheetManager != null) {
+            this.stylesheetManager.dispose();
         }
     }
 
@@ -792,17 +797,28 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
     }
 
-    protected @Unmodifiable List<Stylesheet> createDefaultStylesheets() {
-        Set<Theme> allThemes = Stream.concat(
-                Arrays.stream(AtlantaFxTheme.values()),
-                Arrays.stream(JavaFxTheme.values()))
-                .collect(Collectors.toSet());
-        List<Stylesheet> result = new ArrayList<>();
-        result.add(new Stylesheet(CssAnchor.class.getResource("core.css").toExternalForm(),
-                Set.of(AtlantaFxTheme.values())));
-        result.add(new Stylesheet(StyleClasses.class.getResource("material.css").toExternalForm(), allThemes));
-        result.addAll(IconStylesheets.getAll());
-        return Collections.unmodifiableList(result);
+    protected StylesheetRegistry getStylesheetRegistry() {
+        return stylesheetRegistry;
+    }
+
+    /**
+     * Adds stylesheets to this window only. Stylesheets that every window needs belong in the registry.
+     *
+     * @param sheets the stylesheets to add
+     */
+    protected void addStylesheets(List<Stylesheet> sheets) {
+        checkIfTopLevel();
+        this.stylesheetManager.addStylesheets(sheets);
+    }
+
+    /**
+     * Removes stylesheets from this window.
+     *
+     * @param sheets the stylesheets to remove
+     */
+    protected void removeStylesheets(List<Stylesheet> sheets) {
+        checkIfTopLevel();
+        this.stylesheetManager.removeStylesheets(sheets);
     }
 
     protected void setShadowVisible(boolean visible) {

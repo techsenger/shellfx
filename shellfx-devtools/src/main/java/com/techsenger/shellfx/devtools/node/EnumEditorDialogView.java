@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools.node;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,8 +29,8 @@ public class EnumEditorDialogView<VM extends EnumEditorDialogViewModel<?>> exten
 
     private final ComboBox<String> comboBox = new ComboBox<>();
 
-    public EnumEditorDialogView(VM viewModel) {
-        super(viewModel);
+    public EnumEditorDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

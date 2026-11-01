@@ -25,15 +25,18 @@ import com.techsenger.shellfx.core.ShellConfig;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.config.InMemoryConfigManager;
+import com.techsenger.shellfx.core.registrar.RegistrarManager;
 import com.techsenger.shellfx.core.registries.ControlRegistry;
 import com.techsenger.shellfx.core.registries.SlotRegistry;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.core.window.AbstractWindowView;
 import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
 import static com.techsenger.shellfx.demo.ApplicationType.IDE;
 import static com.techsenger.shellfx.demo.ApplicationType.MDI;
 import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
-import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.registrars.ShellControlRegistrar;
 import com.techsenger.shellfx.demo.registrars.ShellSlotRegistrar;
+import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.slots.ShellSlots;
 import com.techsenger.shellfx.demo.styles.StylesTabView;
 import com.techsenger.shellfx.demo.styles.StylesTabViewModel;
@@ -43,10 +46,8 @@ import com.techsenger.shellfx.layout.dockhost.DockHostConfig;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
-import com.techsenger.shellfx.core.registrar.RegistrarManager;
 import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -111,13 +112,17 @@ public class Demo extends Application {
     }
 
     private ShellView<?> createShell(ApplicationType appType) {
-        // setting icons
-        FontIconView.setDefaultIconFamily(Fonts.MATERIAL_DESIGN_ICONS.getFamily());
-        IconStylesheets.addAll(IconStylesheetFactory.forAll());
+        // creating application stylesheets
+        var defaultIconFont = Fonts.MATERIAL_DESIGN_ICONS;
+        FontIconView.setDefaultIconFamily(defaultIconFont.getFamily());
+        var stylesheetRegistry = new StylesheetRegistry();
+        stylesheetRegistry.register(AbstractWindowView.createDefaultStylesheets());
+        stylesheetRegistry.register(IconStylesheetFactory.forDefaultFont(defaultIconFont));
+        stylesheetRegistry.register(IconStylesheetFactory.forAllModules());
 
         // creating shell component
-        var context = new DefaultShellContext(DemoSettings.createSettings(),
-                new InMemoryConfigManager(), getHostServices(), new SlotRegistry(), new ControlRegistry());
+        var context = new DefaultShellContext(DemoSettings.createSettings(), new InMemoryConfigManager(),
+                getHostServices(), new SlotRegistry(), new ControlRegistry(), stylesheetRegistry);
         if (appType == ApplicationType.STYLES_ONLY) {
             // Important: To support different density styles, the window density must not be specified.
             context.getSettings().getAppearance().setDensity(null);
@@ -125,7 +130,7 @@ public class Demo extends Application {
         var shellConfig = context.getConfigManager().getOrCreateConfig(ShellConfig.class, ShellConfig::new);
         var shellParams = new DefaultShellParams(shellConfig, context);
         var shellViewModel = new DefaultShellViewModel<>(shellParams);
-        var shellView = new DefaultShellView<>(shellViewModel, null, ShellSlots.MAIN_MENU, context) {
+        var shellView = new DefaultShellView<>(shellViewModel, context, ShellSlots.MAIN_MENU) {
             @Override
             protected void build() {
                 super.build();

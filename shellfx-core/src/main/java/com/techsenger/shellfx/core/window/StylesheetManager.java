@@ -14,36 +14,43 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.style;
+package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.core.registry.RegistryStateListener;
+import com.techsenger.shellfx.material.style.Stylesheet;
 import com.techsenger.shellfx.material.theme.Theme;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.UUID;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.scene.Parent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages a set of {@link Stylesheet} instances applied to a {@link Parent} node, with automatic theme-specific
- * extension support.
+ * Manages a set of {@link Stylesheet} instances applied to a list of stylesheet URLs, such as the one of a scene or
+ * of a node, with automatic theme-specific extension support.
  *
- * <p>The node may have other stylesheets applied to it externally (not managed by this class); this manager only
+ * <p>The list may have other stylesheets applied to it externally (not managed by this class); this manager only
  * tracks and modifies the stylesheets it owns, leaving unmanaged stylesheets untouched.
  *
+ * <p>The manager follows a {@link StylesheetRegistry}: from its creation until {@link #dispose()} the
+ * stylesheets of the registry are applied and kept in step with the registry. The registry can change in any thread,
+ * and the manager applies the changes in the JavaFX Application Thread.
+ *
  * <p>The theme may not be known at construction time. Stylesheets added before the theme is set are queued internally
- * but not applied to the node until {@link #setTheme(Theme)} is called. Once the theme is set, all subsequent
+ * but not applied to the list until {@link #setTheme(Theme)} is called. Once the theme is set, all subsequent
  * {@link #addStylesheets(List)} calls apply immediately.
  *
  * @author Pavel Castornii
  */
-public class StylesheetManager {
+final class StylesheetManager {
 
     private static final Logger logger = LoggerFactory.getLogger(StylesheetManager.class);
 
@@ -56,13 +63,7 @@ public class StylesheetManager {
         return newUrl;
     }
 
-    /**
-     * Resolved lazily on every call, not cached — for a TOP_LEVEL window the target is the Scene's stylesheets
-     * (so that popups showing over the window, which only inherit Scene-level stylesheets, are styled
-     * correctly), and for a NESTED window it is the window's own root node's stylesheets, since a nested window
-     * has no Scene of its own.
-     */
-    private final Supplier<ObservableList<String>> targetSupplier;
+    private final ObservableList<String> target;
 
     private final List<Stylesheet> stylesheets = new ArrayList<>();
 
@@ -72,16 +73,38 @@ public class StylesheetManager {
      */
     private final Set<String> managedUrls = new HashSet<>();
 
-    private final Supplier<@Nullable String> logPrefix;
+    private final String logPrefix;
+
+    private final StylesheetRegistry registry;
+
+    private final RegistryStateListener registryListener = this::onRegistryChanged;
+
+    /**
+     * The stylesheets of the registry that this manager has taken from it.
+     */
+    private List<Stylesheet> registryStylesheets = List.of();
 
     private @Nullable Theme theme;
 
-    public StylesheetManager(Supplier<ObservableList<String>> targetSupplier, Supplier<@Nullable String> logPrefix) {
-        this.targetSupplier = targetSupplier;
+    private boolean disposed;
+
+    /**
+     * Creates a manager that applies the stylesheets of the registry and follows it until {@link #dispose()}.
+     *
+     * @param target the list of stylesheet URLs to manage
+     * @param logPrefix the prefix of the log messages
+     * @param registry the registry to follow
+     */
+    StylesheetManager(ObservableList<String> target, String logPrefix, StylesheetRegistry registry) {
+        this.target = target;
         this.logPrefix = logPrefix;
+        this.registry = registry;
+        this.registryStylesheets = registry.getStylesheets();
+        addStylesheets(registryStylesheets);
+        registry.addListener(registryListener);
     }
 
-    public Supplier<@Nullable String> getLogPrefix() {
+    public String getLogPrefix() {
         return logPrefix;
     }
 
@@ -145,8 +168,41 @@ public class StylesheetManager {
         return Collections.unmodifiableList(stylesheets);
     }
 
+    /**
+     * Stops following the registry. The owner must call it when it no longer needs the manager, because the registry
+     * lives as long as the application. The stylesheets already applied stay on the target.
+     */
+    public void dispose() {
+        this.disposed = true;
+        registry.removeListener(registryListener);
+        this.registryStylesheets = List.of();
+    }
+
+    private void onRegistryChanged(UUID stateUuid) {
+        if (Platform.isFxApplicationThread()) {
+            applyRegistryChanges();
+        } else {
+            Platform.runLater(this::applyRegistryChanges);
+        }
+    }
+
+    private void applyRegistryChanges() {
+        if (disposed) {
+            return;
+        }
+        var current = registry.getStylesheets();
+        var added = current.stream().filter(s -> !registryStylesheets.contains(s)).toList();
+        var removed = registryStylesheets.stream().filter(s -> !current.contains(s)).toList();
+        this.registryStylesheets = current;
+        if (!removed.isEmpty()) {
+            removeStylesheets(removed);
+        }
+        if (!added.isEmpty()) {
+            addStylesheets(added);
+        }
+    }
+
     private void addToTarget(Stylesheet sheet, Theme theme) {
-        var target = targetSupplier.get();
         var urlStr = sheet.getUrl();
         if (!managedUrls.contains(urlStr)) {
             target.add(urlStr);
@@ -162,7 +218,6 @@ public class StylesheetManager {
     }
 
     private void updateStylesheets() {
-        var target = targetSupplier.get();
         target.removeAll(managedUrls);
         managedUrls.clear();
         for (var sheet : this.stylesheets) {
@@ -171,14 +226,13 @@ public class StylesheetManager {
     }
 
     private void logStylesheets() {
-        var prefix = this.logPrefix.get();
-        if (logger.isDebugEnabled() && prefix != null) {
-            var target = targetSupplier.get();
+        var prefix = this.logPrefix;
+        if (logger.isDebugEnabled()) {
             if (target.isEmpty()) {
-                logger.debug("{} Stylesheets updated. No stylesheets applied to target", prefix);
+                logger.debug("{} Window stylesheets updated. No stylesheets applied to target", prefix);
             } else {
                 var sb = new StringBuilder();
-                sb.append("{} Stylesheets updated. Current target stylesheets:");
+                sb.append("{} Window stylesheets updated. Current target stylesheets:");
                 for (var s : target) {
                     sb.append(System.lineSeparator());
                     sb.append("    ");

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.text;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.geometry.VPos;
 import javafx.scene.control.TextArea;
@@ -34,12 +35,12 @@ public class LongTextDialogView<VM extends LongTextDialogViewModel<?>> extends A
 
     private final GridPane gridPane = new GridPane();
 
-    public LongTextDialogView(VM viewModel) {
-        super(viewModel);
+    public LongTextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public LongTextDialogView(VM viewModel, String labelText) {
-        super(viewModel, labelText);
+    public LongTextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry, String labelText) {
+        super(viewModel, stylesheetRegistry, labelText);
     }
 
     @Override

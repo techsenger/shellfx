@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.text;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -34,12 +35,12 @@ public class TextDialogView<VM extends TextDialogViewModel<?>> extends AbstractT
 
     private final HBox textBox = new HBox(getTextLabel(), textField);
 
-    public TextDialogView(VM viewModel) {
-        super(viewModel);
+    public TextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public TextDialogView(VM viewModel, String labelText) {
-        super(viewModel, labelText);
+    public TextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry, String labelText) {
+        super(viewModel, stylesheetRegistry, labelText);
     }
 
     @Override

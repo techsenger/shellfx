@@ -70,7 +70,7 @@ public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends A
     private final ShellView<?> shell;
 
     public DevToolsWindowView(VM viewModel, ShellView<?> shell) {
-        super(viewModel, new Stage(), null);
+        super(viewModel, shell.getContext().getStylesheetRegistry(), new Stage());
         this.shell = shell;
     }
 

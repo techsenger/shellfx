@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.dialog;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.scene.control.Label;
@@ -45,8 +46,8 @@ public class DemoDialogView<VM extends DemoDialogViewModel<?>> extends AbstractD
 
     private final ResultButton cancelButton = new ResultButton(DemoDailogResultButtons.CANCEL, "Cancel");
 
-    public DemoDialogView(VM viewModel) {
-        super(viewModel);
+    public DemoDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

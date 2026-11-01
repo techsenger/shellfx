@@ -20,8 +20,8 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogView;
 import com.techsenger.shellfx.core.popup.ContainerPopupPort;
 import com.techsenger.shellfx.core.popup.PopupView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.Anchors;
-import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
 import javafx.scene.input.InputEvent;
 import javafx.scene.layout.StackPane;
@@ -180,12 +180,12 @@ public abstract class AbstractHostWindowView<VM extends AbstractHostWindowViewMo
         }
     }
 
-    public AbstractHostWindowView(VM viewModel) {
-        super(viewModel);
+    public AbstractHostWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public AbstractHostWindowView(VM viewModel, Stage stage, List<Stylesheet> stylesheets) {
-        super(viewModel, stage, stylesheets);
+    public AbstractHostWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
+        super(viewModel, stylesheetRegistry, stage);
     }
 
     @Override

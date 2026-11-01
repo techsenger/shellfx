@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.dialogs.text;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -43,12 +44,12 @@ public class TextChoiceDialogView<VM extends TextChoiceDialogViewModel<?>> exten
 
     private final ResultButton okButton = new ResultButton(TextDialogButtons.OK, "OK");
 
-    public TextChoiceDialogView(VM viewModel) {
-        super(viewModel);
+    public TextChoiceDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public TextChoiceDialogView(VM viewModel, String labelText) {
-        super(viewModel);
+    public TextChoiceDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry, String labelText) {
+        super(viewModel, stylesheetRegistry);
         textLabel.setText(labelText);
     }
 

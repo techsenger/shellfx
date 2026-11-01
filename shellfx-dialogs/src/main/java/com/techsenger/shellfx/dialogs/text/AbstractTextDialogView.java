@@ -18,6 +18,7 @@ package com.techsenger.shellfx.dialogs.text;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.scene.control.IndexRange;
@@ -41,12 +42,12 @@ public abstract class AbstractTextDialogView<VM extends AbstractTextDialogViewMo
 
     private @Nullable IndexRange requestedSelection;
 
-    public AbstractTextDialogView(VM viewModel) {
-        super(viewModel);
+    public AbstractTextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public AbstractTextDialogView(VM viewModel, String labelText) {
-        super(viewModel);
+    public AbstractTextDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry, String labelText) {
+        super(viewModel, stylesheetRegistry);
         textLabel.setText(labelText);
     }
 

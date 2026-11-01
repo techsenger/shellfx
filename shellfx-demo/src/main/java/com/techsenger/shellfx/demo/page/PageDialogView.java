@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.layout.pagehost.AbstractPageHostView;
 import com.techsenger.shellfx.layout.pagehost.PageHostParams;
@@ -77,8 +78,8 @@ public class PageDialogView<VM extends PageDialogViewModel<?>> extends AbstractD
 
     private final ResultButton okButton = new ResultButton(PageDialogButtons.OK, "OK");
 
-    public PageDialogView(VM viewModel) {
-        super(viewModel);
+    public PageDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

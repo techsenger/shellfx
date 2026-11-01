@@ -570,28 +570,31 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
 
         protected ViewerDialogView<?> createViewerDialog(ViewerDialogParams params) {
             var viewModel = new ViewerDialogViewModel<>(params);
-            var dialogView = new ViewerDialogView<>(viewModel);
+            var dialogView = new ViewerDialogView<>(viewModel, getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }
 
         protected TextEditorDialogView<?> createTextEditorDialog(EditorDialogParams params) {
             var viewModel = new TextEditorDialogViewModel<>(params);
-            var dialogView = new TextEditorDialogView<>(viewModel);
+            var dialogView = new TextEditorDialogView<>(viewModel,
+                    getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }
 
         protected EnumEditorDialogView<?> createEnumEditorDialog(EditorDialogParams params) {
             var viewModel = new EnumEditorDialogViewModel<>(params);
-            var dialogView = new EnumEditorDialogView<>(viewModel);
+            var dialogView = new EnumEditorDialogView<>(viewModel,
+                    getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }
 
         protected InsetEditorDialogView<?> createInsetEditorDialog(EditorDialogParams params) {
             var viewModel = new InsetEditorDialogViewModel<>(params);
-            var dialogView = new InsetEditorDialogView<>(viewModel);
+            var dialogView = new InsetEditorDialogView<>(viewModel,
+                    getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }

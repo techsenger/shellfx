@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools.node;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -34,8 +35,8 @@ public class InsetEditorDialogView<VM extends InsetEditorDialogViewModel<?>> ext
 
     private final TextField leftTextField = new TextField();
 
-    public InsetEditorDialogView(VM viewModel) {
-        super(viewModel);
+    public InsetEditorDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

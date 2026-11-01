@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.dialog.DialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
@@ -78,7 +79,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var viewModel = new AlertDialogViewModel<>(params);
-            var dialogView = new AlertDialogView<>(viewModel);
+            var dialogView = new AlertDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -87,7 +88,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public NameValueDialogPort openNameValueDialog(DialogParams params) {
             var viewModel = new NameValueDialogViewModel<>(params);
-            var dialogView = new NameValueDialogView<>(viewModel);
+            var dialogView = new NameValueDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -96,7 +97,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public TextDialogPort openTextDialog(TextDialogParams params) {
             var viewModel = new TextDialogViewModel<>(params);
-            var dialogView = new TextDialogView<>(viewModel);
+            var dialogView = new TextDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -105,7 +106,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public TextsDialogPort openTextsDialog(TextsDialogParams params) {
             var viewModel = new TextsDialogViewModel<>(params);
-            var dialogView = new TextsDialogView<>(viewModel);
+            var dialogView = new TextsDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -114,7 +115,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public TextChoiceDialogPort openTextChoiceDialog(TextChoiceDialogParams params) {
             var viewModel = new TextChoiceDialogViewModel<>(params);
-            var dialogView = new TextChoiceDialogView<>(viewModel);
+            var dialogView = new TextChoiceDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -123,7 +124,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public LongTextDialogPort openLongTextDialog(LongTextDialogParams params) {
             var viewModel = new LongTextDialogViewModel<>(params);
-            var dialogView = new LongTextDialogView<>(viewModel);
+            var dialogView = new LongTextDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -132,7 +133,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public ProgressDialogPort openProgressDialog(ProgressDialogParams params) {
             var viewModel = new ProgressDialogViewModel<>(params);
-            var dialogView = new ProgressDialogView<>(viewModel);
+            var dialogView = new ProgressDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -141,7 +142,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public FileChooserDialogPort<StorageFile> openFileChooserDialog(FileChooserDialogParams<StorageFile> params) {
             var viewModel = new FileChooserDialogViewModel<>(params);
-            var dialogView = new FileChooserDialogView<>(viewModel);
+            var dialogView = new FileChooserDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -151,7 +152,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         public FileChooserDialogPort<StorageFile> openDemoFileChooserDialog(
                 FileChooserDialogParams<StorageFile> params, DemoFileStorage demoStorage) {
             var viewModel = new DemoFileChooserDialogViewModel(params, demoStorage);
-            var dialogView = new DemoFileChooserDialogView(viewModel);
+            var dialogView = new DemoFileChooserDialogView(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -160,7 +161,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         @Override
         public DialogPort openPagedDialog(PageDialogParams params) {
             var viewModel = new PageDialogViewModel<>(params);
-            var dialogView = new PageDialogView<>(viewModel);
+            var dialogView = new PageDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
@@ -186,8 +187,8 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
     private final ComboBox<WindowType> windowTypeComboBox =
             new ComboBox(FXCollections.observableArrayList(WindowType.values()));
 
-    public DialogsDialogView(VM viewModel) {
-        super(viewModel);
+    public DialogsDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

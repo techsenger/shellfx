@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogView;
 import com.techsenger.shellfx.storage.StorageFile;
 import javafx.scene.control.Button;
@@ -27,8 +28,8 @@ import javafx.scene.control.Button;
  */
 final class DemoFileChooserDialogView extends FileChooserDialogView<DemoFileChooserDialogViewModel, StorageFile> {
 
-    DemoFileChooserDialogView(DemoFileChooserDialogViewModel viewModel) {
-        super(viewModel);
+    DemoFileChooserDialogView(DemoFileChooserDialogViewModel viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

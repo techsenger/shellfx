@@ -89,7 +89,7 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
 
         protected NameValueDialogView<?> createNameValueDialog(DialogParams params) {
             var viewModel = new NameValueDialogViewModel<>(params);
-            var dialogView = new NameValueDialogView<>(viewModel);
+            var dialogView = new NameValueDialogView<>(viewModel, getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }

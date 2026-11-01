@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.settings;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -52,8 +53,8 @@ public class SettingsDialogView<VM extends SettingsDialogViewModel<?>> extends A
 
     private final ResultButton okButton = new ResultButton(SettingsDialogButtons.OK, "OK");
 
-    public SettingsDialogView(VM viewModel) {
-        super(viewModel);
+    public SettingsDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

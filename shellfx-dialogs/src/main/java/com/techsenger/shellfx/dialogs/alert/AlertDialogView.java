@@ -19,6 +19,7 @@ package com.techsenger.shellfx.dialogs.alert;
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -62,8 +63,8 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
 
     private final ResultButton noButton = new ResultButton(AlertDialogButtons.NO, "No");
 
-    public AlertDialogView(VM viewModel) {
-        super(viewModel);
+    public AlertDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

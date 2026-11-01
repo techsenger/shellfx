@@ -19,8 +19,9 @@ package com.techsenger.shellfx.core;
 import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.registries.ControlRegistry;
 import com.techsenger.shellfx.core.registries.SlotRegistry;
-import javafx.application.HostServices;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.settings.ShellSettings;
+import javafx.application.HostServices;
 
 /**
  *
@@ -38,13 +39,16 @@ public class DefaultShellContext implements ShellViewModelContext, ShellViewCont
 
     private final ControlRegistry controlRegistry;
 
+    private final StylesheetRegistry stylesheetRegistry;
+
     public DefaultShellContext(ShellSettings settings, ConfigManager configManager, HostServices hostServices,
-            SlotRegistry slotRegistry, ControlRegistry controlRegistry) {
+            SlotRegistry slotRegistry, ControlRegistry controlRegistry, StylesheetRegistry stylesheetRegistry) {
         this.settings = settings;
         this.configManager = configManager;
         this.hostServices = hostServices;
         this.slotRegistry = slotRegistry;
         this.controlRegistry = controlRegistry;
+        this.stylesheetRegistry = stylesheetRegistry;
     }
 
     @Override
@@ -70,5 +74,10 @@ public class DefaultShellContext implements ShellViewModelContext, ShellViewCont
     @Override
     public ControlRegistry getControlRegistry() {
         return controlRegistry;
+    }
+
+    @Override
+    public StylesheetRegistry getStylesheetRegistry() {
+        return stylesheetRegistry;
     }
 }

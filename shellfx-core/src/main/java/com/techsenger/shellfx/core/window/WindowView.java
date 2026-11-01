@@ -76,21 +76,9 @@ public interface WindowView<VM extends WindowViewModel<?>> extends ChildView<VM>
     Composer getComposer();
 
     /**
-     * Adds stylesheets to this window.
-     *
-     * @param sheets the stylesheets to add
-     */
-    void addStylesheets(List<Stylesheet> sheets);
-
-    /**
-     * Removes stylesheets from this window.
-     *
-     * @param sheets the stylesheets to remove
-     */
-    void removeStylesheets(List<Stylesheet> sheets);
-
-    /**
      * Returns an unmodifiable list of stylesheets applied to this window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
      *
      * @return an unmodifiable list of stylesheets
      */

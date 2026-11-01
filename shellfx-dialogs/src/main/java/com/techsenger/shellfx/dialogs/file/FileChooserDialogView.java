@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
@@ -135,7 +136,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
         protected AlertDialogView<?> createAlertDialog(AlertDialogParams params) {
             var viewModel = new AlertDialogViewModel<>(params);
-            var view = new AlertDialogView<>(viewModel);
+            var view = new AlertDialogView<>(viewModel, getStylesheetRegistry());
             view.initialize();
             return view;
         }
@@ -243,14 +244,14 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
     private final ResultButton okButton = new ResultButton(FileChooserDialogButtons.OK, "OK");
 
-    public FileChooserDialogView(VM viewModel) {
-        this(viewModel, new DefaultFileIconResolver<T>(),
+    public FileChooserDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        this(viewModel, stylesheetRegistry, new DefaultFileIconResolver<T>(),
                 new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
     }
 
-    public FileChooserDialogView(VM viewModel, FileIconResolver<? super T> iconResolver,
-            FileStyleResolver<? super T> styleResolver) {
-        super(viewModel);
+    public FileChooserDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry,
+            FileIconResolver<? super T> iconResolver, FileStyleResolver<? super T> styleResolver) {
+        super(viewModel, stylesheetRegistry);
         this.decorator = new FileDecorator<T>(iconResolver, styleResolver, viewModel::getDecorationType,
                 () -> viewModel.getAppearanceSettings().getTheme());
     }

@@ -261,7 +261,8 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
         protected NameValueDialogView<?> createNameValueDialog(String nameCaption, String valueCaption,
                 DialogParams params) {
             var viewModel = new NameValueDialogViewModel<>(params);
-            var dialogView = new NameValueDialogView<>(viewModel, nameCaption, valueCaption);
+            var dialogView = new NameValueDialogView<>(viewModel, getShell().getContext().getStylesheetRegistry(),
+                    nameCaption, valueCaption);
             dialogView.initialize();
             return dialogView;
         }

@@ -25,8 +25,6 @@ import com.techsenger.shellfx.core.registries.ControlBuilder;
 import com.techsenger.shellfx.core.registries.Controls;
 import com.techsenger.shellfx.core.window.AbstractHostWindowView;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
-import com.techsenger.shellfx.material.style.Stylesheet;
-import java.util.List;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.MenuBar;
@@ -183,14 +181,13 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
 
     private @Nullable Controls<? extends ShellView<?>, MenuBar> menuBarControls;
 
-    public DefaultShellView(VM viewModel, List<Stylesheet> stylesheets,
-            MenuBarSlot<? extends ShellView<?>> menuBarSlot, ShellViewContext context) {
-        this(viewModel, new Stage(), stylesheets, menuBarSlot, context);
+    public DefaultShellView(VM viewModel, ShellViewContext context, MenuBarSlot<? extends ShellView<?>> menuBarSlot) {
+        this(viewModel, context, new Stage(), menuBarSlot);
     }
 
-    public DefaultShellView(VM viewModel, Stage stage, List<Stylesheet> stylesheets,
-            MenuBarSlot<? extends ShellView<?>> menuBarSlot, ShellViewContext context) {
-        super(viewModel, stage, stylesheets);
+    public DefaultShellView(VM viewModel, ShellViewContext context, Stage stage,
+            MenuBarSlot<? extends ShellView<?>> menuBarSlot) {
+        super(viewModel, context.getStylesheetRegistry(), stage);
         this.menuBarSlot = menuBarSlot;
         this.context = context;
         getComposer().setMenuAware(this);

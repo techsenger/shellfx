@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.dialogs.progress;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.toolkit.fx.Spacer;
@@ -50,8 +51,8 @@ public class ProgressDialogView<VM extends ProgressDialogViewModel<?>> extends A
 
     private final ResultButton cancelButton = new ResultButton(ProgressDialogButtons.CANCEL, "Cancel");
 
-    public ProgressDialogView(VM viewModel) {
-        super(viewModel);
+    public ProgressDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

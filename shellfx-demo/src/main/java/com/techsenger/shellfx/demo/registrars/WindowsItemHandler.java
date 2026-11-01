@@ -42,7 +42,7 @@ public class WindowsItemHandler extends AbstractItemHandler {
             var settings = getComponent().getViewModel().getContext().getSettings().getAppearance();
             var params = new WindowParams(null, WindowType.NESTED, false, settings);
             var viewModel = new DemoWindowViewModel<>(params, i);
-            view = new DemoWindowView<>(viewModel);
+            view = new DemoWindowView<>(viewModel, getComponent().getContext().getStylesheetRegistry());
             view.initialize();
             viewModel.setTitle("Window " + i);
             getComponent().getComposer().addWindow(view);

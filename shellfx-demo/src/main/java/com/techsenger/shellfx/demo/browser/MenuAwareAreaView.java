@@ -54,11 +54,11 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
         @Override
         public DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
             var viewModel = new DemoDialogViewModel<>(params);
-            var dialogView = new DemoDialogView<>(viewModel);
+            var shell = mainTab.getComposer().getShell();
+            var dialogView = new DemoDialogView<>(viewModel, shell.getContext().getStylesheetRegistry());
             dialogView.initialize();
             viewModel.setResizable(resizable);
             if (scope == OverlayScope.WINDOW) {
-                var shell = mainTab.getComposer().getShell();
                 shell.getComposer().addDialog(dialogView);
             } else {
                 mainTab.getComposer().addDialog(dialogView);

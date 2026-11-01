@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.FontIconView;
@@ -59,8 +60,8 @@ public class ViewerDialogView<VM extends ViewerDialogViewModel<?>> extends Abstr
 
     private final ResultButton okButton = new ResultButton(ViewerDialogButtons.OK, "OK");
 
-    public ViewerDialogView(VM viewModel) {
-        super(viewModel);
+    public ViewerDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

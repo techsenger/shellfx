@@ -77,7 +77,7 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
         @Override
         public DialogPort openDemoDialog(boolean resizable, DialogParams params) {
             var viewModel = new DemoDialogViewModel<>(params);
-            var dialogView = new DemoDialogView<>(viewModel);
+            var dialogView = new DemoDialogView<>(viewModel, getShell().getContext().getStylesheetRegistry());
             dialogView.initialize();
             viewModel.setResizable(resizable);
             getShell().getComposer().addDialog(dialogView);

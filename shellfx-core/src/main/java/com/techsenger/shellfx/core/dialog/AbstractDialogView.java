@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.material.button.ButtonWidthGroup;
@@ -72,8 +73,8 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
     private final ButtonWidthGroup buttonWidthGroup = new ButtonWidthGroup(bottomBox,
             () -> getDescriptor().getLogPrefix());
 
-    public AbstractDialogView(VM viewModel) {
-        super(viewModel);
+    public AbstractDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     protected FocusTrap getFocusTrap() {

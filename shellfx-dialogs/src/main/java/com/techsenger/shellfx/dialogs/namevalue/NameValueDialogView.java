@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.dialogs.namevalue;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.geometry.VPos;
@@ -47,12 +48,13 @@ public class NameValueDialogView<VM extends NameValueDialogViewModel<?>> extends
 
     private final ResultButton okButton = new ResultButton(NameValueButtons.OK, "OK");
 
-    public NameValueDialogView(VM viewModel) {
-        super(viewModel);
+    public NameValueDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
-    public NameValueDialogView(VM viewModel, String nameLabelText, String valueLabelText) {
-        super(viewModel);
+    public NameValueDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry, String nameLabelText,
+            String valueLabelText) {
+        super(viewModel, stylesheetRegistry);
         nameLabel.setText(nameLabelText);
         valueLabel.setText(valueLabelText);
     }

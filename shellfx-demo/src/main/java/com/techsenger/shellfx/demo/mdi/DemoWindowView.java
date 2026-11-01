@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.demo.mdi;
 
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.collections.FXCollections;
@@ -174,8 +175,8 @@ public class DemoWindowView<VM extends DemoWindowViewModel<?>> extends AbstractW
 
     private final CheckBox closableCheckBox = new CheckBox("Closable");
 
-    public DemoWindowView(VM viewModel) {
-        super(viewModel);
+    public DemoWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

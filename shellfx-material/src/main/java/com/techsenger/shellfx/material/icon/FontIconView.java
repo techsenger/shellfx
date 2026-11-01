@@ -17,10 +17,6 @@
 package com.techsenger.shellfx.material.icon;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.style.IconStylesheets;
-import com.techsenger.shellfx.material.style.Stylesheet;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -54,6 +50,12 @@ import org.slf4j.LoggerFactory;
  * inherited {@code icon-view} style class) will bypass this mechanism entirely and should be migrated to
  * {@code -fx-icon-size}.
  *
+ * <p>Note that the CSS parser checks the names of properties with {@code endsWith()}, ignoring the letter case, and
+ * parses the value of a property whose name ends with {@code font-size}, {@code font-style}, {@code font-weight} or
+ * {@code font} by the grammar of the matching {@code -fx-font*} property instead of its registered type
+ * (JDK-8389094). So a String property such as {@code -fx-icon-font} fails to parse. A name ending with
+ * {@code font-family} still gives a String, but only for a single identifier or quoted string.
+ *
  * <p>Two kinds of {@link FontIcon} are supported:
  * <ul>
  *     <li>{@link PlainFontIcon} — carries an explicit code point and, optionally, a font family. Both are
@@ -72,9 +74,9 @@ import org.slf4j.LoggerFactory;
  * <p>A {@link StyleFontIcon} whose stylesheet rule has no {@code -fx-icon-family} would keep the family of the
  * previous icon when the view is reused: JavaFX may not return the property to its initial value, because it loses
  * track of the properties applied after the inline style of the view is changed in the middle of a CSS pass (see
- * the inline style below). So {@link #setDefaultIconFamily(String)} also registers in {@code IconStylesheets} a
- * stylesheet with the rule {@code .font-icon-view { -fx-icon-family: '...'; }}, which gives every icon a family;
- * the rules of the icons with another font are more specific and override it.
+ * the inline style below). So the application should also register a stylesheet with the rule
+ * {@code .font-icon-view { -fx-icon-family: '...'; }}, which gives every icon a family; the rules of the icons
+ * with another font are more specific and override it.
  *
  * <p>The inline style of this view is managed by the view itself, because it keeps the frozen icon size there. To
  * style the icon from code, use {@link #iconStyleProperty() iconStyle}; never call {@code setStyle()}, as it
@@ -107,11 +109,6 @@ public class FontIconView extends Text {
     private static @Nullable String defaultIconFamily;
 
     /**
-     * The stylesheet that gives every icon the default family, or {@code null} if there is no default family.
-     */
-    private static @Nullable Stylesheet defaultFamilyStylesheet;
-
-    /**
      * Returns the application-wide default icon font family.
      *
      * @return the default font family, or {@code null} if not set
@@ -125,15 +122,12 @@ public class FontIconView extends Text {
      * not resolve its own font family from an icon or from CSS.
      *
      * <p>It must be set before the application starts, before any view is created and the UI is initialized: the
-     * views that already exist are not updated. The method also replaces the stylesheet that gives the family to
-     * every icon in {@code IconStylesheets} (see the description of the class). A {@code null} family removes
-     * the stylesheet.
+     * views that already exist are not updated.
      *
      * @param family the default font family to use, or {@code null} for none
      */
     public static void setDefaultIconFamily(@Nullable String family) {
         defaultIconFamily = family;
-        updateDefaultFamilyStylesheet(family);
     }
 
     /**
@@ -144,19 +138,6 @@ public class FontIconView extends Text {
      */
     public static List<CssMetaData<?, ?>> getClassCssMetaData() {
         return Css.META_DATA;
-    }
-
-    private static void updateDefaultFamilyStylesheet(@Nullable String family) {
-        if (defaultFamilyStylesheet != null) {
-            IconStylesheets.remove(defaultFamilyStylesheet);
-            defaultFamilyStylesheet = null;
-        }
-        if (family != null) {
-            var css = ".font-icon-view { -fx-icon-family: '" + family + "'; }";
-            defaultFamilyStylesheet = new Stylesheet("data:text/css;base64,"
-                    + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.UTF_8)));
-            IconStylesheets.add(defaultFamilyStylesheet);
-        }
     }
 
     private final StyleableDoubleProperty iconSize =

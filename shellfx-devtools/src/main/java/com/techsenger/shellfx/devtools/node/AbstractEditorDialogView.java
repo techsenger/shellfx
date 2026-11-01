@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
@@ -55,7 +56,7 @@ public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogVi
 
         protected AlertDialogView<?> createAlertDialog(AlertDialogParams params) {
             var viewModel = new AlertDialogViewModel<>(params);
-            var dialogView = new AlertDialogView<>(viewModel);
+            var dialogView = new AlertDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
             return dialogView;
         }
@@ -75,8 +76,8 @@ public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogVi
 
     private final ResultButton okButton = new ResultButton(EditorDialogButtons.OK, "OK");
 
-    public AbstractEditorDialogView(VM viewModel) {
-        super(viewModel);
+    public AbstractEditorDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry);
     }
 
     @Override

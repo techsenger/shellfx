@@ -18,6 +18,7 @@ package com.techsenger.shellfx.core;
 
 import com.techsenger.shellfx.core.registries.ControlRegistry;
 import com.techsenger.shellfx.core.registries.SlotRegistry;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 
 /**
  * The part of the shell context that is available to views: the shell uses its registries on the view side only.
@@ -40,4 +41,12 @@ public interface ShellViewContext {
      * @return
      */
     ControlRegistry getControlRegistry();
+
+    /**
+     * Returns the registry of the stylesheets that every window applies in addition to its own ones. There can be
+     * only one registry in the application.
+     *
+     * @return
+     */
+    StylesheetRegistry getStylesheetRegistry();
 }
