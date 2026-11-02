@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.registry.AbstractExtensionRegistry;
+import com.techsenger.shellfx.core.registry.AbstractItemRegistry;
 import com.techsenger.shellfx.core.registry.Registration;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.LinkedHashSet;
@@ -36,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Pavel Castornii
  */
-public final class StylesheetRegistry extends AbstractExtensionRegistry {
+public final class StylesheetRegistry extends AbstractItemRegistry<Stylesheet> {
 
     private final class StylesheetRegistration implements Registration {
 
@@ -48,9 +48,7 @@ public final class StylesheetRegistry extends AbstractExtensionRegistry {
 
         @Override
         public void unregister() {
-            if (registrations.remove(this)) {
-                renewState();
-            }
+            update(() -> registrations.remove(this));
         }
     }
 
@@ -74,9 +72,8 @@ public final class StylesheetRegistry extends AbstractExtensionRegistry {
      */
     public Registration register(List<Stylesheet> stylesheets) {
         var registration = new StylesheetRegistration(List.copyOf(Objects.requireNonNull(stylesheets)));
-        registrations.add(registration);
-        // after the registration is undoable, so a listener may undo it
-        renewState();
+        // the listeners are told after the registration is undoable, so a listener may undo it
+        update(() -> registrations.add(registration));
         return registration;
     }
 
@@ -91,5 +88,17 @@ public final class StylesheetRegistry extends AbstractExtensionRegistry {
             result.addAll(registration.stylesheets);
         }
         return List.copyOf(result);
+    }
+
+    /**
+     * Applies a change of the registrations and tells the listeners which stylesheets it has added to and removed from
+     * {@link #getStylesheets()}, so a stylesheet that another registration still holds is neither added nor removed.
+     */
+    private void update(Runnable change) {
+        var before = getStylesheets();
+        change.run();
+        var after = getStylesheets();
+        notifyChanged(after.stream().filter(s -> !before.contains(s)).toList(),
+                before.stream().filter(s -> !after.contains(s)).toList());
     }
 }

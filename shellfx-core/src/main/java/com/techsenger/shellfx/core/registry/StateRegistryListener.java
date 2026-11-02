@@ -25,7 +25,7 @@ import java.util.UUID;
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface RegistryStateListener {
+public interface StateRegistryListener {
 
     /**
      * Called once per change of the registrations. It does not say what changed: the listener reads the current state
@@ -34,5 +34,5 @@ public interface RegistryStateListener {
      * @param stateUuid the identifier of the state the listener is told about; if the registry has a different one
      *     by the time the listener reads it, the state has changed again and must be re-read
      */
-    void stateChanged(UUID stateUuid);
+    void changed(UUID stateUuid);
 }

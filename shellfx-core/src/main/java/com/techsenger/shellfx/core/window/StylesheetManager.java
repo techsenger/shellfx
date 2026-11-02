@@ -19,7 +19,7 @@ package com.techsenger.shellfx.core.window;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.registry.RegistryStateListener;
+import com.techsenger.shellfx.core.registry.ItemRegistryListener;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import com.techsenger.shellfx.material.theme.Theme;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -77,12 +76,7 @@ final class StylesheetManager {
 
     private final StylesheetRegistry registry;
 
-    private final RegistryStateListener registryListener = this::onRegistryChanged;
-
-    /**
-     * The stylesheets of the registry that this manager has taken from it.
-     */
-    private List<Stylesheet> registryStylesheets = List.of();
+    private final ItemRegistryListener<Stylesheet> registryListener = this::onRegistryChanged;
 
     private @Nullable Theme theme;
 
@@ -99,8 +93,7 @@ final class StylesheetManager {
         this.target = target;
         this.logPrefix = logPrefix;
         this.registry = registry;
-        this.registryStylesheets = registry.getStylesheets();
-        addStylesheets(registryStylesheets);
+        addStylesheets(registry.getStylesheets());
         registry.addListener(registryListener);
     }
 
@@ -175,25 +168,20 @@ final class StylesheetManager {
     public void dispose() {
         this.disposed = true;
         registry.removeListener(registryListener);
-        this.registryStylesheets = List.of();
     }
 
-    private void onRegistryChanged(UUID stateUuid) {
+    private void onRegistryChanged(List<Stylesheet> added, List<Stylesheet> removed) {
         if (Platform.isFxApplicationThread()) {
-            applyRegistryChanges();
+            applyRegistryChanges(added, removed);
         } else {
-            Platform.runLater(this::applyRegistryChanges);
+            Platform.runLater(() -> applyRegistryChanges(added, removed));
         }
     }
 
-    private void applyRegistryChanges() {
+    private void applyRegistryChanges(List<Stylesheet> added, List<Stylesheet> removed) {
         if (disposed) {
             return;
         }
-        var current = registry.getStylesheets();
-        var added = current.stream().filter(s -> !registryStylesheets.contains(s)).toList();
-        var removed = registryStylesheets.stream().filter(s -> !current.contains(s)).toList();
-        this.registryStylesheets = current;
         if (!removed.isEmpty()) {
             removeStylesheets(removed);
         }

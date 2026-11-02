@@ -21,14 +21,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Base of the extension registries: keeps the identifier of the state and the listeners. A subclass calls
+ * Base of the state extension registries: keeps the identifier of the state and the listeners. A subclass calls
  * {@link #renewState()} after every change of what it holds.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractExtensionRegistry implements ExtensionRegistry {
+public abstract class AbstractStateRegistry implements StateRegistry {
 
-    private final List<RegistryStateListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<StateRegistryListener> listeners = new CopyOnWriteArrayList<>();
 
     private volatile UUID stateUuid = UUID.randomUUID();
 
@@ -38,12 +38,12 @@ public abstract class AbstractExtensionRegistry implements ExtensionRegistry {
     }
 
     @Override
-    public void addListener(RegistryStateListener listener) {
+    public void addListener(StateRegistryListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(RegistryStateListener listener) {
+    public void removeListener(StateRegistryListener listener) {
         listeners.remove(listener);
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractExtensionRegistry implements ExtensionRegistry {
         var newUuid = UUID.randomUUID();
         stateUuid = newUuid;
         for (var listener : listeners) {
-            listener.stateChanged(newUuid);
+            listener.changed(newUuid);
         }
     }
 }

@@ -71,11 +71,14 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [ConfigManager](#config-manager)
 * [Component Port](#port)
 * [Extension Registries](#registries)
+    * [Registry Kinds](#registries-kinds)
     * [Slot Registry](#registries-slot)
     * [Control Registry](#registries-control)
+    * [Resolution by Component](#registries-resolution)
     * [Control Builder](#registries-control-builder)
     * [Control State](#registries-control-state)
     * [Menu Visibility](#registries-menu-visibility)
+    * [Stylesheet Registry](#registries-stylesheet)
 * [FileStorage](#storage)
     * [Packages](#storage-packages)
     * [Core Concepts](#storage-concepts)
@@ -781,17 +784,34 @@ An extension registry provides a runtime mechanism for components, plugins, and 
 without creating direct compile-time dependencies between them. Extensions can be registered and removed at any time,
 and registrations do not depend on the order in which components or plugins are loaded.
 
-Registrations are associated with the component class of the slot. When resolving registrations for an actual
-component, the registry considers its class, superclasses, and interfaces. Therefore, a registration made for a base
-view type such as `TabHostView` also applies to its subtypes.
-
-The resolved result is cached by `Class#getName()` rather than by the `Class` object itself. This avoids retaining the
-`ClassLoader` of an unloaded plugin through the cache. The cache is invalidated whenever the registrations change.
+Shell provides three registries: `SlotRegistry` and `ControlRegistry` build the menus and tool bars, and
+`StylesheetRegistry` holds the stylesheets that every window applies.
 
 Registries are not tied to a particular layer and can be used by both views and view models. In the shell, registries
 are used only on the view side, so they are exposed through `ShellViewContext`, which is available to views.
 `ShellViewModelContext` does not expose them. `DefaultShellContext` implements both contexts, allowing an application
 to create a single context object while exposing each layer only the API intended for it.
+
+### Registry Kinds <a name="registries-kinds"></a>
+
+Every registry implements `ExtensionRegistry`. It is not synchronized and promises nothing about threads: its
+listeners are called in the thread that changed it. Registries differ in what a listener is told about a change, and
+there are two kinds:
+
+- `StateRegistry` tells only that something has changed. `getStateUuid()` returns an identifier of the current state
+  that is replaced on every change, and a `StateRegistryListener` gets the new identifier in `stateChanged(UUID)`. The
+  listener reads the registry again and compares the identifier with the one it saw before: if the registry has a
+  different one by the time the listener reads it, the state has changed again and must be re-read. `SlotRegistry`
+  and `ControlRegistry` are state registries, because they hold the structure of a tree that is rebuilt as a whole
+  and have no items that could be listed.
+- `ItemRegistry<T>` tells what has changed. An `ItemRegistryListener<T>` gets the added and the removed items in
+  `changed(List<T> added, List<T> removed)`; either list can be empty but never `null`, and both are unmodifiable.
+  `T` is the domain item, such as `Stylesheet` for `StylesheetRegistry`. In `StylesheetRegistry` a stylesheet registered
+  more than once is reported as added by the first registration and as removed by the last one.
+
+The kind is a matter of how a change is reported, not of how often the registry changes: all registries can change at
+any time. A listener of an item registry that applies the changes one by one depends on the order of the
+notifications, which is not guaranteed between threads; a listener that only re-reads the registry does not.
 
 ### Slot Registry <a name="registries-slot"></a>
 
@@ -899,6 +919,16 @@ the group is laid out.
 
 Registering a factory does not invoke it. Factories are called only when a builder creates the corresponding
 controls.
+
+### Resolution by Component <a name="registries-resolution"></a>
+
+Registrations in `SlotRegistry` and `ControlRegistry` are associated with the component class of the slot. When
+resolving registrations for an actual component, the registry considers its class, superclasses, and interfaces.
+Therefore, a registration made for a base view type such as `TabHostView` also applies to its subtypes.
+
+The resolved result is cached by `Class#getName()` rather than by the `Class` object itself. This avoids retaining the
+`ClassLoader` of an unloaded plugin through the cache. The cache is invalidated whenever the registrations change.
+`StylesheetRegistry` is not tied to a component class and does not resolve anything.
 
 ### Control Builder <a name="registries-control-builder"></a>
 
@@ -1063,6 +1093,28 @@ visible, so the `material` module has ready-made classes for the common case:
   items. It never changes the visibility of the menu or of its items and does not depend on `ControlRegistry` or
   `ControlBuilder`. The builder puts a separator between the groups of any menu, so a plain `Menu` that has groups
   with nothing to show should install it too: `GroupCollapser.install(menu)`.
+
+### Stylesheet Registry <a name="registries-stylesheet"></a>
+
+`StylesheetRegistry` holds the application-wide stylesheets that every top-level window applies: the default ones, the
+icon stylesheets of the platform and of plugins. It starts empty, and the application decides what to register. It is
+available through `ShellViewContext#getStylesheetRegistry()`, and there is only one registry in the application.
+
+A stylesheet is registered alone or in a list as one contribution that is undone as a whole. Windows read the registry
+when they are created and follow it while they are open, so stylesheets can be registered and unregistered at any time
+and from any thread: the windows apply the changes in the JavaFX Application Thread. Dialogs take the registry in their
+constructors.
+
+A `Stylesheet` is a URL of a CSS file, optionally with a set of themes for which it has an extension. For such a
+theme the window applies one more file next to the base one, and the name of that file is generated from the name of
+the base file and the theme: for `base.css` and the `CUPERTINO_DARK` theme it is `base-cupertino-dark.css`. It is meant
+for the rules that cannot be written in JavaFX CSS for all themes at once, and should be avoided where possible.
+
+A stylesheet registered more than once is applied once and stays until all its registrations are undone. Stylesheets
+are compared by their URL only, so the set of themes does not make two stylesheets different.
+
+It is an item registry, so a listener gets the stylesheets that have appeared in and disappeared from
+`getStylesheets()`; a stylesheet that another registration still holds is neither added nor removed.
 
 ## FileStorage <a name="storage"></a>
 

@@ -23,7 +23,7 @@ import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
-import com.techsenger.shellfx.core.registry.AbstractExtensionRegistry;
+import com.techsenger.shellfx.core.registry.AbstractStateRegistry;
 import com.techsenger.shellfx.core.registry.Registration;
 import java.util.Objects;
 import java.util.Set;
@@ -44,7 +44,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public final class SlotRegistry extends AbstractExtensionRegistry {
+public final class SlotRegistry extends AbstractStateRegistry {
 
     private final RegistrationIndex<SlotRegistration> index = new RegistrationIndex<>(this::renewState);
 
