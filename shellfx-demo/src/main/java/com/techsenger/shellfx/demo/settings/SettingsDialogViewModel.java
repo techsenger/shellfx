@@ -16,11 +16,12 @@
 
 package com.techsenger.shellfx.demo.settings;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowComposer;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
@@ -36,19 +37,16 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  */
 public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C> {
 
-    private final ReadOnlyObjectWrapper<Theme> theme = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Theme> selectedTheme = new ReadOnlyObjectWrapper<>();
 
-    private final ObservableSource<Theme> themeSource = new SimpleObservableSource<>();
+    private final ObservableSource<Theme> selectedThemeSource = new SimpleObservableSource<>();
 
-    private final ReadOnlyObjectWrapper<Density> density = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<@Nullable Density> selectedDensity = new ReadOnlyObjectWrapper<>();
 
-    private final ObservableSource<Density> densitySource = new SimpleObservableSource<>();
-
-    private final AppearanceSettings settings;
+    private final ObservableSource<@Nullable Density> selectedDensitySource = new SimpleObservableSource<>();
 
     public SettingsDialogViewModel(SettingsDialogParams params) {
         super(params);
-        this.settings = params.getSettings();
     }
 
     @Override
@@ -61,28 +59,30 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Theme getTheme() {
-        return theme.get();
+    public Theme getSelectedTheme() {
+        return selectedTheme.get();
     }
 
-    public void setTheme(Theme theme) {
-        themeSource.next(theme);
+    @RequestSetter
+    public void setSelectedTheme(Theme theme) {
+        selectedThemeSource.next(theme);
     }
 
-    public ReadOnlyObjectProperty<Theme> themeProperty() {
-        return theme.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<Theme> selectedThemeProperty() {
+        return selectedTheme.getReadOnlyProperty();
     }
 
-    public Density getDensity() {
-        return density.get();
+    public @Nullable Density getSelectedDensity() {
+        return selectedDensity.get();
     }
 
-    public void setDensity(Density density) {
-        densitySource.next(density);
+    @RequestSetter
+    public void setSelectedDensity(@Nullable Density density) {
+        selectedDensitySource.next(density);
     }
 
-    public ReadOnlyObjectProperty<Density> densityProperty() {
-        return density.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<@Nullable Density> selectedDensityProperty() {
+        return selectedDensity.getReadOnlyProperty();
     }
 
     @Override
@@ -96,14 +96,16 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
         setTitle("Settings");
         setIcon(new PlainFontIcon(0xF08BB));
         setResizable(false);
-        setTheme(settings.getTheme());
-        setDensity(settings.getDensity());
+        var appearance = getSettings().getAppearance();
+        setSelectedTheme(appearance.getTheme());
+        setSelectedDensity(appearance.getDensity());
         setRightButtons(SettingsDialogButtons.CANCEL, SettingsDialogButtons.OK);
         setButtonDefault(SettingsDialogButtons.OK, true);
         setOnResult((buttonName) -> {
             if (buttonName == SettingsDialogButtons.OK) {
-                settings.setTheme(theme.get());
-                settings.setDensity(density.get());
+                appearance.setTheme(selectedTheme.get());
+                appearance.setDensity(selectedDensity.get());
+                getSettings().notifyListeners();
             }
             closeSafely();
         });
@@ -114,12 +116,12 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
      * intended exclusively for {@code SettingsDialogView}. Direct invocation by user code results in undefined
      * behavior.
      */
-    ReadOnlyObjectWrapper<Theme> themeWrapper() {
-        return theme;
+    ReadOnlyObjectWrapper<Theme> selectedThemeWrapper() {
+        return selectedTheme;
     }
 
-    ObservableSource<Theme> themeSource() {
-        return themeSource;
+    ObservableSource<Theme> selectedThemeSource() {
+        return selectedThemeSource;
     }
 
     /**
@@ -127,11 +129,11 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
      * intended exclusively for {@code SettingsDialogView}. Direct invocation by user code results in undefined
      * behavior.
      */
-    ReadOnlyObjectWrapper<Density> densityWrapper() {
-        return density;
+    ReadOnlyObjectWrapper<@Nullable Density> selectedDensityWrapper() {
+        return selectedDensity;
     }
 
-    ObservableSource<Density> densitySource() {
-        return densitySource;
+    ObservableSource<@Nullable Density> selectedDensitySource() {
+        return selectedDensitySource;
     }
 }

@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.dialogs.alert;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ public class AlertDialogParams extends DialogParams {
 
     private final AlertDialogType dialogType;
 
-    public AlertDialogParams(AlertDialogConfig config, WindowType type, AppearanceSettings setting,
+    public AlertDialogParams(AlertDialogConfig config, WindowType type, ShellSettings setting,
             AlertDialogType dialogType) {
         super(config, type, setting);
         this.dialogType = dialogType;

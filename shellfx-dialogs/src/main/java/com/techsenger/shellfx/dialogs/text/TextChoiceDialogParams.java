@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.dialogs.text;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public class TextChoiceDialogParams extends DialogParams {
 
-    public TextChoiceDialogParams(TextChoiceDialogConfig config, WindowType type, AppearanceSettings settings) {
+    public TextChoiceDialogParams(TextChoiceDialogConfig config, WindowType type, ShellSettings settings) {
         super(config, type, settings);
     }
 

@@ -325,7 +325,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             windowType = WindowType.TOP_LEVEL;
         }
         var params = new ViewerDialogParams(new ViewerDialogConfig(), windowType,
-                getShellContext().getSettings().getAppearance(), node, item, declaringClassName, linkOpener);
+                getShellContext().getSettings(), node, item, declaringClassName, linkOpener);
         var dialog = getComposer().openViewerDialog(params);
         dialog.setOnClosed(() -> focusPropertiesSource.next(null));
     }
@@ -336,7 +336,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             windowType = WindowType.TOP_LEVEL;
         }
         var params = new EditorDialogParams(getConfig().getEditorDialog(), windowType,
-                getShellContext().getSettings().getAppearance(), task);
+                getShellContext().getSettings(), task);
         var dialog = getComposer().openEditorDialog(params);
         dialog.setOnClosed(() -> {
             if (dialog.isPropertyUpdated()) {

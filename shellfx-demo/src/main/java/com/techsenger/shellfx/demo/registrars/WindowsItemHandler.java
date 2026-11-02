@@ -39,7 +39,7 @@ public class WindowsItemHandler extends AbstractItemHandler {
     public void handle(ActionEvent event) {
         DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
-            var settings = getComponent().getViewModel().getContext().getSettings().getAppearance();
+            var settings = getComponent().getViewModel().getContext().getSettings();
             var params = new WindowParams(null, WindowType.NESTED, false, settings);
             var viewModel = new DemoWindowViewModel<>(params, i);
             view = new DemoWindowView<>(viewModel, getComponent().getContext().getStylesheetRegistry());

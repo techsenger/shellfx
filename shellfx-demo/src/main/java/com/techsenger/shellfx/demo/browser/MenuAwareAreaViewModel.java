@@ -20,7 +20,7 @@ import com.techsenger.shellfx.core.MenuAwarePort;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.popup.OverlayScope;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import javafx.beans.property.BooleanProperty;
@@ -40,7 +40,7 @@ public class MenuAwareAreaViewModel<C extends MenuAwareAreaComposer> extends Abs
 
     private final BooleanProperty barDisabled = new SimpleBooleanProperty();
 
-    private final AppearanceSettings settings;
+    private final ShellSettings settings;
 
     public MenuAwareAreaViewModel(MenuAwareAreaParams params) {
         super(params);

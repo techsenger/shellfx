@@ -104,7 +104,7 @@ public abstract class AbstractEditorDialogViewModel<C extends EditorDialogCompos
     }
 
     void openErrorDialog() {
-        var alertParams = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getAppearanceSettings(),
+        var alertParams = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getSettings(),
                 AlertDialogType.ERROR);
         var alertDialog = getComposer().openAlertDialog(alertParams);
         alertDialog.setMessage("Failed to apply the value.");

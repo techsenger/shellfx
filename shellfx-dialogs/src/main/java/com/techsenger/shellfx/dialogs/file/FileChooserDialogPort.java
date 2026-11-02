@@ -18,7 +18,6 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogPort;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.storage.StorageFile;
 import java.net.URI;
@@ -36,8 +35,6 @@ import javafx.collections.ObservableList;
 public interface FileChooserDialogPort<T extends StorageFile> extends DialogPort {
 
     T getResult();
-
-    AppearanceSettings getAppearanceSettings();
 
     FileChooserType getChooserType();
 

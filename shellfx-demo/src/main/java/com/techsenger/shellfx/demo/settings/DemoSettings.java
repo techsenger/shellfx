@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.demo.settings;
 
+import com.techsenger.shellfx.core.settings.AbstractShellSettings;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.DefaultAppearanceSettings;
 import com.techsenger.shellfx.core.settings.ShellSettings;
@@ -35,7 +36,7 @@ public final class DemoSettings {
         var appearance = new DefaultAppearanceSettings(null, regularFont, monospaceFont);
         appearance.setTheme(AtlantaFxTheme.CUPERTINO_DARK);
         appearance.setDensity(Density.XS);
-        var settings = new ShellSettings() {
+        var settings = new AbstractShellSettings() {
 
             @Override
             public AppearanceSettings getAppearance() {

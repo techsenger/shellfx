@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -29,8 +29,7 @@ public class PageDialogParams extends DialogParams {
 
     private final PageMenuType menuType;
 
-    public PageDialogParams(PageDialogConfig config, WindowType type, AppearanceSettings setting,
-            PageMenuType menuType) {
+    public PageDialogParams(PageDialogConfig config, WindowType type, ShellSettings setting, PageMenuType menuType) {
         super(config, type, setting);
         this.menuType = menuType;
     }

@@ -37,8 +37,8 @@ public class SettingsItemHandler extends AbstractItemHandler {
     @Override
     public void handle(ActionEvent event) {
         var shell = getComponent();
-        var appearance = shell.getViewModel().getContext().getSettings().getAppearance();
-        var params = new SettingsDialogParams(new SettingsDialogConfig(), WindowType.NESTED, appearance);
+        var settings = shell.getViewModel().getContext().getSettings();
+        var params = new SettingsDialogParams(new SettingsDialogConfig(), WindowType.NESTED, settings);
         var viewModel = new SettingsDialogViewModel<>(params);
         var view = new SettingsDialogView<>(viewModel, shell.getContext().getStylesheetRegistry());
         view.initialize();

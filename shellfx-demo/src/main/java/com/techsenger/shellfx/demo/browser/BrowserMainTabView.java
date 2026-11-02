@@ -72,8 +72,8 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
         }
 
         protected MenuAwareAreaView<?> createTextViewer() {
-            var appearance = getShell().getViewModel().getContext().getSettings().getAppearance();
-            var params = new MenuAwareAreaParams(null, appearance);
+            var settings = getShell().getViewModel().getContext().getSettings();
+            var params = new MenuAwareAreaParams(null, settings);
             var viewModel = new MenuAwareAreaViewModel<>(params);
             var areaView = new MenuAwareAreaView<>(viewModel, view);
             areaView.initialize();

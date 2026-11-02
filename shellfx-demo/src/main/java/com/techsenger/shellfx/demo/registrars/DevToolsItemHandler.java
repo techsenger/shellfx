@@ -101,8 +101,7 @@ public class DevToolsItemHandler extends AbstractItemHandler {
         var context = getComponent().getViewModel().getContext();
         var config = context.getConfigManager().getOrCreateConfig(DevToolsWindowConfig.class,
                 DevToolsWindowConfig::new);
-        var params = new DevToolsWindowParams(config, context.getSettings().getAppearance(),
-                context.getConfigManager());
+        var params = new DevToolsWindowParams(config, context.getSettings(), context.getConfigManager());
         var viewModel = new DevToolsWindowViewModel<>(params);
         var view = new DevToolsWindowView<>(viewModel, getComponent());
         view.initialize();

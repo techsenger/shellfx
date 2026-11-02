@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -37,7 +37,7 @@ public class ViewerDialogParams extends DialogParams {
 
     private final Consumer<String> linkOpener;
 
-    public ViewerDialogParams(ViewerDialogConfig config, WindowType windowType, AppearanceSettings settings,
+    public ViewerDialogParams(ViewerDialogConfig config, WindowType windowType, ShellSettings settings,
             Element node, PropertyItem item, String declaringClassName,
             Consumer<String> linkOpener) {
         super(config, windowType, settings);

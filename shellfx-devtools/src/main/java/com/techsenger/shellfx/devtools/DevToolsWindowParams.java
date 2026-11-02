@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.devtools;
 
 import com.techsenger.shellfx.core.config.ConfigManager;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
@@ -30,8 +30,7 @@ public class DevToolsWindowParams extends WindowParams {
 
     private final ConfigManager configManager;
 
-    public DevToolsWindowParams(DevToolsWindowConfig config, AppearanceSettings setting,
-            ConfigManager configManager) {
+    public DevToolsWindowParams(DevToolsWindowConfig config, ShellSettings setting, ConfigManager configManager) {
         super(config, WindowType.TOP_LEVEL, false, setting);
         this.configManager = configManager;
     }

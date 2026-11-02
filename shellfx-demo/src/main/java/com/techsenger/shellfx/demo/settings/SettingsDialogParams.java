@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.settings;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public class SettingsDialogParams extends DialogParams {
 
-    public SettingsDialogParams(SettingsDialogConfig config, WindowType type, AppearanceSettings setting) {
+    public SettingsDialogParams(SettingsDialogConfig config, WindowType type, ShellSettings setting) {
         super(config, type, setting);
     }
 

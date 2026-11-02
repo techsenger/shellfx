@@ -23,7 +23,7 @@ import javafx.scene.text.Font;
 
 /**
  * Provides access to the application-wide appearance settings, including density, theme, and fonts. Changes to
- * these settings are propagated to all windows. Settings can be observed for changes via subscription callbacks.
+ * these settings are propagated to all windows.
  *
  * @author Pavel Castornii
  */
@@ -45,14 +45,6 @@ public interface AppearanceSettings {
     void setDensity(@Nullable Density density);
 
     /**
-     * Registers a callback to be invoked when the density changes.
-     *
-     * @param callback the callback to invoke with the new density value
-     * @return a {@link SettingsSubscription} that can be used to unsubscribe
-     */
-    SettingsSubscription onDensityChanged(SettingsCallback<@Nullable Density> callback);
-
-    /**
      * Returns the current application theme.
      *
      * @return the current {@link Theme}
@@ -65,14 +57,6 @@ public interface AppearanceSettings {
      * @param theme the {@link Theme} to apply
      */
     void setTheme(Theme theme);
-
-    /**
-     * Registers a callback to be invoked when the theme changes.
-     *
-     * @param callback the callback to invoke with the new {@link Theme}
-     * @return a {@link SettingsSubscription} that can be used to unsubscribe
-     */
-    SettingsSubscription onThemeChanged(SettingsCallback<Theme> callback);
 
     /**
      * Returns the regular font used for general UI text.
@@ -89,14 +73,6 @@ public interface AppearanceSettings {
     void setRegularFont(Font font);
 
     /**
-     * Registers a callback to be invoked when the regular font changes.
-     *
-     * @param callback the callback to invoke with the new regular {@link Font}
-     * @return a {@link SettingsSubscription} that can be used to unsubscribe
-     */
-    SettingsSubscription onRegularFontChanged(SettingsCallback<Font> callback);
-
-    /**
      * Returns the monospace font used for displaying code or terminal-style text.
      *
      * @return the current monospace {@link Font}
@@ -109,12 +85,4 @@ public interface AppearanceSettings {
      * @param font the {@link Font} to apply
      */
     void setMonospaceFont(Font font);
-
-    /**
-     * Registers a callback to be invoked when the monospace font changes.
-     *
-     * @param callback the callback to invoke with the new monospace {@link Font}
-     * @return a {@link SettingsSubscription} that can be used to unsubscribe
-     */
-    SettingsSubscription onMonospaceFontChanged(SettingsCallback<Font> callback);
 }

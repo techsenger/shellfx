@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.demo.shared.DockableTabParams;
 import com.techsenger.shellfx.demo.shared.DockableTabView;
 import com.techsenger.shellfx.demo.shared.DockableTabViewModel;
@@ -37,7 +37,7 @@ import com.techsenger.shellfx.layout.tabhost.ProminentTabHostViewModel;
  */
 public final class HostFactory {
 
-    public static ProminentTabHostView<?> createProminentTabHost(AppearanceSettings settings) {
+    public static ProminentTabHostView<?> createProminentTabHost(ShellSettings settings) {
         var params = new ProminentTabHostParams(null, settings);
         var viewModel = new ProminentTabHostViewModel<>(params);
         var view = new ProminentTabHostView<>(viewModel);

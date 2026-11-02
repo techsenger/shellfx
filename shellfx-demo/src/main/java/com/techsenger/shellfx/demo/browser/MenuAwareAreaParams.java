@@ -19,7 +19,7 @@ package com.techsenger.shellfx.demo.browser;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaConfig;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 
 /**
  *
@@ -27,14 +27,14 @@ import com.techsenger.shellfx.core.settings.AppearanceSettings;
  */
 public class MenuAwareAreaParams extends AreaParams {
 
-    private final AppearanceSettings settings;
+    private final ShellSettings settings;
 
-    public MenuAwareAreaParams(@Nullable AreaConfig config, AppearanceSettings settings) {
+    public MenuAwareAreaParams(@Nullable AreaConfig config, ShellSettings settings) {
         super(config);
         this.settings = settings;
     }
 
-    public AppearanceSettings getSettings() {
+    public ShellSettings getSettings() {
         return settings;
     }
 }

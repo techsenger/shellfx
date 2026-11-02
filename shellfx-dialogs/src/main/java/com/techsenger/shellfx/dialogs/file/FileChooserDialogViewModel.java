@@ -23,7 +23,7 @@ import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.core.settings.SettingsSubscription;
+import com.techsenger.shellfx.core.settings.SettingsListener;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
@@ -36,6 +36,7 @@ import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
+import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
@@ -172,9 +173,11 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private Comparator<T> sortComparator;
 
-    private SettingsSubscription themeSubscription;
-
     private long loadToken;
+
+    private final SettingsListener settingsListener = this::applySettings;
+
+    private @Nullable Theme decoratedTheme;
 
     private final List<AsyncTask> tasks = new ArrayList<>();
 
@@ -292,11 +295,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     public ReadOnlyObjectProperty<Mode> modeProperty() {
         return mode.getReadOnlyProperty();
-    }
-
-    @Override
-    public AppearanceSettings getAppearanceSettings() {
-        return super.getAppearanceSettings();
     }
 
     @Override
@@ -427,7 +425,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        this.themeSubscription = getAppearanceSettings().onThemeChanged((oldV, newV) -> decorateShownFiles());
+        this.decoratedTheme = getSettings().getAppearance().getTheme();
+        getSettings().addListener(this.settingsListener);
         switch (chooserType) {
             case OPEN -> {
                 setTitle("Open");
@@ -462,7 +461,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     protected void postDeinitialize() {
         super.postDeinitialize();
-        themeSubscription.unsubscribe();
+        getSettings().removeListener(this.settingsListener);
         // the results of the loading that is still running are not wanted any more
         loadToken++;
         cancelTasks();
@@ -624,6 +623,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     protected FileRefiner<T> createDefaultFileRefiner(StorageProvider<T> storageProvider) {
         return new DefaultFileRefiner<T>(storageProvider);
+    }
+
+    AppearanceSettings getAppearanceSettings() {
+        return getSettings().getAppearance();
     }
 
     ObservableMap<TableColumnName, TableColumnInfo> getColumns() {
@@ -995,7 +998,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void showWarning(String text) {
-        var params = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getAppearanceSettings(),
+        var params = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getSettings(),
                 AlertDialogType.WARNING);
         getComposer().addAlertDialog(params, text);
     }
@@ -1032,9 +1035,13 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         files.stream().filter(fileRefiner::isRefinable).forEach(pending::add);
     }
 
-    private void decorateShownFiles() {
-        restyleSource.next(new ArrayList<>(modifiableFiles));
-        restyleSource.next(new ArrayList<>(modifiableLocations));
+    private void applySettings() {
+        var theme = getSettings().getAppearance().getTheme();
+        if (theme != this.decoratedTheme) {
+            this.decoratedTheme = theme;
+            restyleSource.next(new ArrayList<>(modifiableFiles));
+            restyleSource.next(new ArrayList<>(modifiableLocations));
+        }
     }
 
     /**

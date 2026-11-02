@@ -20,8 +20,8 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.patternfx.mvvm.ViewModel;
 import com.techsenger.shellfx.core.config.ConfigUtils;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.core.settings.SettingsSubscription;
+import com.techsenger.shellfx.core.settings.SettingsListener;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.style.Density;
@@ -103,17 +103,11 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final ReadOnlyObjectWrapper<Font> monospaceFont = new ReadOnlyObjectWrapper<>();
 
-    private final AppearanceSettings appearanceSettings;
+    private final ShellSettings settings;
 
     private final @Nullable WindowConfig config;
 
-    private SettingsSubscription densitySubscription;
-
-    private SettingsSubscription themeSubscription;
-
-    private SettingsSubscription regularFontSubscription;
-
-    private SettingsSubscription monospaceFontSubscription;
+    private final SettingsListener settingsListener = this::applySettings;
 
     private Runnable onCloseRequest = () -> closeSafely();
 
@@ -139,7 +133,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         super(params);
         this.windowType = params.getWindowType();
         this.modal = params.isModal();
-        this.appearanceSettings = params.getSettings();
+        this.settings = params.getSettings();
         this.config = params.getConfig();
     }
 
@@ -506,46 +500,6 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         return y.getReadOnlyProperty();
     }
 
-    @Override
-    public @Nullable Density getDensity() {
-        return this.density.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<Density> densityProperty() {
-        return density.getReadOnlyProperty();
-    }
-
-    @Override
-    public Theme getTheme() {
-        return this.theme.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<Theme> themeProperty() {
-        return theme.getReadOnlyProperty();
-    }
-
-    @Override
-    public Font getRegularFont() {
-        return this.regularFont.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<Font> regularFontProperty() {
-        return regularFont.getReadOnlyProperty();
-    }
-
-    @Override
-    public Font getMonospaceFont() {
-        return this.monospaceFont.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<Font> monospaceFontProperty() {
-        return monospaceFont.getReadOnlyProperty();
-    }
-
     protected void onCloseRequest() {
         if (this.onCloseRequest != null) {
             this.onCloseRequest.run();
@@ -564,18 +518,9 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     protected void preInitialize() {
         super.preInitialize();
         if (this.windowType == WindowType.TOP_LEVEL) {
-            setDensity(this.appearanceSettings.getDensity());
-            setRegularFont(this.appearanceSettings.getRegularFont());
-            setMonospaceFont(this.appearanceSettings.getMonospaceFont());
-            this.densitySubscription =
-                    this.appearanceSettings.onDensityChanged((oldV, newV) -> setDensity(newV));
-            this.monospaceFontSubscription =
-                    this.appearanceSettings.onMonospaceFontChanged((oldV, newV) -> setMonospaceFont(newV));
-            this.regularFontSubscription =
-                    this.appearanceSettings.onRegularFontChanged((oldV, newV) -> setRegularFont(newV));
+            applySettings();
+            this.settings.addListener(this.settingsListener);
         }
-        setTheme(this.appearanceSettings.getTheme());
-        this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> setTheme(newV));
     }
 
     @Override
@@ -591,11 +536,8 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     protected void postDeinitialize() {
         super.postDeinitialize();
         if (this.windowType == WindowType.TOP_LEVEL) {
-            this.densitySubscription.unsubscribe();
-            this.monospaceFontSubscription.unsubscribe();
-            this.regularFontSubscription.unsubscribe();
+            this.settings.removeListener(this.settingsListener);
         }
-        this.themeSubscription.unsubscribe();
     }
 
     /**
@@ -626,24 +568,56 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         return config;
     }
 
-    protected AppearanceSettings getAppearanceSettings() {
-        return appearanceSettings;
+    protected ShellSettings getSettings() {
+        return settings;
+    }
+
+    protected @Nullable Density getDensity() {
+        return this.density.get();
     }
 
     protected void setDensity(@Nullable Density density) {
         this.density.set(density);
     }
 
+    protected ReadOnlyObjectProperty<Density> densityProperty() {
+        return density.getReadOnlyProperty();
+    }
+
+    protected Theme getTheme() {
+        return this.theme.get();
+    }
+
     protected void setTheme(Theme theme) {
         this.theme.set(theme);
+    }
+
+    protected ReadOnlyObjectProperty<Theme> themeProperty() {
+        return theme.getReadOnlyProperty();
+    }
+
+    protected Font getRegularFont() {
+        return this.regularFont.get();
     }
 
     protected void setRegularFont(Font font) {
         this.regularFont.set(font);
     }
 
+    protected ReadOnlyObjectProperty<Font> regularFontProperty() {
+        return regularFont.getReadOnlyProperty();
+    }
+
+    protected Font getMonospaceFont() {
+        return this.monospaceFont.get();
+    }
+
     protected void setMonospaceFont(Font font) {
         this.monospaceFont.set(font);
+    }
+
+    protected ReadOnlyObjectProperty<Font> monospaceFontProperty() {
+        return monospaceFont.getReadOnlyProperty();
     }
 
     ObservableSource<Void> closeWindowSource() {
@@ -707,5 +681,12 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
             throw new UnsupportedOperationException("The operation is not supported for " + WindowType.TOP_LEVEL
                     + " Window");
         }
+    }
+
+    private void applySettings() {
+        setDensity(this.settings.getAppearance().getDensity());
+        setRegularFont(this.settings.getAppearance().getRegularFont());
+        setMonospaceFont(this.settings.getAppearance().getMonospaceFont());
+        setTheme(this.settings.getAppearance().getTheme());
     }
 }

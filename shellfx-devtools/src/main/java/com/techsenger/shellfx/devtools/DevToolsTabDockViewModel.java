@@ -16,10 +16,11 @@
 
 package com.techsenger.shellfx.devtools;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
 import com.techsenger.shellfx.core.config.ConfigUtils;
-import com.techsenger.shellfx.core.settings.SettingsSubscription;
+import com.techsenger.shellfx.core.settings.SettingsListener;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.layout.dockhost.TabDockComposer;
 import com.techsenger.shellfx.layout.dockhost.TabDockViewModel;
@@ -46,7 +47,9 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
 
     private final Selector selector;
 
-    private SettingsSubscription themeSubscription;
+    private final SettingsListener settingsListener = this::updateHighlight;
+
+    private @Nullable Theme highlightTheme;
 
     private DevToolsHostType hostType;
 
@@ -150,8 +153,8 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
         // synchronously query the connector/selector while initializing
         setHostType(hostType);
         this.connector.start();
-        updateHighlight(this.settings.getAppearance().getTheme());
-        this.themeSubscription = this.settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
+        updateHighlight();
+        this.settings.addListener(this.settingsListener);
         // we start with shell window
         this.selector.setSelectedWindowUid(shellWindowUid);
         super.postInitialize();
@@ -161,7 +164,7 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
     protected void postDeinitialize() {
         super.postDeinitialize();
         this.connector.stop();
-        this.themeSubscription.unsubscribe();
+        this.settings.removeListener(this.settingsListener);
     }
 
     @Override
@@ -182,7 +185,12 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
         ConfigUtils.observe(selectionSelected, config, DevToolsTabDockConfig::setSelectionSelected);
     }
 
-    private void updateHighlight(Theme theme) {
+    private void updateHighlight() {
+        var theme = this.settings.getAppearance().getTheme();
+        if (theme == this.highlightTheme) {
+            return;
+        }
+        this.highlightTheme = theme;
         var highlight = createHighlight(theme);
         this.connector.setHighlight(highlight);
     }

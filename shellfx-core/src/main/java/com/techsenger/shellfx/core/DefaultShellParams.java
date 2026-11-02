@@ -29,7 +29,7 @@ public class DefaultShellParams extends WindowParams {
     private final ShellViewModelContext context;
 
     public DefaultShellParams(ShellConfig config, ShellViewModelContext context) {
-        super(config, WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
+        super(config, WindowType.TOP_LEVEL, false, context.getSettings());
         this.context = context;
     }
 

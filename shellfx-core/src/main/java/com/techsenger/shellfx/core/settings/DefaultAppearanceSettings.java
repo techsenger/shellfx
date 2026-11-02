@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.core.settings;
 
-import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.text.Font;
 
 /**
@@ -29,13 +27,13 @@ import javafx.scene.text.Font;
  */
 public class DefaultAppearanceSettings implements AppearanceSettings {
 
-    private final ObjectProperty<Density> density = new SimpleObjectProperty<>();
+    private @Nullable Density density;
 
-    private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
+    private Theme theme;
 
-    private final ObjectProperty<Font> regularFont = new SimpleObjectProperty<>();
+    private Font regularFont;
 
-    private final ObjectProperty<Font> monospaceFont = new SimpleObjectProperty<>();
+    private Font monospaceFont;
 
     public DefaultAppearanceSettings() {
 
@@ -48,61 +46,41 @@ public class DefaultAppearanceSettings implements AppearanceSettings {
 
     @Override
     public @Nullable Density getDensity() {
-        return this.density.get();
+        return this.density;
     }
 
     @Override
     public void setDensity(@Nullable Density density) {
-        this.density.set(density);
-    }
-
-    @Override
-    public SettingsSubscription onDensityChanged(SettingsCallback<@Nullable Density> callback) {
-        return SubscriptionUtils.onChanged(density, callback);
+        this.density = density;
     }
 
     @Override
     public Theme getTheme() {
-        return theme.get();
+        return theme;
     }
 
     @Override
     public void setTheme(Theme theme) {
-        this.theme.set(theme);
-    }
-
-    @Override
-    public SettingsSubscription onThemeChanged(SettingsCallback<Theme> callback) {
-        return SubscriptionUtils.onChanged(theme, callback);
+        this.theme = theme;
     }
 
     @Override
     public Font getRegularFont() {
-        return regularFont.get();
+        return regularFont;
     }
 
     @Override
     public void setRegularFont(Font font) {
-        this.regularFont.set(font);
-    }
-
-    @Override
-    public SettingsSubscription onRegularFontChanged(SettingsCallback<Font> callback) {
-        return SubscriptionUtils.onChanged(regularFont, callback);
+        this.regularFont = font;
     }
 
     @Override
     public Font getMonospaceFont() {
-        return monospaceFont.get();
+        return monospaceFont;
     }
 
     @Override
     public void setMonospaceFont(Font font) {
-        this.monospaceFont.set(font);
-    }
-
-    @Override
-    public SettingsSubscription onMonospaceFontChanged(SettingsCallback<Font> callback) {
-        return SubscriptionUtils.onChanged(monospaceFont, callback);
+        this.monospaceFont = font;
     }
 }

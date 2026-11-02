@@ -17,11 +17,16 @@
 package com.techsenger.shellfx.core.settings;
 
 /**
+ * Told that settings have changed. It does not say what changed: the listener reads the current state of the settings
+ * it is registered on and compares it with the state it already holds.
  *
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface SettingsSubscription {
+public interface SettingsListener {
 
-    void unsubscribe();
+    /**
+     * Called once per announced batch of changes.
+     */
+    void changed();
 }

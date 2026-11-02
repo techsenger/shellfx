@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 
@@ -27,7 +27,7 @@ import com.techsenger.shellfx.core.window.WindowType;
  */
 public class DialogParams extends WindowParams {
 
-    public DialogParams(@Nullable DialogConfig config, WindowType type, AppearanceSettings settings) {
+    public DialogParams(@Nullable DialogConfig config, WindowType type, ShellSettings settings) {
         super(config, type, true, settings);
     }
 

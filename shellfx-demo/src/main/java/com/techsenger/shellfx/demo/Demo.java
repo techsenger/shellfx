@@ -162,7 +162,7 @@ public class Demo extends Application {
         var context = shellView.getViewModel().getContext();
         switch (appType) {
             case BROWSER -> {
-                workspace = HostFactory.createProminentTabHost(context.getSettings().getAppearance());
+                workspace = HostFactory.createProminentTabHost(context.getSettings());
             }
             case IDE -> {
                 var dockHostConfig = context.getConfigManager()
@@ -182,7 +182,7 @@ public class Demo extends Application {
                 workspace = null;
             }
             case STYLES_ONLY -> {
-                workspace = HostFactory.createProminentTabHost(context.getSettings().getAppearance());
+                workspace = HostFactory.createProminentTabHost(context.getSettings());
             }
             default -> throw new AssertionError();
         }

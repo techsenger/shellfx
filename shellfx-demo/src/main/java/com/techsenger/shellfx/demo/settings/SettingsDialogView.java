@@ -102,15 +102,15 @@ public class SettingsDialogView<VM extends SettingsDialogViewModel<?>> extends A
     protected void bind() {
         super.bind();
         var viewModel = getViewModel();
-        viewModel.themeWrapper().bind(themeComboBox.valueProperty());
-        viewModel.densityWrapper().bind(densityComboBox.valueProperty());
+        viewModel.selectedThemeWrapper().bind(themeComboBox.valueProperty());
+        viewModel.selectedDensityWrapper().bind(densityComboBox.valueProperty());
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
         var viewModel = getViewModel();
-        viewModel.themeSource().addListener((theme) -> themeComboBox.setValue(theme));
-        viewModel.densitySource().addListener((density) -> densityComboBox.setValue(density));
+        viewModel.selectedThemeSource().addListener((theme) -> themeComboBox.setValue(theme));
+        viewModel.selectedDensitySource().addListener((density) -> densityComboBox.setValue(density));
     }
 }

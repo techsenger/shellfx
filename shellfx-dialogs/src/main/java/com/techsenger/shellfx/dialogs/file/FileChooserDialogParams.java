@@ -18,7 +18,7 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.StorageProvider;
@@ -53,11 +53,11 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      *
      * @param config the config of the dialog
      * @param windowType the type of the window
-     * @param settings the appearance settings
+     * @param settings the settings
      * @param chooserType the type of the chooser
      * @param storageProvider tells the storages the user can choose files from, each time they are needed
      */
-    public FileChooserDialogParams(FileChooserDialogConfig config, WindowType windowType, AppearanceSettings settings,
+    public FileChooserDialogParams(FileChooserDialogConfig config, WindowType windowType, ShellSettings settings,
             FileChooserType chooserType, StorageProvider<T> storageProvider) {
         super(config, windowType, settings);
         this.chooserType = chooserType;

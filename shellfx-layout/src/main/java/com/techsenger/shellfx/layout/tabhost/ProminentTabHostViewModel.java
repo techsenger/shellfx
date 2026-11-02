@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.layout.tabhost;
 
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.core.settings.SettingsSubscription;
+import com.techsenger.shellfx.core.settings.SettingsListener;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.text.Font;
@@ -30,34 +30,33 @@ public class ProminentTabHostViewModel<C extends TabHostComposer> extends TabHos
 
     private final ReadOnlyObjectWrapper<Font> regularFont = new ReadOnlyObjectWrapper<>();
 
-    private final AppearanceSettings appearanceSettings;
+    private final ShellSettings settings;
 
-    private SettingsSubscription regularFontSubscription;
+    private final SettingsListener settingsListener = this::applySettings;
 
     public ProminentTabHostViewModel(ProminentTabHostParams params) {
         super(params);
-        this.appearanceSettings = params.getSettings();
+        this.settings = params.getSettings();
     }
 
     @Override
     protected void preInitialize() {
         super.preInitialize();
-        setRegularFont(this.appearanceSettings.getRegularFont());
-        this.regularFontSubscription =
-                this.appearanceSettings.onRegularFontChanged((oldV, newV) -> setRegularFont(newV));
+        applySettings();
+        this.settings.addListener(this.settingsListener);
     }
 
     @Override
     protected void postDeinitialize() {
         super.postDeinitialize();
-        this.regularFontSubscription.unsubscribe();
+        this.settings.removeListener(this.settingsListener);
     }
 
     ReadOnlyObjectProperty<Font> regularFontProperty() {
         return regularFont.getReadOnlyProperty();
     }
 
-    private void setRegularFont(Font font) {
-        this.regularFont.set(font);
+    private void applySettings() {
+        this.regularFont.set(this.settings.getAppearance().getRegularFont());
     }
 }

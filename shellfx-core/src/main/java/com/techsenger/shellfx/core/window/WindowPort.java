@@ -24,14 +24,10 @@ import com.techsenger.shellfx.core.traits.Closable;
 import com.techsenger.shellfx.core.traits.Iconed;
 import com.techsenger.shellfx.core.traits.Titled;
 import com.techsenger.shellfx.material.RequestSetter;
-import com.techsenger.shellfx.material.style.Density;
-import com.techsenger.shellfx.material.theme.Theme;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.scene.text.Font;
 
 /**
  * Provides full access to the component's client API.
@@ -363,48 +359,4 @@ public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable,
     void setY(double y);
 
     ReadOnlyDoubleProperty yProperty();
-
-    /**
-     * Returns the density applied to the window.
-     *
-     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @return the density, or {@code null} if not set
-     */
-    @Nullable Density getDensity();
-
-    ReadOnlyObjectProperty<@Nullable Density> densityProperty();
-
-    /**
-     * Returns the theme applied to the window.
-     *
-     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @return the theme
-     */
-    Theme getTheme();
-
-    ReadOnlyObjectProperty<Theme> themeProperty();
-
-    /**
-     * Returns the regular font applied to the window.
-     *
-     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @return the regular font
-     */
-    Font getRegularFont();
-
-    ReadOnlyObjectProperty<Font> regularFontProperty();
-
-    /**
-     * Returns the monospace font applied to the window.
-     *
-     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @return the monospace font
-     */
-    Font getMonospaceFont();
-
-    ReadOnlyObjectProperty<Font> monospaceFontProperty();
 }

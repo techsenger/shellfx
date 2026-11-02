@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public abstract class AbstractConfig implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
 
-    private transient List<ConfigListener> listeners = new ArrayList<>();
+    private transient List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * Registers a listener. A config lives as long as the application, so a listener owned by a shorter-lived
@@ -89,13 +89,10 @@ public abstract class AbstractConfig implements Serializable {
      */
     public void notifyListeners(@Nullable Object hint) {
         for (var listener : listeners) {
-            if (!listeners.contains(listener)) {
-                continue;
-            }
             try {
                 listener.changed(hint);
-            } catch (RuntimeException ex) {
-                logger.warn("Config listener failed", ex);
+            } catch (Exception ex) {
+                logger.error("Config listener failed", ex);
             }
         }
     }
@@ -107,6 +104,6 @@ public abstract class AbstractConfig implements Serializable {
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        listeners = new ArrayList<>();
+        listeners = new CopyOnWriteArrayList<>();
     }
 }

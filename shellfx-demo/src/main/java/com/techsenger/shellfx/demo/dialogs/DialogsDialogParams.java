@@ -20,7 +20,7 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.dialog.DialogConfig;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -30,17 +30,17 @@ import java.util.Objects;
  */
 public class DialogsDialogParams extends DialogParams {
 
-    private final AppearanceSettings settings;
+    private final ShellSettings settings;
 
     private final ConfigManager manager;
 
-    public DialogsDialogParams(@Nullable DialogConfig config, AppearanceSettings settings, ConfigManager manager) {
+    public DialogsDialogParams(@Nullable DialogConfig config, ShellSettings settings, ConfigManager manager) {
         super(config, WindowType.NESTED, settings);
         this.settings = settings;
         this.manager = manager;
     }
 
-    public AppearanceSettings getSettings() {
+    public ShellSettings getSettings() {
         return settings;
     }
 

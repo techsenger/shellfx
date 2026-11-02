@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -29,7 +29,7 @@ public class EditorDialogParams extends DialogParams {
 
     private EditPropertyTask<?> task;
 
-    public EditorDialogParams(EditorDialogConfig config, WindowType windowType, AppearanceSettings settings,
+    public EditorDialogParams(EditorDialogConfig config, WindowType windowType, ShellSettings settings,
             EditPropertyTask<?> task) {
         super(config, windowType, settings);
         this.task = task;

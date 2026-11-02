@@ -21,7 +21,6 @@ import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.page.PageDialogConfig;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
@@ -66,8 +65,6 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     private final ObjectProperty<WindowType> selectedWindowType = new SimpleObjectProperty<>();
 
-    private final AppearanceSettings settings;
-
     private final ConfigManager configManager;
 
     private final List<? extends FileStorage<StorageFile>> storages;
@@ -75,25 +72,25 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
-                        getAppearanceSettings(), AlertDialogType.INFO);
+                        getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("All done! Time for coffee.");
             }),
             Map.entry(DialogType.WARNING, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
-                        getAppearanceSettings(), AlertDialogType.WARNING);
+                        getSettings(), AlertDialogType.WARNING);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Attention! You shouldn't do it!");
             }),
             Map.entry(DialogType.ERROR, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
-                        getAppearanceSettings(), AlertDialogType.ERROR);
+                        getSettings(), AlertDialogType.ERROR);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Oops! That didn’t work.\nTwice!");
             }),
             Map.entry(DialogType.YES_NO, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
-                        getAppearanceSettings(), AlertDialogType.CONFIRMATION);
+                        getSettings(), AlertDialogType.CONFIRMATION);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Are you really sure?");
             }),
@@ -155,7 +152,6 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     public DialogsDialogViewModel(DialogsDialogParams params) {
         super(params);
-        this.settings = params.getSettings();
         this.configManager = params.getManager();
         if (OsUtils.isWindows()) {
             this.storages = WindowsFileStorage.createSystemStorages(DefaultStorageFile::new);
@@ -191,13 +187,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         action.run();
     }
 
-    protected AppearanceSettings getSettings() {
-        return settings;
-    }
-
     private void showFileChooserDialog(FileChooserType type) {
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
-        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
+        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), getSettings(),
                 type, () -> this.storages);
         handleFileChooserResult(getComposer().openFileChooserDialog(params));
     }
@@ -211,7 +203,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         var demoStorage = new DemoFileStorage();
         List<FileStorage<StorageFile>> demoStorages = List.of(demoStorage);
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
-        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
+        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), getSettings(),
                 FileChooserType.SAVE_AS, () -> demoStorages);
         params.setFileRefiner(new DemoFileRefiner(demoStorages));
         params.setTwoPhaseSortPolicy(TwoPhaseSortPolicy.AFTER_EACH_PHASE);
@@ -234,7 +226,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     private void showPagedDialog(PageMenuType menuType) {
         var config = configManager.getOrCreateConfig(PageDialogConfig.class, PageDialogConfig::new);
-        var params = new PageDialogParams(config, selectedWindowType.get(), settings, menuType);
+        var params = new PageDialogParams(config, selectedWindowType.get(), getSettings(), menuType);
         getComposer().openPagedDialog(params);
     }
 }

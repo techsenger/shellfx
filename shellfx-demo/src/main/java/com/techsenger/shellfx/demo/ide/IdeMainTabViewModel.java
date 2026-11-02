@@ -114,7 +114,7 @@ public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractT
     }
 
     protected void onDialogOpen() {
-        var settings = getShellContext().getSettings().getAppearance();
+        var settings = getShellContext().getSettings();
         var params = new DialogParams(null, WindowType.NESTED, settings);
         var dialog = getComposer().openDemoDialog(true, params);
         dialog.setOnResult((name) -> {
