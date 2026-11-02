@@ -74,7 +74,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Registry Kinds](#registries-kinds)
     * [Slot Registry](#registries-slot)
     * [Control Registry](#registries-control)
-    * [Resolution by Component](#registries-resolution)
+    * [Component Resolution](#registries-resolution)
     * [Control Builder](#registries-control-builder)
     * [Control State](#registries-control-state)
     * [Menu Visibility](#registries-menu-visibility)
@@ -920,7 +920,7 @@ the group is laid out.
 Registering a factory does not invoke it. Factories are called only when a builder creates the corresponding
 controls.
 
-### Resolution by Component <a name="registries-resolution"></a>
+### Component Resolution <a name="registries-resolution"></a>
 
 Registrations in `SlotRegistry` and `ControlRegistry` are associated with the component class of the slot. When
 resolving registrations for an actual component, the registry considers its class, superclasses, and interfaces.
