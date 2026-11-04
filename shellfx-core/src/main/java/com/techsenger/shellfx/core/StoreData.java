@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core;
+
+import java.io.Serializable;
 
 /**
- * An extension registry of items that tells its listeners which items have been added and removed.
+ * The root object a {@link FileStore} keeps in its file. Data that is empty is not worth a file, so the store deletes
+ * the file instead of writing it.
  *
- * @param <T> the type of the registered items
  * @author Pavel Castornii
  */
-public interface ItemRegistry<T> extends ExtensionRegistry {
+public interface StoreData extends Serializable {
 
     /**
-     * Adds a listener to be told about every change of the items.
-     *
-     * @param listener the listener to add
+     * Tells whether the data holds nothing to keep.
      */
-    void addListener(ItemRegistryListener<T> listener);
-
-    /**
-     * Removes a listener; does nothing if it was not added.
-     *
-     * @param listener the listener to remove
-     */
-    void removeListener(ItemRegistryListener<T> listener);
+    boolean isEmpty();
 }

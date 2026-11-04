@@ -32,6 +32,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.shellfx</groupId>
+            <artifactId>shellfx-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx</groupId>
             <artifactId>shellfx-core</artifactId>
         </dependency>
         <dependency>

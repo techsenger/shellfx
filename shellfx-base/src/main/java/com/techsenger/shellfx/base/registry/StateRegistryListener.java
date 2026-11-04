@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.base.registry;
 
 import java.util.UUID;
 
 /**
- * Told that the state of an extension registry has changed. The registry is not synchronized and promises nothing
+ * Told that the state of a registry has changed. The registry is not synchronized and promises nothing
  * about the thread: the listener is called in the thread that changed the registry.
  *
  * @author Pavel Castornii

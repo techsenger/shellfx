@@ -20,18 +20,28 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Keeps the configs of a {@link ConfigData}; whether and where they are persisted is up to the subclass.
- * Always used on the UI thread.
+ * The {@link ConfigManager} that keeps the configs in memory, starting with the ones in the given data. Where the data
+ * comes from and where it is saved to is up to whoever creates the manager. Always used on the UI thread.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractConfigManager implements ConfigManager {
+public final class DefaultConfigManager implements ConfigManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultConfigManager.class);
 
     private final ConfigData data;
 
-    AbstractConfigManager(ConfigData data) {
+    /**
+     * Creates a manager that works with the given data.
+     *
+     * @param data the configs the manager starts with; it is the live state of the manager, not a copy, so the owner
+     *     saves what the manager changed by saving this object
+     */
+    public DefaultConfigManager(ConfigData data) {
         this.data = data;
     }
 
@@ -75,8 +85,23 @@ public abstract class AbstractConfigManager implements ConfigManager {
         data.getConfigsByUuid().remove(uuid);
     }
 
-    final ConfigData getData() {
-        return data;
+    /**
+     * Logs a warning for every listener that is still registered on a config. It is meant to be called before the
+     * configs are saved: by then the components are gone, so such a listener is a leak.
+     */
+    public void warnAboutListeners() {
+        warnAboutListeners(data.getConfigsByClass());
+        warnAboutListeners(data.getConfigsByUuid());
+    }
+
+    private <K> void warnAboutListeners(Map<K, AbstractConfig> configs) {
+        configs.forEach((key, config) -> {
+            var listenerClasses = ConfigUtils.getListenerClasses(config);
+            if (!listenerClasses.isEmpty() && logger.isWarnEnabled()) {
+                logger.warn("Config {} ({}) is saved while listeners are still registered on it, probably a leak: {}",
+                        key, config.getClass().getName(), listenerClasses.stream().map(Class::getName).toList());
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

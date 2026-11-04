@@ -17,8 +17,8 @@
 package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.registry.AbstractItemRegistry;
-import com.techsenger.shellfx.core.registry.Registration;
+import com.techsenger.shellfx.base.registry.AbstractItemRegistry;
+import com.techsenger.shellfx.base.registry.Registration;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.LinkedHashSet;
 import java.util.List;

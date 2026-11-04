@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.registries;
 
-import com.techsenger.shellfx.core.registry.Registration;
+import com.techsenger.shellfx.base.registry.Registration;
 
 /**
  *

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.base.registry;
 
 /**
  * Represents a handle for a registered contribution. The holder of this handle is the only one who can undo the

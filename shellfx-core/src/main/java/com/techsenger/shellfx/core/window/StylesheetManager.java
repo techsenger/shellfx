@@ -19,7 +19,7 @@ package com.techsenger.shellfx.core.window;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.registry.ItemRegistryListener;
+import com.techsenger.shellfx.base.registry.ItemRegistryListener;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import com.techsenger.shellfx.material.theme.Theme;
 import java.util.ArrayList;

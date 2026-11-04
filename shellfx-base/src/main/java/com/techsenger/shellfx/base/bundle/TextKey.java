@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registrar;
+package com.techsenger.shellfx.base.bundle;
 
 /**
- * Registers a set of contributions with a registry, and withdraws all of them on demand.
+ * The address of a text: the bundle it is in and its key in that bundle. A key is unique only within its bundle, so
+ * bundles of different modules do not clash.
  *
+ * @param bundleName the name of the bundle
+ * @param key the key of the text in the bundle
  * @author Pavel Castornii
  */
-public interface Registrar {
+public record TextKey(BundleName bundleName, String key) {
 
-    void register();
-
-    void unregister();
 }

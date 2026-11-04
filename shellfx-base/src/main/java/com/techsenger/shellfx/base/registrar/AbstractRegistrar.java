@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registrar;
+package com.techsenger.shellfx.base.registrar;
 
-import com.techsenger.shellfx.core.registry.ExtensionRegistry;
-import com.techsenger.shellfx.core.registry.Registration;
+import com.techsenger.shellfx.base.registry.Registration;
+import com.techsenger.shellfx.base.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * @param <R> the type of the registry this registrar contributes to
  * @author Pavel Castornii
  */
-public abstract class AbstractRegistrar<R extends ExtensionRegistry> implements Registrar {
+public abstract class AbstractRegistrar<R extends Registry> implements Registrar {
 
     private final R registry;
 

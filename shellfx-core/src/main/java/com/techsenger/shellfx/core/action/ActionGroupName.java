@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
+package com.techsenger.shellfx.core.action;
+
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.shellfx.base.bundle.Multilingual;
+
 /**
- * The API of the registries of the extensions: a registry whose state changes and the registrations in it.
+ * Identifies a group of actions that are listed together, for example in a window for reassigning hotkeys.
+ * Implementations are, by convention, enum constants.
+ *
+ * @author Pavel Castornii
  */
-package com.techsenger.shellfx.core.registry;
+public interface ActionGroupName extends Name, Multilingual {
+
+}

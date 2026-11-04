@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.config;
+module com.techsenger.shellfx.base {
+    requires com.techsenger.annotations;
+    requires com.techsenger.patternfx.core;
+    requires org.slf4j;
 
-/**
- * This is a simple config manager whose configs are not saved to a file. It can be used for tests, demo etc.
- * Always on the JavaFX thread.
- *
- * @author Pavel Castornii
- */
-public class InMemoryConfigManager extends AbstractConfigManager {
-
-    public InMemoryConfigManager() {
-        super(new ConfigData());
-    }
+    exports com.techsenger.shellfx.base.bundle;
+    exports com.techsenger.shellfx.base.registrar;
+    exports com.techsenger.shellfx.base.registry;
 }

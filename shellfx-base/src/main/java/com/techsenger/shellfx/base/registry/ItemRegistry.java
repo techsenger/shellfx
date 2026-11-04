@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
-
-import java.util.UUID;
+package com.techsenger.shellfx.base.registry;
 
 /**
- * An extension registry that tells its listeners only that it has changed, not what has changed: a listener reads the
- * current state of the registry.
+ * A registry of items that tells its listeners which items have been added and removed.
  *
+ * @param <T> the type of the registered items
  * @author Pavel Castornii
  */
-public interface StateRegistry extends ExtensionRegistry {
+public interface ItemRegistry<T> extends Registry {
 
     /**
-     * Returns an identifier of the current state of the registrations that is replaced with a new one on every
-     * change: a registration added or removed. Only a different value matters, so it is compared with the one seen
-     * before.
-     *
-     * @return the identifier of the state, never {@code null}
-     */
-    UUID getStateUuid();
-
-    /**
-     * Adds a listener to be told about every change of the state.
+     * Adds a listener to be told about every change of the items.
      *
      * @param listener the listener to add
      */
-    void addListener(StateRegistryListener listener);
+    void addListener(ItemRegistryListener<T> listener);
 
     /**
      * Removes a listener; does nothing if it was not added.
      *
      * @param listener the listener to remove
      */
-    void removeListener(StateRegistryListener listener);
+    void removeListener(ItemRegistryListener<T> listener);
 }

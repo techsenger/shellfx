@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core;
 
 import com.techsenger.shellfx.core.config.ConfigManager;
+import com.techsenger.shellfx.core.registries.BundleRegistry;
 import javafx.application.HostServices;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 
@@ -46,4 +47,11 @@ public interface ShellViewModelContext {
      * @return
      */
     HostServices getHostServices();
+
+    /**
+     * Returns the registry of the bundles of texts.
+     *
+     * @return the registry, never {@code null}
+     */
+    BundleRegistry getBundleRegistry();
 }

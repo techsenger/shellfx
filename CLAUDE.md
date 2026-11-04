@@ -33,12 +33,13 @@ the rest of the machine for it on your own.
 
 ## Module Layout
 
-Modules and their dependency direction (all depend on `shellfx-material`, which depends on nothing else
-in-repo):
+Modules and their dependency direction (all depend on `shellfx-material`, which depends only on `shellfx-base`,
+the UI-free foundation with no in-repo dependencies; `core` builds on both):
 
 ```
-material  (base UI elements, no shellfx deps)
-  ├── core      (Shell, Window, Tab, Page, Dialog, Popup, registries, settings)
+base      (no UI: `base.registry`, `base.registrar`, `base.bundle`; no in-repo dependencies)
+material  (base UI elements, depends on base)
+  ├── core      (depends on base; Shell, Window, Tab, Page, Dialog, Popup, registries, settings)
   ├── shared    (depends on core; FindBase/FindPanel used by other modules)
   ├── layout    (depends on core, shared; TabHost, DockHost, PageHost, TreePageHost)
   ├── storage   (depends on core; file-system abstractions)
@@ -108,8 +109,9 @@ lookups silently fall back to defaults and mask regressions.
   one registrar of each kind per component it registers into, named after that component (`XSlotRegistrar`,
   `XControlRegistrar`), not one per plugin; `RegistrarManager` registers a plugin's registrars in order and withdraws
   them in the reverse order. The base classes (`Registrar`, `AbstractRegistrar`, `RegistrarManager`) live in
-  `core.registrar`; the registrars of the concrete registries (`AbstractSlotRegistrar`, `AbstractControlRegistrar`)
-  live in `core.registrars`, mirroring `core.registry` and `core.registries`.
+  `base.registrar` (module `shellfx-base`); the registrars of the concrete registries
+  (`AbstractSlotRegistrar`, `AbstractControlRegistrar`) live in `core.registrars`, mirroring `base.registry` and
+  `core.registries`.
   `ControlBuilder` assembles the final menu tree or a `ToolBar` (from its groups, or returns the `ControlGroup`s of a
   tool bar slot) from both registries.
   The menu controls are plain JavaFX (`Menu`, `MenuItem`...) created and owned by their providers: a control keeps
@@ -284,8 +286,10 @@ PatternFX — PatternFX has no persistence. Configs replaced the former `*Histor
   config is read from a file, and a field added after the file was written reads back as the Java zero value.
   Name configs `[UniqueName][Role]Config` (`FileChooserDialogConfig`). A parent config creates its child configs
   eagerly (`DockHostConfig` holds its `SideBarConfig`s, `DevToolsTabDockConfig` holds the tab configs).
-- **Storage.** `ConfigManager` keeps configs by class or by component UUID; the application decides when to save
-  (`FileConfigManager#save()`). `InMemoryConfigManager` is for tests and the demo.
+- **Persistence.** `ConfigManager` keeps configs by class or by component UUID; `DefaultConfigManager` takes a
+  `ConfigData` and the code that created it saves that object back, for example with `FileStore` (`restore()`/`save()`,
+  a factory of the data, `IOException` on failure; the data is a `StoreData`, and empty data deletes the file).
+  `new DefaultConfigManager(new ConfigData())` is for tests and the demo.
 - **Params.** The config is always the first constructor argument and there is no setter. A required config is a
   non-null parameter checked with `Objects.requireNonNull(getConfig())` in `validate()`; an optional one is
   `@Nullable` and callers pass `null`. A `Params` subclass with its own config type overrides `getConfig()` with a

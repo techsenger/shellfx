@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.shellfx.core.registries.ActionRegistry;
 import com.techsenger.shellfx.core.registries.ControlRegistry;
 import com.techsenger.shellfx.core.registries.SlotRegistry;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
@@ -29,24 +30,30 @@ import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 public interface ShellViewContext {
 
     /**
-     * Returns the registry of the slot tree. There can be only one registry in the application.
+     * Returns the registry of the slot tree.
      *
      * @return
      */
     SlotRegistry getSlotRegistry();
 
     /**
-     * Returns the control registry. There can be only one registry in the application.
+     * Returns the control registry.
      *
      * @return
      */
     ControlRegistry getControlRegistry();
 
     /**
-     * Returns the registry of the stylesheets that every window applies in addition to its own ones. There can be
-     * only one registry in the application.
+     * Returns the registry of the stylesheets that every window applies in addition to its own ones.
      *
      * @return
      */
     StylesheetRegistry getStylesheetRegistry();
+
+    /**
+     * Returns the registry of the actions a user can do, whose hotkeys the user can reassign.
+     *
+     * @return the registry, never {@code null}
+     */
+    ActionRegistry getActionRegistry();
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.base.registry;
 
 import java.util.List;
 
 /**
- * Told that the registrations of an extension registry have changed. The registry is not synchronized and promises
+ * Told that the registrations of a registry have changed. The registry is not synchronized and promises
  * nothing about the thread: the listener is called in the thread that changed the registry.
  *
  * @param <T> the type of the registered items

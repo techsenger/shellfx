@@ -70,8 +70,8 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Config Object](#config-object)
     * [ConfigManager](#config-manager)
 * [Component Port](#port)
-* [Extension Registries](#registries)
-    * [Registry Kinds](#registries-kinds)
+* [Registries](#registries)
+    * [Registry Types](#registries-types)
     * [Slot Registry](#registries-slot)
     * [Control Registry](#registries-control)
     * [Component Resolution](#registries-resolution)
@@ -79,6 +79,8 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Control State](#registries-control-state)
     * [Menu Visibility](#registries-menu-visibility)
     * [Stylesheet Registry](#registries-stylesheet)
+    * [Action Registry](#registries-action)
+    * [Bundle Registry](#registries-bundle)
 * [FileStorage](#storage)
     * [Packages](#storage-packages)
     * [Core Concepts](#storage-concepts)
@@ -169,6 +171,7 @@ complex applications more intuitive and productive.
 
 The platform consists of the following modules:
 
+* Base — the most basic classes of ShellFX, its very foundation, without UI.
 * Material — provides UI elements (menus, text areas, etc.) and supporting classes.
 * Core — includes the shell itself, base classes for component development, settings, and core utility classes.
 * Layout — offers abstract components for creating tabs with various layouts.
@@ -341,7 +344,7 @@ advance. This feature is crucial in cases where plugins/extensions are used, as 
 the user. Each plugin may introduce its own menu items and interact with existing menus. Therefore, it is impossible
 to predict the final structure of the menu that the user will work with.
 
-The implementation is built on two extension registries (see [Extension Registries](#registries)). The
+The implementation is built on two registries (see [Registries](#registries)). The
 `SlotRegistry` holds the structure of the menu: the menu bar, its menus and the groups of menu items are slots, put
 into each other at positions. The `ControlRegistry` holds the factories that create the controls: the menu bar, the
 menus, the groups and the menu items. Both registries can be changed and unregistered from at any time, so a plugin
@@ -742,14 +745,10 @@ by all components of that kind, or by the UUID of a component instance, and then
 For each of the two ways the manager can get a config, create it with a factory if it does not exist yet, put a new
 one and remove it.
 
-The platform provides two implementations:
-
-* `FileConfigManager` keeps the configs in a file (see `ConfigFile`) and writes them back when `save()` is called.
-The application decides when to do it, usually when it stops. The file is replaced as a whole, so a failure never
-leaves a half-written one. The classes of the configs are loaded with the given class loader, which allows to read
-back the configs of plugins. Before saving the manager warns about every listener that is still registered on a
-config, because by that time the components are gone and such a listener is a leak.
-* `InMemoryConfigManager` keeps the configs only in memory. It is meant for tests and demos.
+A manager keeps the configs in memory. `DefaultConfigManager` is the only implementation: it is given a `ConfigData`
+and works with it as its live state, so whoever creates the manager chooses where the data comes from and where it is
+saved to. Before saving, that one calls `warnAboutListeners()`, because by that time the components are gone and a
+listener that is still registered on a config is a leak.
 
 The manager is available to components through `ShellViewModelContext`, and the code that creates a component takes
 the config from it and passes it to the `Params`.
@@ -778,25 +777,27 @@ all setters at once, and it is impossible to hide a particular getter or read-on
 * Read-only ports double the number of types and bloat the code, since every property would have to be declared twice —
 as a read-only property in one port and as a writable one in another.
 
-## Extension Registries <a name="registries"></a>
+## Registries <a name="registries"></a>
 
-An extension registry provides a runtime mechanism for components, plugins, and modules to contribute functionality
+A registry provides a runtime mechanism for components, plugins, and modules to contribute functionality
 without creating direct compile-time dependencies between them. Extensions can be registered and removed at any time,
 and registrations do not depend on the order in which components or plugins are loaded.
 
-Shell provides three registries: `SlotRegistry` and `ControlRegistry` build the menus and tool bars, and
-`StylesheetRegistry` holds the stylesheets that every window applies.
+Shell provides five registries: `SlotRegistry` and `ControlRegistry` build the menus and tool bars,
+`StylesheetRegistry` holds the stylesheets that are applied to the whole application, `ActionRegistry` holds the
+actions a user can do, with the hotkeys the user can reassign, and `BundleRegistry` holds the bundles of texts.
 
-Registries are not tied to a particular layer and can be used by both views and view models. In the shell, registries
-are used only on the view side, so they are exposed through `ShellViewContext`, which is available to views.
-`ShellViewModelContext` does not expose them. `DefaultShellContext` implements both contexts, allowing an application
-to create a single context object while exposing each layer only the API intended for it.
+Registries are not tied to a particular layer and can be used by both views and view models. In the shell, the slot,
+control, stylesheet and action registries are used only on the view side, so they are exposed through
+`ShellViewContext`, which is available to views. `BundleRegistry` is needed on both sides, so it is exposed through
+`ShellViewModelContext`. `DefaultShellContext` implements both contexts, allowing an application to create a single
+context object while exposing each layer only the API intended for it.
 
-### Registry Kinds <a name="registries-kinds"></a>
+### Registry Types <a name="registries-types"></a>
 
-Every registry implements `ExtensionRegistry`. It is not synchronized and promises nothing about threads: its
-listeners are called in the thread that changed it. Registries differ in what a listener is told about a change, and
-there are two kinds:
+Every registry implements `Registry`. The interface promises nothing about threads: whether a registry is synchronized
+is stated by the registry itself (`ActionRegistry` can be changed from any thread), and listeners are called in the
+thread that changed it. Registries differ in what a listener is told about a change, and there are two types:
 
 - `StateRegistry` tells only that something has changed. `getStateUuid()` returns an identifier of the current state
   that is replaced on every change, and a `StateRegistryListener` gets the new identifier in `stateChanged(UUID)`. The
@@ -806,10 +807,9 @@ there are two kinds:
   and have no items that could be listed.
 - `ItemRegistry<T>` tells what has changed. An `ItemRegistryListener<T>` gets the added and the removed items in
   `changed(List<T> added, List<T> removed)`; either list can be empty but never `null`, and both are unmodifiable.
-  `T` is the domain item, such as `Stylesheet` for `StylesheetRegistry`. In `StylesheetRegistry` a stylesheet registered
-  more than once is reported as added by the first registration and as removed by the last one.
+  `T` is the domain item, such as `Stylesheet` for `StylesheetRegistry` or `Action` for `ActionRegistry`.
 
-The kind is a matter of how a change is reported, not of how often the registry changes: all registries can change at
+The type is a matter of how a change is reported, not of how often the registry changes: all registries can change at
 any time. A listener of an item registry that applies the changes one by one depends on the order of the
 notifications, which is not guaranteed between threads; a listener that only re-reads the registry does not.
 
@@ -1116,6 +1116,157 @@ are compared by their URL only, so the set of themes does not make two styleshee
 It is an item registry, so a listener gets the stylesheets that have appeared in and disappeared from
 `getStylesheets()`; a stylesheet that another registration still holds is neither added nor removed.
 
+### Action Registry <a name="registries-action"></a>
+
+`ActionRegistry` holds the actions a user can do, whose hotkeys the user can reassign. It is available through
+`ShellViewContext#getActionRegistry()`, and there is only one registry in the application. It is only a map of the
+registered actions by their names: it does not know where the choices of the user are kept and never saves them.
+Keeping them is the job of the module that declares the actions, so how and where it is done is up to the application
+and its plugins; ShellFX only offers the classes below.
+
+* `ActionName` identifies an action independently of its hotkey. By convention a name is a constant of an enum,
+because the choice of the user is saved under the name and found by it after a restart. A name is `Multilingual`: its
+`getTextKey()` gives the `TextKey` a text for the user, such as a title, is to be found by in the bundles.
+* `ActionGroupName` identifies a group of actions that are listed together, for example in a window for reassigning
+hotkeys. By convention it is a constant of an enum too, and it is `Multilingual` as well.
+* `Action` is a name, a group name and a default hotkey, which can be `null`. Its current hotkey is the property
+`hotkeyProperty()`, which starts with the default one; `isCustomHotkey()` tells whether the user has changed it.
+Controls bind to this property, so a change of the hotkey is seen at once. An action carries no behavior.
+* `CustomHotkeyData` is the choices of the user for the actions of a module, the root object that is kept in a file. It
+keeps one record, a name and a hotkey in the form of `KeyCombination#getName()`, for each action that the user has
+changed; the records are its own detail. `copyTo(actions)` gives the actions the saved hotkeys, and `copyFrom(actions)`
+takes the changed ones from them; an action that the user has not changed leaves no record, so a new default hotkey
+reaches everyone who has not changed it. It is a `StoreData` and is empty when nothing is changed, so a
+[FileStore](#config-manager) deletes its file.
+
+The whole chain of a module that declares actions looks like this:
+
+```java
+// activation: the actions are created from scratch, with their defaults
+var actions = List.of(
+        new Action(EditorAction.SAVE, EditorGroup.FILE, KeyCombination.valueOf("Shortcut+S")),
+        new Action(EditorAction.FIND, EditorGroup.SEARCH, KeyCombination.valueOf("Shortcut+F")));
+
+// the choices of the user are read from the file
+var store = new FileStore<>(dataDirectory.resolve("hotkeys.bin"), getClass().getClassLoader(),
+        CustomHotkeyData::new);
+store.restore();                       // IOException if the file is there but cannot be read
+
+// the choices are given to the actions before anyone can see them
+store.getData().copyTo(actions);
+
+// the actions become available to the controls
+var registration = context.getActionRegistry().register(actions);
+
+// ... the user changes hotkeys with action.setHotkey(...), controls follow the property ...
+
+// deactivation, in the opposite order
+registration.unregister();             // nobody sees the actions any more
+store.getData().copyFrom(actions);     // the changed ones become the records
+store.save();                          // the file is written, or deleted if nothing is changed
+// the list of actions is dropped, a new activation starts again from the first step
+```
+
+Everything else is a choice of the application. It decides where the file lives (one per module, as above, or one for
+the whole application), when `restore()` and `save()` are called, and what to do if the file is damaged: `restore()`
+throws instead of replacing it with empty data, so that the next `save()` does not overwrite what is still there.
+
+A control finds an action by its name with `getActionsByName()`, which returns an unmodifiable snapshot in the order of
+registration, and asks for it again when the registry tells that actions have been added or removed. A window for
+reassigning hotkeys checks a conflict the same way, by looking through the values of this map for the actions that
+already have the hotkey. A name can be registered only once: registering a taken name throws `IllegalStateException`
+and registers none of the actions of that contribution. Actions are registered alone or in a list as one contribution
+that is undone as a whole. It is an item registry, and the registry can be changed from any thread.
+
+The registry holds every action of a module, including the ones that have no hotkey at the moment: an action has no
+default hotkey, or the user has removed it, and `getHotkey()` is `null`. This is deliberate. The registry does not hold
+hotkeys, it holds the very `Action` objects, and a control binds to the `hotkeyProperty()` of such an object. Were the
+actions without a hotkey left out, a control would have nothing to bind to, and a hotkey assigned later by the user
+would reach it only if it looked the action up again. With the action in the registry the control binds once and is
+updated by itself, whether the hotkey appears, changes or disappears. The module sees the same changes, because it holds
+the same objects, and takes the changed ones with `copyFrom(actions)` on deactivation.
+
+```java
+// a menu item follows the hotkey of the action; while it is null the item has no accelerator
+var action = context.getActionRegistry().getActionsByName().get(EditorAction.FIND);
+if (action != null) {
+    menuItem.acceleratorProperty().bind(action.hotkeyProperty());
+}
+```
+
+### Bundle Registry <a name="registries-bundle"></a>
+
+`BundleRegistry` holds the bundles of texts, so that a text for the user can be found in any module without knowing
+whose bundle it is. It is available through `ShellViewModelContext#getBundleRegistry()`, and there is only one registry
+in the application. Each module and plugin has its own bundle that only it can reach, so the module loads the bundle
+itself and gives the loaded `ResourceBundle` to the registry; the registry only holds it. The language is therefore the
+one the bundle has been loaded for. How the application chooses it is up to the application, for example with the
+standard system properties `-Duser.language` and `-Duser.country` in the start script; a text does not change while the
+application runs.
+
+* `BundleName` identifies a bundle, for example the bundle of a module. By convention a name is a constant of an enum.
+* `TextKey` is the address of a text: the name of the bundle and the key in that bundle. A key must be unique only
+within its bundle, so bundles of different modules do not clash.
+* `Multilingual` is what has a text for the user: `getTextKey()` tells where the text is, and `getText(bundles)`
+returns the text. `ActionName` and `ActionGroupName` are `Multilingual`.
+* `TextUtils.getText(bundles, textKey)` returns the text of a key, and is what `Multilingual#getText` calls; use it for
+a `TextKey` that does not belong to an object. If there is no bundle or no such text, it returns the key in the form
+`!key!` and writes a warning to the log, so that a gap is seen in the UI and never fails a control. Take the bundle from
+the registry when you need more than the text, such as `MessageFormat`.
+
+`Multilingual` and `TextUtils` take not the registry but a function from a bundle name to the bundle, which is `null`
+if there is none. The registry hands out its own method as that function, `registry::getBundle`. This way the same call
+works everywhere, in a view model and in a control of the `material` module, which does not know the registry, and a
+test passes `name -> bundle`.
+
+* `BundleRegistry` registers a bundle under a name and returns it with `getBundle(name)`, which is `null` if there is
+no such bundle, for example because its module has been unloaded. Registering a taken name throws
+`IllegalStateException`. It is an item registry, which tells its listeners the names of the bundles that have been
+added and removed, and it can be changed from any thread.
+
+A module registers its bundle before the things that use its texts and withdraws it after them:
+
+```java
+public enum EditorBundle implements BundleName {
+    EDITOR
+}
+
+public enum EditorAction implements ActionName {
+    SAVE("action.save"),
+    FIND("action.find");
+
+    private final TextKey textKey;
+
+    EditorAction(String key) {
+        this.textKey = new TextKey(EditorBundle.EDITOR, key);
+    }
+
+    @Override
+    public TextKey getTextKey() {
+        return textKey;
+    }
+
+    // getText() of Name is omitted
+}
+```
+
+```java
+// activation: the module loads its own bundle for the language of the application, then registers it
+var bundle = ResourceBundle.getBundle("com.example.editor.messages");
+var bundleRegistration = context.getBundleRegistry().register(EditorBundle.EDITOR, bundle);
+var actionRegistration = context.getActionRegistry().register(actions);
+
+// anywhere that has the context, for example in a view model
+var title = EditorAction.SAVE.getText(context.getBundleRegistry()::getBundle);
+
+// deactivation, in the opposite order
+actionRegistration.unregister();
+bundleRegistration.unregister();
+```
+
+The files of the bundle are named by the language, for example `messages.properties` with `action.save=Save` and
+`messages_de.properties` with the same keys and their texts in German.
+
 ## FileStorage <a name="storage"></a>
 
 `FileStorage` is an abstraction layer over any disk. It gives one uniform API for listing, reading, writing, creating
@@ -1139,8 +1290,8 @@ default implementations, the cancellable task and the sort policy.
 theirs, the icon set and the types of decoration.
 * `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
 scheme, with the default schemes of the themes.
-* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `DecorationCellUtils` that
-keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a storage failed.
+* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `DecorationCellUtils`
+that keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a storage failed.
 
 ### Core Concepts <a name="storage-concepts"></a>
 
@@ -1289,9 +1440,9 @@ file, the file and the properties it is bound to as method references (`StorageF
 runs the update for the file when it starts observing and whenever one of the properties changes, and stops with
 `unobserve` when the cell becomes empty. The file is given to the updater and not read from the cell, because some
 cells set their item only at the end of `updateItem`. For the icon and the styles the update is
-`DecorationCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a value
-adds its own `setText` to the update. The updater never calls the cell otherwise, so several cells of one row, one for
-each column, are each updated by the properties they observe, and the cell is not asked to show its file again.
+`DecorationCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a
+value adds its own `setText` to the update. The updater never calls the cell otherwise, so several cells of one row,
+one for each column, are each updated by the properties they observe, and the cell is not asked to show its file again.
 
 Whoever resets the decoration decorates the files again: the view walks the cells that exist in the virtual flow with
 `ColumnViewUtils.forEachItem` and `TableViewUtils.forEachItem` of the `material` module, which pass the item of each
@@ -1401,6 +1552,11 @@ The platform requires Java 25 and JavaFX 27.
 This project is available on Maven Central. Minimal set of required dependencies:
 
 ```
+<dependency>
+    <groupId>com.techsenger.shellfx</groupId>
+    <artifactId>shellfx-base</artifactId>
+    <version>${shellfx.version}</version>
+</dependency>
 <dependency>
     <groupId>com.techsenger.shellfx</groupId>
     <artifactId>shellfx-material</artifactId>

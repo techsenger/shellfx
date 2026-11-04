@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.base.registry;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Base of the state extension registries: keeps the identifier of the state and the listeners. A subclass calls
+ * Base of the state registries: keeps the identifier of the state and the listeners. A subclass calls
  * {@link #renewState()} after every change of what it holds.
  *
  * @author Pavel Castornii

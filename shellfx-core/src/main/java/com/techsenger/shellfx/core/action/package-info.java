@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
-
 /**
- * A registry of the contributions of plugins to the components, which can change at any time. It is not synchronized
- * and promises nothing about threads: its listeners are called in the thread that changed it. How a listener is told
- * about a change depends on the kind of the registry: see {@link StateRegistry} and
- * {@link ItemRegistry}.
- *
- * @author Pavel Castornii
+ * The description of the actions a user can do and the hotkeys the user can reassign for them.
  */
-public interface ExtensionRegistry {
-    // marker
-}
+@NullMarked
+package com.techsenger.shellfx.core.action;
+
+import com.techsenger.annotations.NullMarked;

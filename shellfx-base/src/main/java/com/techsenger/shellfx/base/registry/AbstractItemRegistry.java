@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.base.registry;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Base of the item extension registries: keeps the listeners. A subclass calls {@link #notifyChanged(List, List)}
+ * Base of the item registries: keeps the listeners. A subclass calls {@link #notifyChanged(List, List)}
  * after every change of what it holds.
  *
  * @param <T> the type of the registered items

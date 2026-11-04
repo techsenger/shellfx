@@ -23,7 +23,7 @@ import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
-import com.techsenger.shellfx.core.registry.Registration;
+import com.techsenger.shellfx.base.registry.Registration;
 import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.ArrayList;
 import java.util.List;

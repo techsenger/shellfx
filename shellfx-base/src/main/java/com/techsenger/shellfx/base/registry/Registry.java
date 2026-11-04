@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
+package com.techsenger.shellfx.base.registry;
+
 /**
- * The API of the registrars of the extensions: a registrar that makes and withdraws registrations in a registry, and
- * the manager that runs a plugin's registrars together.
+ * A registry of what components and plugins contribute, which can change at any time. It is not synchronized
+ * and promises nothing about threads: its listeners are called in the thread that changed it. How a listener is told
+ * about a change depends on the kind of the registry: see {@link StateRegistry} and
+ * {@link ItemRegistry}.
+ *
+ * @author Pavel Castornii
  */
-package com.techsenger.shellfx.core.registrar;
+public interface Registry {
+    // marker
+}

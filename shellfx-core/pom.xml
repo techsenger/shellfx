@@ -11,7 +11,7 @@
     <artifactId>shellfx-core</artifactId>
     <packaging>jar</packaging>
     <name>ShellFX - Core</name>
-    <description>Core module of the ShellFX</description>
+    <description>All the key components of ShellFX, including the shell itself</description>
 
     <dependencies>
         <dependency>
@@ -25,6 +25,10 @@
         <dependency>
             <groupId>com.techsenger.tabpanepro</groupId>
             <artifactId>tabpanepro-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx</groupId>
+            <artifactId>shellfx-base</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.shellfx</groupId>

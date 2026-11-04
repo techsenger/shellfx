@@ -27,19 +27,19 @@ module com.techsenger.shellfx.core {
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvvm;
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.shellfx.material;
 
     exports com.techsenger.shellfx.core;
+    exports com.techsenger.shellfx.core.action;
     exports com.techsenger.shellfx.core.area;
     exports com.techsenger.shellfx.core.close;
     exports com.techsenger.shellfx.core.config;
     exports com.techsenger.shellfx.core.dialog;
     exports com.techsenger.shellfx.core.page;
     exports com.techsenger.shellfx.core.popup;
-    exports com.techsenger.shellfx.core.registrar;
     exports com.techsenger.shellfx.core.registrars;
     exports com.techsenger.shellfx.core.registries;
-    exports com.techsenger.shellfx.core.registry;
     exports com.techsenger.shellfx.core.settings;
     exports com.techsenger.shellfx.core.tab;
     exports com.techsenger.shellfx.core.traits;

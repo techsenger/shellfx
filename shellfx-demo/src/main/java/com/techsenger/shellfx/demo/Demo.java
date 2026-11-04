@@ -24,11 +24,9 @@ import com.techsenger.shellfx.core.DefaultShellViewModel;
 import com.techsenger.shellfx.core.ShellConfig;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
-import com.techsenger.shellfx.core.config.InMemoryConfigManager;
-import com.techsenger.shellfx.core.registrar.RegistrarManager;
-import com.techsenger.shellfx.core.registries.ControlRegistry;
-import com.techsenger.shellfx.core.registries.SlotRegistry;
-import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.core.config.ConfigData;
+import com.techsenger.shellfx.core.config.DefaultConfigManager;
+import com.techsenger.shellfx.base.registrar.RegistrarManager;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
 import static com.techsenger.shellfx.demo.ApplicationType.IDE;
@@ -112,17 +110,18 @@ public class Demo extends Application {
     }
 
     private ShellView<?> createShell(ApplicationType appType) {
+        var context = new DefaultShellContext(DemoSettings.createSettings(), new DefaultConfigManager(new ConfigData()),
+                getHostServices());
+
         // creating application stylesheets
         var defaultIconFont = Fonts.MATERIAL_DESIGN_ICONS;
         FontIconView.setDefaultIconFamily(defaultIconFont.getFamily());
-        var stylesheetRegistry = new StylesheetRegistry();
+        var stylesheetRegistry = context.getStylesheetRegistry();
         stylesheetRegistry.register(AbstractWindowView.createDefaultStylesheets());
         stylesheetRegistry.register(IconStylesheetFactory.forDefaultFont(defaultIconFont));
         stylesheetRegistry.register(IconStylesheetFactory.forAllModules());
 
         // creating shell component
-        var context = new DefaultShellContext(DemoSettings.createSettings(), new InMemoryConfigManager(),
-                getHostServices(), new SlotRegistry(), new ControlRegistry(), stylesheetRegistry);
         if (appType == ApplicationType.STYLES_ONLY) {
             // Important: To support different density styles, the window density must not be specified.
             context.getSettings().getAppearance().setDensity(null);

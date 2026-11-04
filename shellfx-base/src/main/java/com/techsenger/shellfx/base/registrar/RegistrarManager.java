@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registrar;
+package com.techsenger.shellfx.base.registrar;
 
 import java.util.List;
 

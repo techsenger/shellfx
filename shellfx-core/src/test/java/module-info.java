@@ -27,6 +27,7 @@ open module com.techsenger.shellfx.core {
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvvm;
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.shellfx.material;
 
     requires com.techsenger.shellfx.test;

@@ -16,18 +16,19 @@
 
 package com.techsenger.shellfx.core.config;
 
+import com.techsenger.shellfx.core.StoreData;
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * All configs held by a {@link ConfigManager}, in the form they are written to a file.
+ * All configs held by a {@link ConfigManager}, in the form they are kept in a store: the root object the store saves
+ * and restores.
  *
  * @author Pavel Castornii
  */
-final class ConfigData implements Serializable {
+public final class ConfigData implements StoreData {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -36,16 +37,25 @@ final class ConfigData implements Serializable {
 
     private final Map<UUID, AbstractConfig> configsByUuid = new HashMap<>();
 
+    public ConfigData() {
+        // empty
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return configsByClass.isEmpty() && configsByUuid.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigData [configsByClass: " + configsByClass + ", configsByUuid: " + configsByUuid + ']';
+    }
+
     Map<Class<? extends AbstractConfig>, AbstractConfig> getConfigsByClass() {
         return configsByClass;
     }
 
     Map<UUID, AbstractConfig> getConfigsByUuid() {
         return configsByUuid;
-    }
-
-    @Override
-    public String toString() {
-        return "ConfigData [configsByClass: " + configsByClass + ", configsByUuid: " + configsByUuid + ']';
     }
 }

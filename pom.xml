@@ -119,6 +119,11 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.shellfx</groupId>
+                <artifactId>shellfx-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.shellfx</groupId>
                 <artifactId>shellfx-material</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -162,6 +167,7 @@
 
     <modules>
         <module>shellfx-test</module>
+        <module>shellfx-base</module>
         <module>shellfx-material</module>
         <module>shellfx-core</module>
         <module>shellfx-layout</module>
