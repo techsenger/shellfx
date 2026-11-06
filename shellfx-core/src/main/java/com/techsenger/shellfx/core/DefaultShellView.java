@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellView<VM extends DefaultShellViewModel<?>>
-        extends AbstractHostWindowView<VM> implements ShellView<VM> {
+public class DefaultShellView<VM extends DefaultShellViewModel<?>> extends AbstractHostWindowView<VM>
+        implements ShellView<VM> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellView.class);
 
@@ -72,6 +72,7 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
             }
             view.getContentBox().getChildren().remove(this.workspace.getNode());
             getModifiableChildren().remove(this.workspace);
+            this.workspace = null;
         }
 
         @Override
