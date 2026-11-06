@@ -413,7 +413,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
             type = WindowType.TOP_LEVEL;
         }
-        var params = new DialogParams(null, type, getShellContext().getSettings());
+        var params = new DialogParams(null, type, getContextAccess().getSettings());
         NameValueDialogPort dialog;
         if (parent.category() == InspectorCategory.PROPERTY) {
             dialog = getComposer().addNameValueDialog("Property", "Value", params);

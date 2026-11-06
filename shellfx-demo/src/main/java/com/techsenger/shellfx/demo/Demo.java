@@ -158,7 +158,7 @@ public class Demo extends Application {
 
     private AreaView<?> createWorkspace(ApplicationType appType, ShellView<?> shellView) {
         AreaView<?> workspace;
-        var context = shellView.getViewModel().getContext();
+        var context = shellView.getContext();
         switch (appType) {
             case BROWSER -> {
                 workspace = HostFactory.createProminentTabHost(context.getSettings());

@@ -40,7 +40,7 @@ public class MainTabItemHandler extends AbstractContainerItemHandler {
     public void handle(ActionEvent event) {
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() instanceof TabHostView<?>) {
-            var configManager = shell.getViewModel().getContext().getConfigManager();
+            var configManager = shell.getContext().getConfigManager();
             var config = configManager.getOrCreateConfig(BrowserMainTabConfig.class, BrowserMainTabConfig::new);
             var tabParams = new BrowserMainTabParams(config);
             var tabViewModel = new BrowserMainTabViewModel<>(tabParams);

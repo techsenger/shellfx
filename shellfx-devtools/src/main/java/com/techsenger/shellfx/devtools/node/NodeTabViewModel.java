@@ -173,7 +173,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
 
     private int foundPropertyCount = 0;
 
-    private Consumer<String> linkOpener = (url) -> getComposer().getShellPort().getContext()
+    private Consumer<String> linkOpener = (url) -> getComposer().getShellPort().getContextAccess()
             .getHostServices().showDocument(url);
 
     private Element selectedNode;
@@ -325,7 +325,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             windowType = WindowType.TOP_LEVEL;
         }
         var params = new ViewerDialogParams(new ViewerDialogConfig(), windowType,
-                getShellContext().getSettings(), node, item, declaringClassName, linkOpener);
+                getContextAccess().getSettings(), node, item, declaringClassName, linkOpener);
         var dialog = getComposer().openViewerDialog(params);
         dialog.setOnClosed(() -> focusPropertiesSource.next(null));
     }
@@ -336,7 +336,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             windowType = WindowType.TOP_LEVEL;
         }
         var params = new EditorDialogParams(getConfig().getEditorDialog(), windowType,
-                getShellContext().getSettings(), task);
+                getContextAccess().getSettings(), task);
         var dialog = getComposer().openEditorDialog(params);
         dialog.setOnClosed(() -> {
             if (dialog.isPropertyUpdated()) {

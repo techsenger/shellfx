@@ -32,7 +32,7 @@ import javafx.application.HostServices;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellContext implements ShellViewModelContext, ShellViewContext {
+public class DefaultShellContext implements ShellContext {
 
     private final ShellSettings settings;
 

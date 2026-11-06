@@ -75,7 +75,7 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
         }
 
         protected DemoAreaView<?> createDemoArea() {
-            var settings = getShell().getViewModel().getContext().getSettings();
+            var settings = getShell().getContext().getSettings();
             var params = new DemoAreaParams(null, settings);
             var viewModel = new DemoAreaViewModel<>(params);
             var areaView = new DemoAreaView<>(viewModel, getShell(), view);

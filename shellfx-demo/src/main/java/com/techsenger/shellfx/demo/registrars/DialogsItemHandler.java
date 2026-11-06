@@ -35,7 +35,7 @@ public class DialogsItemHandler extends AbstractItemHandler {
     @Override
     public void handle(ActionEvent event) {
         var shell = getComponent();
-        var context = shell.getViewModel().getContext();
+        var context = shell.getContext();
         var dialogParams = new DialogsDialogParams(
                 null,
                 context.getSettings(),

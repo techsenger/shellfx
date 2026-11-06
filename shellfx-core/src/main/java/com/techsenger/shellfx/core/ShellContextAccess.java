@@ -22,10 +22,12 @@ import javafx.application.HostServices;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 
 /**
+ * The part of the shell context that is available to view models: the settings, the config manager, the host services
+ * and the bundles. The registries that serve the view side are in {@link ShellContext}.
  *
  * @author Pavel Castornii
  */
-public interface ShellViewModelContext {
+public interface ShellContextAccess {
 
     /**
      * Returns the settings of the shell.

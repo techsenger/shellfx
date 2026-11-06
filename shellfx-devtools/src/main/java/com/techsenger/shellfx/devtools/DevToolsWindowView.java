@@ -47,7 +47,7 @@ public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends A
 
         protected DevToolsTabDockView<?> createTabDock() {
             var shell = this.view.shell;
-            var context = shell.getViewModel().getContext();
+            var context = shell.getContext();
             var connector = new LocalConnector(shell.getStage(), null);
             var configManager = getViewModel().getConfigManager();
             var config = configManager.getOrCreateConfig(DevToolsTabDockConfig.class, DevToolsTabDockConfig::new);

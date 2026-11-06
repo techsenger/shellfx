@@ -762,7 +762,7 @@ and works with it as its live state, so whoever creates the manager chooses wher
 saved to. Before saving, that one calls `warnAboutListeners()`, because by that time the components are gone and a
 listener that is still registered on a config is a leak.
 
-The manager is available to components through `ShellViewModelContext`, and the code that creates a component takes
+The manager is available to components through `ShellContextAccess`, and the code that creates a component takes
 the config from it and passes it to the `Params`.
 
 ## Component Port <a name="port"></a>
@@ -800,10 +800,11 @@ Shell provides five registries: `SlotRegistry` and `ControlRegistry` build the m
 actions a user can do, with the hotkeys the user can reassign, and `BundleRegistry` holds the bundles of texts.
 
 Registries are not tied to a particular layer and can be used by both views and view models. In the shell, the slot,
-control, stylesheet and action registries are used only on the view side, so they are exposed through
-`ShellViewContext`, which is available to views. `BundleRegistry` is needed on both sides, so it is exposed through
-`ShellViewModelContext`. `DefaultShellContext` implements both contexts, allowing an application to create a single
-context object while exposing each layer only the API intended for it.
+control, stylesheet and action registries are used only on the view side, so they are exposed only through
+`ShellContext`, which is available to views. `BundleRegistry` is needed on both sides, so it is exposed through
+`ShellContextAccess`, the part of the context that view models see. `ShellContext` extends `ShellContextAccess`, like
+a composer extends its `ComposerAccess`, and `DefaultShellContext` implements it, so an application creates a single
+context object while a view model is given only the part intended for it (`getContextAccess()` of the port).
 
 ### Registry Types <a name="registries-types"></a>
 
@@ -1070,7 +1071,7 @@ visible, so the `material` module has ready-made classes for the common case:
 
 `StylesheetRegistry` holds the application-wide stylesheets that every top-level window applies: the default ones, the
 icon stylesheets of the platform and of plugins. It starts empty, and the application decides what to register. It is
-available through `ShellViewContext#getStylesheetRegistry()`, and there is only one registry in the application.
+available through `ShellContext#getStylesheetRegistry()`, and there is only one registry in the application.
 
 A stylesheet is registered alone or in a list as one contribution that is undone as a whole. Windows read the registry
 when they are created and follow it while they are open, so stylesheets can be registered and unregistered at any time
@@ -1091,7 +1092,7 @@ It is an item registry, so a listener gets the stylesheets that have appeared in
 ### Action Registry <a name="registries-action"></a>
 
 `ActionRegistry` holds the actions a user can do, whose hotkeys the user can reassign. It is available through
-`ShellViewContext#getActionRegistry()`, and there is only one registry in the application. It is only a map of the
+`ShellContext#getActionRegistry()`, and there is only one registry in the application. It is only a map of the
 registered actions by their names: it does not know where the choices of the user are kept and never saves them.
 Keeping them is the job of the module that declares the actions, so how and where it is done is up to the application
 and its plugins; ShellFX only offers the classes below.
@@ -1169,7 +1170,7 @@ if (action != null) {
 ### Bundle Registry <a name="registries-bundle"></a>
 
 `BundleRegistry` holds the bundles of texts, so that a text for the user can be found in any module without knowing
-whose bundle it is. It is available through `ShellViewModelContext#getBundleRegistry()`, and there is only one registry
+whose bundle it is. It is available through `ShellContextAccess#getBundleRegistry()`, and there is only one registry
 in the application. Each module and plugin has its own bundle that only it can reach, so the module loads the bundle
 itself and gives the loaded `ResourceBundle` to the registry; the registry only holds it. The language is therefore the
 one the bundle has been loaded for. How the application chooses it is up to the application, for example with the

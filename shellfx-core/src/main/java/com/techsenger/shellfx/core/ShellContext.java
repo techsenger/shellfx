@@ -22,12 +22,12 @@ import com.techsenger.shellfx.core.registries.SlotRegistry;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 
 /**
- * The part of the shell context that is available to views: the shell uses its registries on the view side only.
- * The view model part is {@link ShellViewModelContext}.
+ * The context of the shell, available to views: everything {@link ShellContextAccess} offers to view models plus the
+ * registries that the shell uses on the view side only.
  *
  * @author Pavel Castornii
  */
-public interface ShellViewContext {
+public interface ShellContext extends ShellContextAccess {
 
     /**
      * Returns the registry of the slot tree.

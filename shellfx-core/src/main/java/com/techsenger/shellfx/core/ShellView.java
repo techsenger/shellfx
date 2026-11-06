@@ -38,11 +38,11 @@ public interface ShellView<VM extends ShellViewModel<?>> extends HostWindowView<
     Composer getComposer();
 
     /**
-     * Returns the part of the shell context that is available to views.
+     * Returns the shell context, which includes the part available to view models.
      *
      * @return
      */
-    ShellViewContext getContext();
+    ShellContext getContext();
 
     /**
      * Clears all existing elements in menu bar and adds new elements build using registry.

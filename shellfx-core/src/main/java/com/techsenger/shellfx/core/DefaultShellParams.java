@@ -26,15 +26,15 @@ import java.util.Objects;
  */
 public class DefaultShellParams extends WindowParams {
 
-    private final ShellViewModelContext context;
+    private final ShellContextAccess contextAccess;
 
-    public DefaultShellParams(ShellConfig config, ShellViewModelContext context) {
-        super(config, WindowType.TOP_LEVEL, false, context.getSettings());
-        this.context = context;
+    public DefaultShellParams(ShellConfig config, ShellContextAccess contextAccess) {
+        super(config, WindowType.TOP_LEVEL, false, contextAccess.getSettings());
+        this.contextAccess = contextAccess;
     }
 
-    public ShellViewModelContext getContext() {
-        return context;
+    public ShellContextAccess getContextAccess() {
+        return contextAccess;
     }
 
     @Override
@@ -46,6 +46,6 @@ public class DefaultShellParams extends WindowParams {
     public void validate() {
         super.validate();
         Objects.requireNonNull(getConfig());
-        Objects.requireNonNull(context);
+        Objects.requireNonNull(contextAccess);
     }
 }

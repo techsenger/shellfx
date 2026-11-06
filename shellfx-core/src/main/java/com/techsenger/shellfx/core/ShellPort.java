@@ -38,12 +38,12 @@ public interface ShellPort extends HostWindowPort {
      *
      * @return
      */
-    ShellViewModelContext getContext();
+    ShellContextAccess getContextAccess();
 
     /**
      * Returns the context of the shell as an instance of the specified class using type casting.
      *
      * @return
      */
-    <T extends ShellViewModelContext> T getContext(Class<T> contextClass);
+    <T extends ShellContextAccess> T getContextAccess(Class<T> contextClass);
 }

@@ -39,7 +39,7 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     @Override
     public void handle(ActionEvent event) {
-        var configManager = getComponent().getViewModel().getContext().getConfigManager();
+        var configManager = getComponent().getContext().getConfigManager();
         var config = configManager.getOrCreateConfig(PageTabConfig.class, PageTabConfig::new);
         var params = new PageTabParams(config, menuType);
         var tabViewModel = new PageTabViewModel<>(params);

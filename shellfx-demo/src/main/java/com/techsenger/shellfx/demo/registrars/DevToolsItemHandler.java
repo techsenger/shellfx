@@ -85,7 +85,7 @@ public class DevToolsItemHandler extends AbstractItemHandler {
 
     protected DevToolsTabDockView<?> createDevToolsDock() {
         var shell = getComponent();
-        var context = shell.getViewModel().getContext();
+        var context = shell.getContext();
         var connector = new LocalConnector(shell.getStage(), null);
         var config = context.getConfigManager().getOrCreateConfig(DevToolsTabDockConfig.class,
                 DevToolsTabDockConfig::new);
@@ -98,7 +98,7 @@ public class DevToolsItemHandler extends AbstractItemHandler {
     }
 
     protected DevToolsWindowView<?> createDevToolsWindow() {
-        var context = getComponent().getViewModel().getContext();
+        var context = getComponent().getContext();
         var config = context.getConfigManager().getOrCreateConfig(DevToolsWindowConfig.class,
                 DevToolsWindowConfig::new);
         var params = new DevToolsWindowParams(config, context.getSettings(), context.getConfigManager());

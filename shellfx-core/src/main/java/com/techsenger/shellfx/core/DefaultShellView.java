@@ -88,15 +88,15 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>> extends Abstr
 
     private final MenuBarSlot<? extends ShellView<?>> menuBarSlot;
 
-    private final ShellViewContext context;
+    private final ShellContext context;
 
     private @Nullable Controls<? extends ShellView<?>, MenuBar> menuBarControls;
 
-    public DefaultShellView(VM viewModel, ShellViewContext context, MenuBarSlot<? extends ShellView<?>> menuBarSlot) {
+    public DefaultShellView(VM viewModel, ShellContext context, MenuBarSlot<? extends ShellView<?>> menuBarSlot) {
         this(viewModel, context, new Stage(), menuBarSlot);
     }
 
-    public DefaultShellView(VM viewModel, ShellViewContext context, Stage stage,
+    public DefaultShellView(VM viewModel, ShellContext context, Stage stage,
             MenuBarSlot<? extends ShellView<?>> menuBarSlot) {
         super(viewModel, context.getStylesheetRegistry(), stage);
         this.menuBarSlot = menuBarSlot;
@@ -112,7 +112,7 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>> extends Abstr
     }
 
     @Override
-    public ShellViewContext getContext() {
+    public ShellContext getContext() {
         return context;
     }
 
