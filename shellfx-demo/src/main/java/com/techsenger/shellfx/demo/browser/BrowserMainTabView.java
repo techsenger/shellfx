@@ -19,6 +19,9 @@ package com.techsenger.shellfx.demo.browser;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.tab.AbstractHostTabView;
 import com.techsenger.shellfx.demo.HostFactory;
+import com.techsenger.shellfx.demo.area.DemoAreaParams;
+import com.techsenger.shellfx.demo.area.DemoAreaView;
+import com.techsenger.shellfx.demo.area.DemoAreaViewModel;
 import com.techsenger.shellfx.layout.dockhost.DockHostView;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.dockhost.TabDockView;
@@ -57,11 +60,11 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
             view.addLayout();
 
             var leftTabDock = HostFactory.createLeftTabDock(getShell(), dockHost);
-            var textViewer = createTextViewer();
+            var demoArea = createDemoArea();
 
             var modelRoot = ModelNodeBuilder.root(Orientation.HORIZONTAL, s -> s
                         .area(leftTabDock)
-                        .mainArea(textViewer));
+                        .mainArea(demoArea));
 
             dockHost.getComposer().applyModel(modelRoot);
         }
@@ -71,11 +74,11 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
             view.dockHost.getComposer().addTabDock(tabDock, Side.BOTTOM, 250);
         }
 
-        protected MenuAwareAreaView<?> createTextViewer() {
+        protected DemoAreaView<?> createDemoArea() {
             var settings = getShell().getViewModel().getContext().getSettings();
-            var params = new MenuAwareAreaParams(null, settings);
-            var viewModel = new MenuAwareAreaViewModel<>(params);
-            var areaView = new MenuAwareAreaView<>(viewModel, view);
+            var params = new DemoAreaParams(null, settings);
+            var viewModel = new DemoAreaViewModel<>(params);
+            var areaView = new DemoAreaView<>(viewModel, getShell(), view);
             areaView.initialize();
             return areaView;
         }

@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.browser;
+package com.techsenger.shellfx.demo.area;
 
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AbstractAreaView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
+import com.techsenger.shellfx.core.popup.PopupContainerView;
 import com.techsenger.shellfx.core.popup.PopupParams;
 import com.techsenger.shellfx.core.popup.PopupPort;
-import com.techsenger.shellfx.core.tab.HostTabView;
+import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.demo.dialog.DemoDialogView;
 import com.techsenger.shellfx.demo.dialog.DemoDialogViewModel;
 import com.techsenger.shellfx.demo.popup.DemoPopupView;
 import com.techsenger.shellfx.demo.popup.DemoPopupViewModel;
 import com.techsenger.shellfx.material.Anchors;
 import com.techsenger.shellfx.material.style.Spacing;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -40,28 +43,31 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
+ * The area with the demo dialogs and popups and the checkboxes of the items of the Extra menu. It is placed in a
+ * container of popups, for example a tab; if the container also hosts windows, the area can open dialogs in it, too.
  *
  * @author Pavel Castornii
  */
-public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends AbstractAreaView<VM> {
+public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaView<VM> {
 
-    public class Composer extends AbstractAreaView<VM>.Composer implements MenuAwareAreaComposer {
+    public class Composer extends AbstractAreaView<VM>.Composer implements DemoAreaComposer {
 
-        private final MenuAwareAreaView<VM> view = MenuAwareAreaView.this;
+        private final DemoAreaView<VM> view = DemoAreaView.this;
 
-        private HostTabView<?> mainTab;
+        private ShellView<?> shell;
+
+        private PopupContainerView<?> container;
 
         @Override
         public DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
             var viewModel = new DemoDialogViewModel<>(params);
-            var shell = mainTab.getComposer().getShell();
             var dialogView = new DemoDialogView<>(viewModel, shell.getContext().getStylesheetRegistry());
             dialogView.initialize();
             viewModel.setResizable(resizable);
             if (scope == OverlayScope.WINDOW) {
                 shell.getComposer().addDialog(dialogView);
             } else {
-                mainTab.getComposer().addDialog(dialogView);
+                ((WindowContainerView<?>) container).getComposer().addDialog(dialogView);
             }
             return viewModel;
         }
@@ -73,16 +79,16 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
             var popupView = new DemoPopupView<>(viewModel);
             popupView.initialize();
             if (scope == OverlayScope.WINDOW) {
-                var shell = mainTab.getComposer().getShell();
                 shell.getComposer().addPopup(popupView, Anchors.topRight(20, 20));
             } else {
-                mainTab.getComposer().addPopup(popupView, Anchors.bottomRight(20, 20));
+                container.getComposer().addPopup(popupView, Anchors.bottomRight(20, 20));
             }
             return viewModel;
         }
 
-        private void setMainTab(HostTabView<?> mainTab) {
-            this.mainTab = mainTab;
+        private void setContainer(ShellView<?> shell, PopupContainerView<?> container) {
+            this.shell = shell;
+            this.container = container;
         }
     }
 
@@ -109,9 +115,17 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
 
     private final StackPane stackPane = new StackPane(vBox);
 
-    public MenuAwareAreaView(VM viewModel, HostTabView<?> mainTab) {
+    /**
+     * Creates a view.
+     *
+     * @param viewModel the view model
+     * @param shell the shell the dialogs and popups of the window scope are opened in
+     * @param container the container the popups of the tab scope are opened in; the dialogs of that scope are offered
+     *     only if it is a {@link WindowContainerView}
+     */
+    public DemoAreaView(VM viewModel, ShellView<?> shell, PopupContainerView<?> container) {
         super(viewModel);
-        getComposer().setMainTab(mainTab);
+        getComposer().setContainer(shell, container);
     }
 
     @Override
@@ -131,7 +145,7 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
 
     @Override
     protected Composer createComposer() {
-        return new MenuAwareAreaView.Composer();
+        return new DemoAreaView.Composer();
     }
 
     @Override
@@ -140,6 +154,8 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
         StackPane.setAlignment(vBox, Pos.CENTER);
         setupButton(shellDialogButton);
         setupButton(tabDialogButton);
+        this.tabDialogButton.setVisible(getComposer().container instanceof WindowContainerView<?>);
+        this.tabDialogButton.setManaged(getComposer().container instanceof WindowContainerView<?>);
         setupButton(shellPopupButton);
         setupButton(tabPopupButton);
         vBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
@@ -160,9 +176,10 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        // in order for the shell to determine the focused component, you need to manually set focus
-        // on the container when the user clicks on it with the mouse.
-        stackPane.setOnMouseClicked(e -> stackPane.requestFocus());
+        // in order for the shell to determine the focused component, you need to manually set focus on the container
+        // when the user clicks on it with the mouse. When a Pane inside a Tab requests focus, it receives it, but
+        // immediately loses it because TabPane captures the focus, so the focus is requested on the next pulse.
+        stackPane.setOnMouseClicked(e -> Platform.runLater(() -> stackPane.requestFocus()));
         this.shellDialogButton.setOnAction(e -> getViewModel().onDialogOpen(OverlayScope.WINDOW));
         this.tabDialogButton.setOnAction(e -> getViewModel().onDialogOpen(OverlayScope.TAB));
         this.shellPopupButton.setOnAction(e -> getViewModel().onPopupOpen(OverlayScope.WINDOW));

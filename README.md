@@ -361,29 +361,21 @@ described in [Control State](#registries-control-state) and [Menu Visibility](#r
 A menu consists of groups separated by separators. Items are added to groups, and empty groups are ignored. Each menu
 and group is identified by its slot. The controls of the menu keep their own state and react to their own actions (see
 [Control State](#registries-control-state)). Each of them decides for itself what to depend on; a control that wants to
-follow the component the user is working with observes the port of the current menu aware component, which is exposed
-by `ShellPort.ComposerAccess#menuAwarePortProperty()`. Controls that do not need it ignore it.
+follow a component the user is working with finds that component itself (see below) and observes it. A control belongs
+to the view side, so it can work with the view of the component as well as with its port.
 
-The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
-the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
-identified, and the result is stored in `ShellView#focusedProperty()`. Note that if a component should become focused
-when the user clicks on an empty area of that component (for example, a `Pane`), you must explicitly call
-`pane.requestFocus()`.
+The `Shell` tracks the focused component. It follows `Scene#focusOwnerProperty()`, identifies the component that owns
+the focused node, and stores the result in `ShellView.Composer#focusedProperty()`.
 
-At the same time, the focused component may not be one the menu pays attention to (for example, it could be just a
-toolbar). Such a component marks itself by implementing `MenuAwarePort`, so after the focused component changes,
-`Shell` searches from it up to the root of the tree - the Shell - for the first component whose port implements
-`MenuAwarePort`; this is the current menu aware component. It does not form the menu: it only tells the menu controls
-which component is current. The `Shell` itself is menu aware too, and it is the current one when nothing else is, for
-example when the workspace is empty. See also `ShellView.Composer#menuAwareProperty()`.
+`Shell` does not decide which component the menu is about, because the application knows it better. A control that
+depends on a component finds the component itself: it can be the focused component, found with `focusedProperty()`, the
+selected tab of the workspace or anything else. Focus is not always the right answer: when the user clicks the main
+menu, the focus moves away from the component the user was working with. The demo uses the focus. The control observes
+the component it found (its view or its port), so its state stays actual whether the menu is open or an accelerator is
+pressed.
 
-The port of the current menu aware component is available to menu controls as
-`ShellPort.ComposerAccess#menuAwarePortProperty()`, which is `null` when there is none. A control that depends on the
-state of that component observes it through this property, so its state stays actual whether the menu is open or an
-accelerator is pressed.
-
-To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
-`MenuAwarePort` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
+To gain a complete understanding of working with the menu, it is recommended to experiment with the menu in the demo
+and pay attention to log messages at the debug level.
 
 The second key part of ShellFX is the workspace, which represents one of the available layouts. ShellFX supports
 different types of workspace:
@@ -965,11 +957,11 @@ empty groups are omitted.
 
 ### Control State <a name="registries-control-state"></a>
 
-The controls are regular JavaFX controls such as `Menu`, `MenuItem`, `CheckMenuItem`, and `RadioMenuItem`. A control
-is created and owned by its provider, so it can keep its state actual itself instead of being updated from the
-outside. A control observes whatever it depends on - the view model of the shell, the port of the menu aware
-component - and keeps its `visible` and `disable` properties actual at all times. For this a provider binds the
-properties in `initialize` and always unbinds them in `deinitialize`:
+The controls are regular JavaFX controls such as `Menu`, `MenuItem`, `CheckMenuItem`, and `RadioMenuItem`. A control is
+created and owned by its provider, so it can keep its state actual itself instead of being updated from the outside. A
+control observes whatever it depends on - the view model of the shell, the view or the port of a component - and keeps
+its `visible` and `disable` properties actual at all times. For this a provider binds the properties in `initialize` and
+always unbinds them in `deinitialize`:
 
 ```java
 register(ShellSlots.ExtraMenu.FOO_GROUP, 100, () -> new SimpleControlProvider<>(new MenuItem("_Foo")) {
@@ -977,8 +969,7 @@ register(ShellSlots.ExtraMenu.FOO_GROUP, 100, () -> new SimpleControlProvider<>(
     @Override
     public void initialize(ShellView<?> view) {
         super.initialize(view);
-        getControl().disableProperty().bind(view.getComposer().menuAwarePortProperty()
-                .flatMap(port -> port instanceof FooPort fooPort ? fooPort.fooDisabledProperty() : null));
+        getControl().disableProperty().bind(observeFooPort(view).flatMap(FooPort::fooDisabledProperty));
         getControl().setOnAction(e -> System.out.println("Foo"));
     }
 
@@ -990,52 +981,14 @@ register(ShellSlots.ExtraMenu.FOO_GROUP, 100, () -> new SimpleControlProvider<>(
 });
 ```
 
+Here `observeFooPort` is a method of the application that returns an observable value of the `FooPort` of the component
+the control depends on, for example the one that has focus; it is `null` when there is none. The control uses `flatMap`
+because that component changes while the user works: `flatMap` follows the property of the *current* port and picks up
+the property of a new one by itself, so the control neither listens to the port nor rebinds. A plain `map` is not
+enough, because the function returns another observable, not a value.
+
 Since the state is always actual, nothing has to be refreshed when a menu is shown or an accelerator is pressed: a
 disabled item reacts neither to a mouse click nor to its accelerator.
-
-#### Why flatMap
-
-The state of a control depends on the port of the menu aware component, and that port changes every time the user
-moves the focus to another component. The control needs a property of the *current* port, not of the one that was
-there when the control was created. `flatMap` does exactly that: it takes the observable value of the port and a
-function that returns a property of a given port, and gives back an observable value that always follows the
-property of the current port. When the port changes, it drops the property of the old port and picks up the property
-of the new one by itself; when there is no port, or the function returns `null`, the result is `null`, which a bound
-`BooleanProperty` treats as `false`. Without `flatMap` every control would have to listen to the port, rebind its
-property and remove the listener in `deinitialize`. A plain `map` is not enough here, because the function does not
-return a value but another observable.
-
-#### Why the state is lazy
-
-A bound property and a binding in JavaFX are lazy. When their source changes they are only marked invalid and tell
-their observers that they have become invalid, without recalculating anything. The value is recalculated the next
-time somebody reads it (`isVisible()`, `isDisable()`), which also makes the property valid again. A property that
-is read again after being invalidated reports the next change as well; a property that nobody reads reports only
-the first one, which is enough, because it is already known to be stale.
-
-`flatMap` is lazy in the same way: when the port changes, it only becomes invalid and unsubscribes from the property
-of the old port; it subscribes to the property of the new port when its value is next read. So when the user
-switches to another tab, nothing is asked from the new port until the state of an item is really needed: when a menu
-is shown, when an accelerator is pressed, or when the menu bar reads `visible` of a top-level menu. The state of an
-item in a menu that nobody opens is never calculated.
-
-This is why `DynamicMenu` listens to the `visible` properties of its items with an `InvalidationListener` and not
-with a `ChangeListener`. A `ChangeListener` has to pass the old and the new value, so the property must calculate the
-new value right away, whether or not the menu is ever shown. An `InvalidationListener` only marks the `visible`
-binding of the menu as stale, and the items are read when the visibility of the menu is read. For the same reason a
-provider should bind the state of its control and should not copy it with a change listener.
-
-#### Why unbind in deinitialize
-
-A `flatMap` subscribes to its source (here, the port property of the shell, which lives as long as the shell) only
-while somebody observes the `flatMap` itself, and it stops observing the source as soon as the last observer is
-gone. The observer is the property of the control it is bound to, so `unbind()` is what lets go of the shell:
-without it the shell keeps the `flatMap` of a control that is no longer used. The property holds its binding weakly
-and the binding is cleaned up when it is invalidated after the control is collected, but a binding that is invalid
-and never read does not get that chance, so do not rely on it. The owner of the controls calls `deinitialize` of
-every provider (`Controls#deinitializeAll`) before it drops them, and a provider must unbind there every property it
-bound in `initialize`, including `map` and `flatMap` results, and remove from a dynamic menu every condition it
-added.
 
 ### Menu Visibility <a name="registries-menu-visibility"></a>
 
@@ -1069,7 +1022,7 @@ visible, so the `material` module has ready-made classes for the common case:
       @Override
       public void initialize(ShellView<?> view) {
           super.initialize(view);
-          fooPort = view.getComposer().menuAwarePortProperty().map(port -> port instanceof FooPort);
+          fooPort = observeFooPort(view).map(port -> true).orElse(false);
           getControl().addVisibleCondition(fooPort);
       }
 
@@ -1090,8 +1043,7 @@ visible, so the `material` module has ready-made classes for the common case:
   [Control State](#registries-control-state), and unbinds it in `deinitialize`:
 
   ```java
-  menu.visibleProperty().bind(view.getComposer().menuAwarePortProperty()
-          .map(port -> port instanceof FooPort));
+  menu.visibleProperty().bind(observeFooPort(view).map(port -> true));
   ```
 
 * `GroupCollapser` is installed by the dynamic menus themselves. Just before a menu is shown, it hides the separators

@@ -16,10 +16,8 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.window.HostWindowView;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  *
@@ -34,20 +32,6 @@ public interface ShellView<VM extends ShellViewModel<?>> extends HostWindowView<
         void removeWorkspace();
 
         AreaView<?> getWorkspace();
-
-        /**
-         * Defines the current menu aware component: the nearest component, from the focused one up to the Shell,
-         * whose port is a menu aware port. The menu controls may react to it, but are not obliged to.
-         *
-         * @return
-         */
-        ReadOnlyObjectProperty<ParentView<?>> menuAwareProperty();
-
-        /**
-         * Returns the value of {@link #menuAwareProperty()}.
-         * @return
-         */
-        ParentView<?> getMenuAware();
     }
 
     @Override

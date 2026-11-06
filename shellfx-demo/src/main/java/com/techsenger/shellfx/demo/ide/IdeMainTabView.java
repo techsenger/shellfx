@@ -18,34 +18,19 @@ package com.techsenger.shellfx.demo.ide;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.AbstractPopupManager;
 import com.techsenger.shellfx.core.popup.ContainerPopupPort;
-import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupContainerView;
 import com.techsenger.shellfx.core.popup.PopupManager;
-import com.techsenger.shellfx.core.popup.PopupParams;
-import com.techsenger.shellfx.core.popup.PopupPort;
 import com.techsenger.shellfx.core.popup.PopupView;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
-import com.techsenger.shellfx.demo.dialog.DemoDialogView;
-import com.techsenger.shellfx.demo.dialog.DemoDialogViewModel;
-import com.techsenger.shellfx.demo.popup.DemoPopupView;
-import com.techsenger.shellfx.demo.popup.DemoPopupViewModel;
+import com.techsenger.shellfx.demo.area.DemoAreaParams;
+import com.techsenger.shellfx.demo.area.DemoAreaView;
+import com.techsenger.shellfx.demo.area.DemoAreaViewModel;
 import com.techsenger.shellfx.material.Anchors;
-import com.techsenger.shellfx.material.style.Spacing;
 import java.util.List;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.input.InputEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -75,27 +60,12 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
         };
 
         @Override
-        public DialogPort openDemoDialog(boolean resizable, DialogParams params) {
-            var viewModel = new DemoDialogViewModel<>(params);
-            var dialogView = new DemoDialogView<>(viewModel, getShell().getContext().getStylesheetRegistry());
-            dialogView.initialize();
-            viewModel.setResizable(resizable);
-            getShell().getComposer().addDialog(dialogView);
-            return viewModel;
-        }
-
-        @Override
-        public PopupPort openDemoPopup(OverlayScope scope) {
-            var params = new PopupParams(null, false);
-            var viewModel = new DemoPopupViewModel<>(params);
-            var popupView = new DemoPopupView<>(viewModel);
-            popupView.initialize();
-            if (scope == OverlayScope.WINDOW) {
-                getShell().getComposer().addPopup(popupView, Anchors.topRight(40, 20));
-            } else {
-                addPopup(popupView, Anchors.bottomRight(20, 20));
-            }
-            return viewModel;
+        public void compose() {
+            super.compose();
+            var area = createArea();
+            getModifiableChildren().add(area);
+            VBox.setVgrow(area.getNode(), Priority.ALWAYS);
+            getContentBox().getChildren().add(area.getNode());
         }
 
         @Override
@@ -125,28 +95,16 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
         public @Unmodifiable List<? extends ContainerPopupPort> getPopupPorts() {
             return popupManager.getPopups().stream().map(d -> d.getViewModel()).toList();
         }
+
+        protected DemoAreaView<?> createArea() {
+            var settings = getShell().getViewModel().getContext().getSettings();
+            var params = new DemoAreaParams(null, settings);
+            var viewModel = new DemoAreaViewModel<>(params);
+            var areaView = new DemoAreaView<>(viewModel, getShell(), view);
+            areaView.initialize();
+            return areaView;
+        }
     }
-
-    private final CheckBox fooDisabledCheckBox = new CheckBox("Foo Item Disabled");
-
-    private final CheckBox barIncludedCheckBox = new CheckBox("Bar Item Included");
-
-    private final CheckBox barDisabledCheckBox = new CheckBox("Bar Item Disabled");
-
-    private final Button shellDialogButton = new Button("Shell");
-
-    private final HBox dialogHBox = new HBox(shellDialogButton);
-
-    private final Button shellPopupButton = new Button("Shell");
-
-    private final Button tabPopupButton = new Button("Tab");
-
-    private final HBox popupHBox = new HBox(shellPopupButton, tabPopupButton);
-
-    private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooDisabledCheckBox, barIncludedCheckBox,
-            barDisabledCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
-
-    private final StackPane stackPane = new StackPane(vBox);
 
     public IdeMainTabView(VM viewModel, ShellView<?> shell) {
         super(viewModel, shell);
@@ -163,47 +121,7 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
     }
 
     @Override
-    protected void build() {
-        super.build();
-        StackPane.setAlignment(vBox, Pos.CENTER);
-        setupButton(shellDialogButton);
-        setupButton(shellPopupButton);
-        setupButton(tabPopupButton);
-        vBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        vBox.setSpacing(Spacing.getVertical());
-        dialogHBox.setSpacing(Spacing.getHorizontal());
-        popupHBox.setSpacing(Spacing.getHorizontal());
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
-        getContentBox().getChildren().add(stackPane);
-    }
-
-    @Override
-    protected void bind() {
-        super.bind();
-        var viewModel = getViewModel();
-        this.fooDisabledCheckBox.selectedProperty().bindBidirectional(viewModel.fooDisabledProperty());
-        this.barIncludedCheckBox.selectedProperty().bindBidirectional(viewModel.barIncludedProperty());
-        this.barDisabledCheckBox.selectedProperty().bindBidirectional(viewModel.barDisabledProperty());
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        // when a Pane inside a Tab requests focus, it receives it, but immediately loses it because
-        // TabPane captures the focus. To fix it we request focus on next pulse.
-        this.stackPane.setOnMouseClicked(e -> Platform.runLater(() -> this.stackPane.requestFocus()));
-        this.shellDialogButton.setOnAction(e -> getViewModel().onDialogOpen());
-        this.shellPopupButton.setOnAction(e -> getViewModel().onPopupOpen(OverlayScope.WINDOW));
-        this.tabPopupButton.setOnAction(e -> getViewModel().onPopupOpen(OverlayScope.TAB));
-    }
-
-    @Override
     protected Composer createComposer() {
         return new IdeMainTabView.Composer();
-    }
-
-    private void setupButton(Button button) {
-        HBox.setHgrow(button, Priority.ALWAYS);
-        button.setMaxWidth(Double.MAX_VALUE);
     }
 }

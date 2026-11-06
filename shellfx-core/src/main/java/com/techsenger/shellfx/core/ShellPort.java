@@ -16,30 +16,18 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.window.HostWindowPort;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends HostWindowPort, MenuAwarePort {
+public interface ShellPort extends HostWindowPort {
 
     interface ComposerAccess extends HostWindowPort.ComposerAccess {
 
         AreaPort getWorkspacePort();
-
-        @Nullable MenuAwarePort getMenuAwarePort();
-
-        /**
-         * Defines the port of the current menu aware component, the one the menu controls may observe; {@code null}
-         * when there is none.
-         *
-         * @return
-         */
-        ReadOnlyObjectProperty<MenuAwarePort> menuAwarePortProperty();
     }
 
     @Override

@@ -133,11 +133,10 @@ lookups silently fall back to defaults and mask regressions.
   provider, controls of a group put nowhere, equal positions) at warning level with only the places that lead to
   them, followed by the paths to the warnings of the built tree; the report is `SlotTreeLogger`, kept by the
   `SlotTree` of the build.
-  `Shell` tracks the focused component via `Scene#focusOwnerProperty()`, walks up the component tree to find the
-  nearest ancestor implementing `MenuAwarePort` and exposes its port as
-  `ShellPort.ComposerAccess#menuAwarePortProperty()` (`null` if there is none), which menu controls may observe; the
-  menu aware component only tells which component is current and does not form the menu. A component that should
-  focus on click of an empty area must call `requestFocus()` explicitly.
+  `Shell` tracks the focused component via `Scene#focusOwnerProperty()` and exposes it as
+  `ShellView.Composer#focusedProperty()`. It does not choose a current component for the menu: a menu control that
+  depends on a component finds the component itself (the focused one, the selected tab and so on) and observes its
+  view or its port. A component that should focus on click of an empty area must call `requestFocus()` explicitly.
 - **Windows.** `Window` comes in `NESTED` (managed by `WindowManager`, hosted inside a `HostWindow` or
   `HostTab`) and `TOP_LEVEL` (own OS `Stage`) variants, both accessed through the same API — dialogs/wizards
   built on `Window` work unmodified in either mode.

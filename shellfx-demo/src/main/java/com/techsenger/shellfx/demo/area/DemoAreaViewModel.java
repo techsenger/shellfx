@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.browser;
+package com.techsenger.shellfx.demo.area;
 
-import com.techsenger.shellfx.core.MenuAwarePort;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
@@ -31,8 +29,8 @@ import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
  *
  * @author Pavel Castornii
  */
-public class MenuAwareAreaViewModel<C extends MenuAwareAreaComposer> extends AbstractAreaViewModel<C>
-        implements MenuAwarePort, DemoMenuAwarePort {
+public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaViewModel<C>
+        implements DemoAreaPort {
 
     private final BooleanProperty fooDisabled = new SimpleBooleanProperty();
 
@@ -42,7 +40,7 @@ public class MenuAwareAreaViewModel<C extends MenuAwareAreaComposer> extends Abs
 
     private final ShellSettings settings;
 
-    public MenuAwareAreaViewModel(MenuAwareAreaParams params) {
+    public DemoAreaViewModel(DemoAreaParams params) {
         super(params);
         this.settings = params.getSettings();
     }

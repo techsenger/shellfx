@@ -16,34 +16,20 @@
 
 package com.techsenger.shellfx.demo.ide;
 
-import com.techsenger.shellfx.core.MenuAwarePort;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupContainerViewModel;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.core.tab.TabParams;
-import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
-import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.demo.styles.DemoIcons;
 import java.util.function.Consumer;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractTabViewModel<C>
-        implements MenuAwarePort, DemoMenuAwarePort, PopupContainerViewModel<C>, IdeMainTabPort {
-
-    private final BooleanProperty fooDisabled = new SimpleBooleanProperty();
-
-    private final BooleanProperty barIncluded = new SimpleBooleanProperty();
-
-    private final BooleanProperty barDisabled = new SimpleBooleanProperty();
+        implements PopupContainerViewModel<C>, IdeMainTabPort {
 
     public IdeMainTabViewModel() {
         super(new TabParams(null));
@@ -60,48 +46,6 @@ public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractT
     }
 
     @Override
-    public boolean isFooDisabled() {
-        return fooDisabled.get();
-    }
-
-    public void setFooDisabled(boolean fooDisabled) {
-        this.fooDisabled.set(fooDisabled);
-    }
-
-    @Override
-    public BooleanProperty fooDisabledProperty() {
-        return fooDisabled;
-    }
-
-    @Override
-    public boolean isBarIncluded() {
-        return barIncluded.get();
-    }
-
-    public void setBarIncluded(boolean barIncluded) {
-        this.barIncluded.set(barIncluded);
-    }
-
-    @Override
-    public BooleanProperty barIncludedProperty() {
-        return barIncluded;
-    }
-
-    @Override
-    public boolean isBarDisabled() {
-        return barDisabled.get();
-    }
-
-    public void setBarDisabled(boolean barDisabled) {
-        this.barDisabled.set(barDisabled);
-    }
-
-    @Override
-    public BooleanProperty barDisabledProperty() {
-        return barDisabled;
-    }
-
-    @Override
     public IdeMainTabPort.ComposerAccess getComposerAccess() {
         return getComposer();
     }
@@ -111,20 +55,5 @@ public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractT
         super.postInitialize();
         setTitle("Main Tab");
         setIcon(DemoIcons.MAIN_TAB);
-    }
-
-    protected void onDialogOpen() {
-        var settings = getShellContext().getSettings();
-        var params = new DialogParams(null, WindowType.NESTED, settings);
-        var dialog = getComposer().openDemoDialog(true, params);
-        dialog.setOnResult((name) -> {
-            if (name == DemoDailogResultButtons.OK) {
-                dialog.closeSafely();
-            }
-        });
-    }
-
-    protected void onPopupOpen(OverlayScope scope) {
-        getComposer().openDemoPopup(scope);
     }
 }

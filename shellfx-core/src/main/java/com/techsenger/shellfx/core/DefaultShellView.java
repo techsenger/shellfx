@@ -17,16 +17,12 @@
 package com.techsenger.shellfx.core;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvvm.ChildView;
-import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.registries.ControlBuilder;
 import com.techsenger.shellfx.core.registries.Controls;
 import com.techsenger.shellfx.core.window.AbstractHostWindowView;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.Priority;
@@ -57,21 +53,9 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
 
     public class Composer extends AbstractHostWindowView<VM>.Composer implements ShellView.Composer {
 
-        private final ReadOnlyObjectWrapper<ParentView<?>> menuAware = new ReadOnlyObjectWrapper<>();
-
-        private final ReadOnlyObjectWrapper<MenuAwarePort> menuAwarePort = new ReadOnlyObjectWrapper<>();
-
         private final DefaultShellView<VM> view = DefaultShellView.this;
 
         private AreaView<?> workspace;
-
-        public Composer() {
-            this.menuAware.addListener((ov, oldV, newV) -> {
-                logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
-                        (newV == null) ? null : newV.getViewModel().getDescriptor().getFullName());
-                updateMenuAwarePort(newV);
-            });
-        }
 
         @Override
         public void addWorkspace(AreaView<?> workspace) {
@@ -99,80 +83,6 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         public AreaPort getWorkspacePort() {
             return this.workspace == null ? null : this.workspace.getViewModel();
         }
-
-        @Override
-        public ReadOnlyObjectProperty<ParentView<?>> menuAwareProperty() {
-            return this.menuAware.getReadOnlyProperty();
-        }
-
-        @Override
-        public ParentView<?> getMenuAware() {
-            return this.menuAware.get();
-        }
-
-        @Override
-        public @Nullable MenuAwarePort getMenuAwarePort() {
-            return this.menuAwarePort.get();
-        }
-
-        @Override
-        public ReadOnlyObjectProperty<MenuAwarePort> menuAwarePortProperty() {
-            return this.menuAwarePort.getReadOnlyProperty();
-        }
-
-        @Override
-        protected void onFocusPauseFinished() {
-            super.onFocusPauseFinished();
-            var newNode = view.getStage().getScene().getFocusOwner();
-            if (newNode == null) {
-                setMenuAware(view);
-                return;
-            }
-            resolvedMenuAware();
-        }
-
-        private void setMenuAware(ParentView<?> menuAware) {
-            this.menuAware.set(menuAware);
-        }
-
-        private void updateMenuAwarePort(@Nullable ParentView<?> menuAware) {
-            @Nullable MenuAwarePort port = null;
-            if (menuAware != null && menuAware.getViewModel() instanceof MenuAwarePort menuAwarePort) {
-                port = menuAwarePort;
-            }
-            this.menuAwarePort.set(port);
-        }
-
-        private void resolvedMenuAware() {
-            ParentView<?> focused = getFocused();
-            if (focused == null) {
-                setMenuAware(view);
-                return;
-            }
-            if (focused == this) { // when user clicks on shell main menu, the previous  menu aware is used
-                return;
-            }
-            ParentView<?> currentComponent = focused;
-            while (true) {
-                var port = currentComponent.getViewModel();
-                if (port instanceof MenuAwarePort menuAware) {
-                    setMenuAware(currentComponent);
-                    return;
-                }
-                if (currentComponent instanceof ChildView<?> child) {
-                    currentComponent = child.getComposer().getParent();
-                    if (currentComponent == null) {
-                        logger.warn("{} Child {} has no parent", getDescriptor().getLogPrefix(),
-                                child.getViewModel().getDescriptor().getFullName());
-                        setMenuAware(view);
-                        return;
-                    }
-                } else {
-                    setMenuAware(view);
-                    return;
-                }
-            }
-        }
     }
 
     private final MenuBarSlot<? extends ShellView<?>> menuBarSlot;
@@ -190,7 +100,6 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         super(viewModel, context.getStylesheetRegistry(), stage);
         this.menuBarSlot = menuBarSlot;
         this.context = context;
-        getComposer().setMenuAware(this);
     }
 
     @Override

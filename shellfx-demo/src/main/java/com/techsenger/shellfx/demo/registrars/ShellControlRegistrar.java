@@ -16,17 +16,21 @@
 
 package com.techsenger.shellfx.demo.registrars;
 
+import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.mvvm.ChildView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.registrars.AbstractControlRegistrar;
 import com.techsenger.shellfx.core.registries.SimpleControlProvider;
 import com.techsenger.shellfx.core.registries.SimpleGroupProvider;
 import com.techsenger.shellfx.core.window.WindowArrangement;
+import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.core.window.WindowView;
 import com.techsenger.shellfx.demo.ApplicationType;
-import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
+import com.techsenger.shellfx.demo.area.DemoAreaPort;
 import com.techsenger.shellfx.demo.page.PageMenuType;
 import com.techsenger.shellfx.demo.slots.ShellSlots;
 import com.techsenger.shellfx.material.menu.DynamicMenu;
-import java.util.function.Function;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -43,13 +47,24 @@ import javafx.scene.input.KeyCombination;
 public class ShellControlRegistrar extends AbstractControlRegistrar {
 
     /**
-     * Returns the value of a property of the current port if it is a demo port; the result must be unbound by the
-     * control that binds to it in {@code deinitialize}.
+     * Returns the area port of the component that has focus or of its nearest ancestor that has one, {@code null} if
+     * there is none, for example while the focus is in the main menu.
      */
-    private static ObservableValue<Boolean> observePort(ShellView<?> view,
-            Function<DemoMenuAwarePort, ObservableValue<Boolean>> property) {
-        return view.getComposer().menuAwarePortProperty()
-                .flatMap(port -> port instanceof DemoMenuAwarePort demoPort ? property.apply(demoPort) : null);
+    private static ObservableValue<@Nullable DemoAreaPort> observeAreaPort(ShellView<?> view) {
+        return view.getComposer().focusedProperty().map(focused -> {
+            ParentView<?> current = focused;
+            while (current != null) {
+                if (current.getViewModel() instanceof DemoAreaPort port) {
+                    return port;
+                }
+                if (current instanceof WindowView<?> window
+                        && window.getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+                    return null; // a top-level window has no parent in the tree
+                }
+                current = current instanceof ChildView<?> child ? child.getComposer().getParent() : null;
+            }
+            return null;
+        });
     }
 
     private final ApplicationType appType;
@@ -184,7 +199,7 @@ public class ShellControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExtraMenu() {
-        // the extra menu is shown while a demo component forms the menu and at least one of its items is visible
+        // the extra menu is shown while a demo component has focus and at least one of its items is visible
         register(ShellSlots.ExtraMenu.MENU, () -> new SimpleControlProvider<ShellView<?>, DynamicMenu>(
                 new DynamicMenu("_Extra")) {
 
@@ -193,7 +208,7 @@ public class ShellControlRegistrar extends AbstractControlRegistrar {
             @Override
             public void initialize(ShellView<?> v) {
                 super.initialize(v);
-                demoPort = v.getComposer().menuAwarePortProperty().map(port -> port instanceof DemoMenuAwarePort);
+                demoPort = observeAreaPort(v).map(port -> true).orElse(false);
                 getControl().addVisibleCondition(demoPort);
             }
 
@@ -217,7 +232,7 @@ public class ShellControlRegistrar extends AbstractControlRegistrar {
             public void initialize(ShellView<?> v) {
                 super.initialize(v);
                 getControl().setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
-                getControl().disableProperty().bind(observePort(v, DemoMenuAwarePort::fooDisabledProperty));
+                getControl().disableProperty().bind(observeAreaPort(v).flatMap(DemoAreaPort::fooDisabledProperty));
                 getControl().setOnAction(e -> System.out.println("Foo Item"));
             }
 
@@ -239,8 +254,8 @@ public class ShellControlRegistrar extends AbstractControlRegistrar {
             public void initialize(ShellView<?> v) {
                 super.initialize(v);
                 getControl().setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-                getControl().visibleProperty().bind(observePort(v, DemoMenuAwarePort::barIncludedProperty));
-                getControl().disableProperty().bind(observePort(v, DemoMenuAwarePort::barDisabledProperty));
+                getControl().visibleProperty().bind(observeAreaPort(v).flatMap(DemoAreaPort::barIncludedProperty));
+                getControl().disableProperty().bind(observeAreaPort(v).flatMap(DemoAreaPort::barDisabledProperty));
                 getControl().setOnAction(e -> System.out.println("Bar Item"));
             }
 

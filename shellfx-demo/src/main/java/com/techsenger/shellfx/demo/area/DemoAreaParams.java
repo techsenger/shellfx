@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.main;
+package com.techsenger.shellfx.demo.area;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
+import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.core.area.AreaConfig;
+import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DemoMenuAwarePort {
+public class DemoAreaParams extends AreaParams {
 
-    boolean isFooDisabled();
+    private final ShellSettings settings;
 
-    ReadOnlyBooleanProperty fooDisabledProperty();
+    public DemoAreaParams(@Nullable AreaConfig config, ShellSettings settings) {
+        super(config);
+        this.settings = settings;
+    }
 
-    boolean isBarIncluded();
-
-    ReadOnlyBooleanProperty barIncludedProperty();
-
-    boolean isBarDisabled();
-
-    ReadOnlyBooleanProperty barDisabledProperty();
+    public ShellSettings getSettings() {
+        return settings;
+    }
 }

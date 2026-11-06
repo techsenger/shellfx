@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.demo.area;
 
-import com.techsenger.patternfx.core.ParentPort;
+import com.techsenger.patternfx.mvvm.ChildComposer;
+import com.techsenger.shellfx.core.dialog.DialogParams;
+import com.techsenger.shellfx.core.dialog.DialogPort;
+import com.techsenger.shellfx.core.popup.OverlayScope;
+import com.techsenger.shellfx.core.popup.PopupPort;
 
 /**
- * Marks the port of a component the main menu pays attention to. While such a component, or one of its descendants,
- * has the focus, it is the current menu aware component of the Shell; the menu controls may observe its port, but are
- * free to ignore it.
  *
  * @author Pavel Castornii
  */
-public interface MenuAwarePort extends ParentPort {
+public interface DemoAreaComposer extends ChildComposer {
 
+    DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params);
+
+    PopupPort openDemoPopup(OverlayScope scope);
 }
