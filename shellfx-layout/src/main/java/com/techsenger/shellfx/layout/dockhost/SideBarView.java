@@ -190,8 +190,9 @@ public class SideBarView<VM extends SideBarViewModel<?>> extends AbstractAreaVie
         }
 
         void addTabDock(TabDockView<?> tabDock) {
-            modifiableTabDocks.add(tabDock);
+            // the listener of the list creates the tabs of the bar, so the component goes into the tree first
             getModifiableChildren().add(tabDock);
+            modifiableTabDocks.add(tabDock);
         }
 
         void removeTabDock(TabDockView<?> tabDock) {
@@ -403,7 +404,7 @@ public class SideBarView<VM extends SideBarViewModel<?>> extends AbstractAreaVie
 
     private TabDockView<?> removeTabDock(int restoreTabIndex) {
         var dockIndex = findTabDockIndex(restoreTabIndex);
-        var tabDock = getComposer().removeTabDock(dockIndex);
+        var tabDock = getComposer().tabDocks.get(dockIndex);
         // removing restoreTab and dock tabs from side bar
         var list = tabPane.getTabs().subList(restoreTabIndex,
                 restoreTabIndex + tabDock.getComposer().getDetachedTabs().size() + 1);
@@ -412,6 +413,7 @@ public class SideBarView<VM extends SideBarViewModel<?>> extends AbstractAreaVie
             barTab.deinit();
         }
         list.clear();
+        getComposer().removeTabDock(dockIndex);
         return tabDock;
     }
 

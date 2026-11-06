@@ -69,16 +69,16 @@ public class TabPopupView<VM extends TabPopupViewModel<?>> extends AbstractAreaV
         }
 
         public void addTab(TabView<?> tab) {
+            getModifiableChildren().add(tab);
             modifiableTabs.add(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().add(tab.getNode());
-            getModifiableChildren().add(tab);
         }
 
         public void removeTab(TabView<?> tab) {
-            modifiableTabs.remove(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().remove(tab.getNode());
+            modifiableTabs.remove(tab);
             getModifiableChildren().remove(tab);
         }
 

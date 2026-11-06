@@ -46,8 +46,8 @@ public abstract class AbstractHostTabView<VM extends AbstractHostTabViewModel<?>
 
         @Override
         public void addWindow(WindowView<?> window) {
-            windowManager.addWindow(window);
             getModifiableChildren().add(window);
+            windowManager.addWindow(window);
         }
 
         @Override
@@ -94,8 +94,8 @@ public abstract class AbstractHostTabView<VM extends AbstractHostTabViewModel<?>
 
         @Override
         public void addDialog(DialogView<?> dialog) {
-            windowManager.addDialog(dialog);
             getModifiableChildren().add(dialog);
+            windowManager.addDialog(dialog);
         }
 
         @Override
@@ -120,8 +120,8 @@ public abstract class AbstractHostTabView<VM extends AbstractHostTabViewModel<?>
 
         @Override
         public void addPopup(PopupView<?> popup, Anchors anchors) {
-            windowManager.addPopup(popup, anchors);
             getModifiableChildren().add(popup);
+            windowManager.addPopup(popup, anchors);
         }
 
         @Override

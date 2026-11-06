@@ -86,8 +86,8 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
             if (this.workspace == null) {
                 return;
             }
-            getModifiableChildren().remove(this.workspace);
             view.getContentBox().getChildren().remove(this.workspace.getNode());
+            getModifiableChildren().remove(this.workspace);
         }
 
         @Override

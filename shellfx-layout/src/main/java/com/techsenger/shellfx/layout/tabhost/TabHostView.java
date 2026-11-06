@@ -203,8 +203,8 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
 
         @Override
         public void addTab(TabView<?> tab) {
-            view.tabPane.getTabs().add(tab.getNode());
             getModifiableChildren().add(tab);
+            view.tabPane.getTabs().add(tab.getNode());
         }
 
         @Override

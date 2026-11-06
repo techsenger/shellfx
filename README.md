@@ -320,6 +320,12 @@ Therefore, any addition or removal of a component must be reflected in both stru
 from the node tree without removing it from the component tree will result in a memory leak. DevTools provide the ability
 to inspect and monitor both hierarchies.
 
+3. The order of the changes of the two hierarchies matters. When a component is added, it is added to the component tree
+first and its node to the node tree afterwards, so everything the node change triggers (for example, selecting a newly
+added tab) already finds the component in the tree. When a component is removed, the order is the opposite: the node is
+removed first and the component afterwards, so everything the node change triggers (for example, deselecting the tab)
+still finds the component in the tree.
+
 ### Shell <a name="core-shell"></a>
 
 `Shell` is the main and top-level component. It extends the `HostWindow` component and inherits its responsibilities for
