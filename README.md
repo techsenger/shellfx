@@ -405,6 +405,20 @@ As a result, components built on top of `Window` (such as dialogs, wizards, or u
 either inside the application or in separate system windows without any changes to application code. This allows
 window-based components to be implemented once and reused with any window type.
 
+Every `TOP_LEVEL` window has one scene, and the scene has one map of the accelerators, a key combination for each
+action, shared by all the content of the window, including its `NESTED` windows. A menu item with an accelerator puts
+itself into this map. This works while there is one item per key. When a component is opened in several instances, for
+example in several tabs, or the same action has items in several menus, their items have the same accelerators and
+overwrite each other: the item that is fired may belong to an instance the user is not working with.
+`AcceleratorManager` solves it. It installs one entry per key, taken from the items that matter now, and puts into the
+map and removes from it only its own entries. By default a window has no `AcceleratorManager`, so it has to be added
+manually when it is needed. Whoever adds it creates it for the scene of the window and calls `update` with the list of
+the components to ask, in the order of their priority, whenever that list or the accelerators of the items may have
+changed. A component with items that have accelerators implements `AcceleratorAware`, and the manager asks the
+components of the list for their items in one pass. The manager recognizes its entries by the `Runnable` of its own kind
+and puts them back if JavaFX replaces or removes them, for example when an item gets into the scene or leaves it, so the
+items can be installed by JavaFX as usual.
+
 ### Tab <a name="core-tab"></a>
 
 `Tab` is an abstract component used for creating custom tab implementations. In ShellFX, `Tab` is one of the central
