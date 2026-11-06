@@ -412,12 +412,12 @@ example in several tabs, or the same action has items in several menus, their it
 overwrite each other: the item that is fired may belong to an instance the user is not working with.
 `AcceleratorManager` solves it. It installs one entry per key, taken from the items that matter now, and puts into the
 map and removes from it only its own entries. By default a window has no `AcceleratorManager`, so it has to be added
-manually when it is needed. Whoever adds it creates it for the scene of the window and calls `update` with the list of
-the components to ask, in the order of their priority, whenever that list or the accelerators of the items may have
-changed. A component with items that have accelerators implements `AcceleratorAware`, and the manager asks the
-components of the list for their items in one pass. The manager recognizes its entries by the `Runnable` of its own kind
-and puts them back if JavaFX replaces or removes them, for example when an item gets into the scene or leaves it, so the
-items can be installed by JavaFX as usual.
+manually when it is needed. Whoever adds it creates it for the scene of the window, with a supplier of an iterator over
+the components to ask, in the order of their priority, and calls `update` whenever those components or the accelerators
+of the items may have changed. A component with items that have accelerators implements `AcceleratorAware`, and the
+manager asks the components of the iterator for their items in one pass. The manager recognizes its entries by the
+`Runnable` of its own kind and puts them back if JavaFX replaces or removes them, for example when an item gets into the
+scene or leaves it, so the items can be installed by JavaFX as usual.
 
 ### Tab <a name="core-tab"></a>
 

@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.core.TreeIterator;
 import com.techsenger.patternfx.mvvm.ParentView;
 import java.util.List;
 import java.util.function.Supplier;
@@ -39,8 +40,8 @@ import org.slf4j.LoggerFactory;
  * menu, a context menu in every area), their items have the same accelerators: the entry of the instance that was
  * attached last wins, the key is removed as soon as any instance goes away, and the item that is fired may belong to an
  * instance the user is not working with. The manager installs exactly one entry per key, taken from the items that
- * matter now, the ones of the instances that are in use. The owner calls {@link #update(List)} every time that set
- * changes or the accelerators of the items change, for example after the user has reassigned the hotkeys.
+ * matter now, the ones of the instances that are in use. The owner calls {@link #update()} every time that set changes
+ * or the accelerators of the items change, for example after the user has reassigned the hotkeys.
  *
  * <p>Only the entries of the manager are removed from the map, so the accelerators that other controls of the scene put
  * there, such as the default button of a dialog, stay intact. The manager recognizes its entries by the
@@ -53,16 +54,6 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public final class AcceleratorManager {
-
-    /**
-     * A component to ask for items.
-     *
-     * @param depth the depth of the component in the component tree; it is only used to indent the log
-     * @param view the component; it has items only if it implements {@link AcceleratorAware}
-     */
-    public record Candidate(int depth, ParentView<?> view) {
-
-    }
 
     /**
      * The entry of a manager in the accelerators of a scene: fires the item. It is the mark by which the manager
@@ -82,6 +73,8 @@ public final class AcceleratorManager {
 
     private final Supplier<Scene> sceneSupplier;
 
+    private final Supplier<TreeIterator<ParentView<?>>> componentsSupplier;
+
     private final MapChangeListener<KeyCombination, Runnable> acceleratorsListener = this::restoreEntry;
 
     private @Nullable ObservableMap<KeyCombination, Runnable> observed;
@@ -92,20 +85,22 @@ public final class AcceleratorManager {
      * Creates a manager.
      *
      * @param sceneSupplier supplies the scene whose accelerators are managed
+     * @param componentsSupplier supplies a new iterator over the components to ask for items, in the order of their
+     *     priority: if several items have the same accelerator, the one of the component that comes later wins; the
+     *     depth of the iterator is only used to indent the log
      */
-    public AcceleratorManager(Supplier<Scene> sceneSupplier) {
+    public AcceleratorManager(Supplier<Scene> sceneSupplier, Supplier<TreeIterator<ParentView<?>>> componentsSupplier) {
         this.sceneSupplier = sceneSupplier;
+        this.componentsSupplier = componentsSupplier;
     }
 
     /**
-     * Replaces the entries of the previous call with the accelerators of the items of the given components, collected
-     * in one pass. An item is fired only if it is not disabled. If debug logging is on, the components with the number
-     * of their accelerators are logged as a tree, followed by the accelerators of the components that have any.
-     *
-     * @param candidates the components to ask for items, in the order of their priority: if several items have the
-     *     same accelerator, the one of the component that comes later wins
+     * Replaces the entries of the previous call with the accelerators of the items of the components, collected in one
+     * pass. A component that is not an {@link AcceleratorAware} has no items. An item is fired only if it is not
+     * disabled. If debug logging is on, the components with the number of their accelerators are logged as a tree,
+     * followed by the accelerators of the components that have any.
      */
-    public void update(List<Candidate> candidates) {
+    public void update() {
         var accelerators = sceneSupplier.get().getAccelerators();
         if (observed == null) {
             accelerators.addListener(acceleratorsListener);
@@ -117,8 +112,10 @@ public final class AcceleratorManager {
         updating = true;
         try {
             clear();
-            for (var candidate : candidates) {
-                var view = candidate.view();
+            var iterator = componentsSupplier.get();
+            while (iterator.hasNext()) {
+                var view = iterator.next();
+                var depth = iterator.getDepth();
                 var items = view instanceof AcceleratorAware aware ? aware.getAcceleratorItems() : List.<MenuItem>of();
                 var name = tree == null ? "" : view.getViewModel().getDescriptor().getFullName();
                 var count = 0;
@@ -137,7 +134,7 @@ public final class AcceleratorManager {
                     }
                 }
                 if (tree != null) {
-                    tree.append("    ".repeat(candidate.depth())).append(name).append(" : ").append(count)
+                    tree.append("    ".repeat(depth)).append(name).append(" : ").append(count)
                             .append(" accelerators\n");
                 }
             }

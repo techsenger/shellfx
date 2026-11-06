@@ -24,8 +24,8 @@ import javafx.scene.control.MenuItem;
  * use. The owner of an {@link AcceleratorManager} asks such components for their items every time it updates the
  * accelerators, so a component that has nothing to give at the moment just returns an empty list.
  *
- * <p>If several items have the same accelerator, the item of the component that comes later in the list given to
- * the manager wins.
+ * <p>If several items have the same accelerator, the item of the component that comes later in the order of the
+ * manager's iterator wins.
  *
  * @author Pavel Castornii
  */
