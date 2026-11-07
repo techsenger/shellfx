@@ -18,9 +18,9 @@ package com.techsenger.shellfx.dialogs.alert;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
-import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.WindowType;
+import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -63,6 +63,9 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
     private final ResultButton yesButton = new ResultButton(AlertDialogButtons.YES, "Yes");
 
     private final ResultButton noButton = new ResultButton(AlertDialogButtons.NO, "No");
+
+    // Whether the message has changed since the height of the stage was fitted to it last time.
+    private boolean resizeRequired;
 
     public AlertDialogView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
         super(viewModel, stylesheetRegistry);
@@ -115,7 +118,11 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
     protected void addListeners() {
         super.addListeners();
         if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            getViewModel().messageProperty().addListener((ov, oldV, newV) -> fitStageHeight());
+            getViewModel().messageProperty().addListener((ov, oldV, newV) -> {
+                resizeRequired = true;
+                fitStageHeight();
+            });
+            getViewModel().visibleProperty().addListener((ov, oldV, newV) -> fitStageHeight());
         }
     }
 
@@ -132,15 +139,17 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
     }
 
     /**
-     * A stage is sized synchronously inside show(), and the message is usually set right after it, so the height has to
-     * be fitted to the message here; a nested dialog follows its content by itself.
+     * A stage is sized synchronously inside show() without regard to the wrapped message, so the height has to be
+     * fitted to the message once the stage is showing and whenever the message changes, but not on every showing, so
+     * a height set by the user is kept; a nested dialog follows its content by itself.
      */
     private void fitStageHeight() {
         var stage = getStage();
         var scene = stage.getScene();
-        if (!stage.isShowing()) {
+        if (!resizeRequired || !stage.isShowing()) {
             return;
         }
+        resizeRequired = false;
         var root = getNode();
         root.applyCss();
         // Stage#sizeToScene() is not used: it changes the width too, setting it to the width of the unwrapped message
