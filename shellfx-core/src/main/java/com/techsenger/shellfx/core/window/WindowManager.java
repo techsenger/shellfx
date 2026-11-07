@@ -24,19 +24,25 @@ import javafx.collections.ObservableList;
 /**
  * The manager of the {@link WindowType#NESTED} windows.
  *
+ * <p>A window passes through two independent phases. First it is added to or removed from the manager, which only
+ * makes the window known to the manager. Then it is made visible or invisible through its own {@code visible}
+ * property, and only a visible window takes part in z-order, focus and modality. Removing a visible window ends both
+ * phases at once, so it does not have to be hidden first.
+ *
  * @author Pavel Castornii
  */
 public interface WindowManager extends PopupManager {
 
     /**
-     * Adds a window to the manager.
+     * Adds a window to the manager (the first phase). The window is added as it is: while it is invisible, it takes no
+     * part in z-order, focus and modality, and it starts to as soon as it becomes visible.
      *
      * @param windowView the window to add
      */
     void addWindow(WindowView<?> windowView);
 
     /**
-     * Removes a window from the manager.
+     * Removes a window from the manager, whether it is visible or not.
      *
      * @param windowView the window to remove
      */
@@ -45,7 +51,7 @@ public interface WindowManager extends PopupManager {
     /**
      * Returns an unmodifiable list of windows.
      *
-     * @return the list of windows. If no windows are present, an empty list is returned.
+     * @return the list of windows, invisible ones included. If no windows are present, an empty list is returned.
      */
     @Unmodifiable ObservableList<WindowView<?>> getWindows();
 
@@ -93,6 +99,9 @@ public interface WindowManager extends PopupManager {
      * {@link WindowPosition#CENTER} and a small upward offset.
      *
      * <p>If the {@code Stage} bounds are not available, the {@code StackPane} center is used as a fallback.
+     *
+     * <p>An invisible dialog is aligned once, when it becomes visible for the first time, because only then its
+     * content, and therefore its size, is final. Hiding and showing it again keeps its current position.
      *
      * <p>For precise control over dialog positioning, use {@link #addWindow(WindowFxView)} combined with one of
      * the {@link #alignWindow(WindowFxView, WindowPosition, double, double) }

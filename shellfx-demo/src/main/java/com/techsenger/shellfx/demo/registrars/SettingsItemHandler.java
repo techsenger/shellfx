@@ -43,5 +43,6 @@ public class SettingsItemHandler extends AbstractItemHandler {
         var view = new SettingsDialogView<>(viewModel, shell.getContext().getStylesheetRegistry());
         view.initialize();
         shell.getComposer().addDialog(view);
+        viewModel.setVisible(true);
     }
 }

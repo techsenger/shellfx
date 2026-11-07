@@ -447,6 +447,9 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         } else {
             this.resizer.disabledProperty().bind(viewModel.resizableProperty().not()
                     .or(this.maximized).or(this.minimized));
+            // a nested window follows the visibility of its node; an invisible one takes no place in the layout
+            windowNode.visibleProperty().bindBidirectional(viewModel.visibleProperty());
+            windowNode.managedProperty().bind(windowNode.visibleProperty());
             viewModel.widthWrapper().bind(windowNode.widthProperty());
             viewModel.heightWrapper().bind(windowNode.heightProperty());
             viewModel.xWrapper().bind(windowNode.layoutXProperty());
@@ -462,6 +465,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.maximizedProperty().addListener((ov, oldV, newV) -> this.maximized.set(newV));
             this.stage.focusedProperty().addListener((ov, oldV, newV) -> getViewModel().setActive(newV));
+            this.stage.showingProperty().addListener((ov, oldV, newV) -> getViewModel().setVisible(newV));
+            ValueUtils.callAndAddListener(viewModel.visibleProperty(), (ov, oldV, newV) -> updateVisible(newV));
             ValueUtils.callAndAddListener(viewModel.resizableProperty(),
                     (ov, oldV, newV) -> this.stage.setResizable(newV));
         } else {
@@ -858,6 +863,17 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             }
         } else {
             this.windowNode.setLayoutY(y);
+        }
+    }
+
+    private void updateVisible(boolean value) {
+        if (this.stage == null) {
+            return;
+        }
+        if (value) {
+            this.stage.show();
+        } else {
+            this.stage.hide();
         }
     }
 

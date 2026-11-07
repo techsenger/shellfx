@@ -44,5 +44,6 @@ public class DialogsItemHandler extends AbstractItemHandler {
         var dialogView = new DialogsDialogView<>(dialogViewModel, shell.getContext().getStylesheetRegistry());
         dialogView.initialize();
         shell.getComposer().addDialog(dialogView);
+        dialogViewModel.setVisible(true);
     }
 }

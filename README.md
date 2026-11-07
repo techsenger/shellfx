@@ -405,6 +405,22 @@ As a result, components built on top of `Window` (such as dialogs, wizards, or u
 either inside the application or in separate system windows without any changes to application code. This allows
 window-based components to be implemented once and reused with any window type.
 
+A window is created invisible. The client fills the window in and makes it visible with `setVisible(true)` of the
+window `Port`, so the window appears with its final content, not an empty one that is filled in afterwards. A window
+that becomes visible gets the focus; `requestFocus()` of the `Port` brings the focus back to the window later. Making a
+window invisible is not closing it: an invisible window stays in the component tree and has to be closed to be removed.
+What happens when a window becomes visible depends on its type.
+
+A `NESTED` window passes two independent phases. First the `Composer` adds it to the window manager, which puts its
+node into the container; the window is a part of the component tree but is invisible. Then it is made visible or
+invisible with `setVisible`. A window that is not visible takes no part in z-order, focus and modality: a modal window
+blocks its container only while it is visible. Removing a visible window ends both phases at once, so it does not have
+to be made invisible first. When the window becomes visible, the window manager gives it the focus.
+
+A `TOP_LEVEL` window gets its `Stage` from the `Composer`, and the stage is not visible yet. `setVisible` is `show()`
+and `hide()` of the stage. The stage is sized when it becomes visible, so the content has to be there before. A
+minimized window is still visible. The platform gives the focus to the window when it becomes visible.
+
 Every `TOP_LEVEL` window has one scene, and the scene has one map of the accelerators, a key combination for each
 action, shared by all the content of the window, including its `NESTED` windows. A menu item with an accelerator puts
 itself into this map. This works while there is one item per key. When a component is opened in several instances, for
@@ -445,6 +461,9 @@ API as regular windows.
 All dialogs in ShellFX are asynchronous. Opening a dialog does not block the application's execution flow or freeze
 the user interface. Instead, user responses are delivered through callbacks, events, observable properties, or
 other asynchronous mechanisms. This approach keeps the UI responsive and simplifies background processing.
+
+Like any window, a dialog is created invisible: the client sets its content and calls `setVisible(true)`. A nested
+dialog is centered once, when it is shown for the first time; if it is hidden and shown again, it stays where it is.
 
 Dialogs can be displayed either as `NESTED` or `TOP_LEVEL` windows. Nested dialogs are rendered within a
 `WindowContainer` and appear as an integral part of the application's user interface. Top-level dialogs are displayed

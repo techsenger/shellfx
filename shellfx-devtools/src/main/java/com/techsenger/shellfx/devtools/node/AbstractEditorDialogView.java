@@ -49,7 +49,6 @@ public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogVi
                 getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getStage());
-                dialog.getStage().show();
             }
             return dialog.getViewModel();
         }

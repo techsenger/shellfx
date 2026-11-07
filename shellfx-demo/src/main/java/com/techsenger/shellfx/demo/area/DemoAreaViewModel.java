@@ -95,6 +95,7 @@ public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaV
                 dialog.closeSafely();
             }
         });
+        dialog.setVisible(true);
     }
 
     protected void onPopupOpen(OverlayScope scope) {

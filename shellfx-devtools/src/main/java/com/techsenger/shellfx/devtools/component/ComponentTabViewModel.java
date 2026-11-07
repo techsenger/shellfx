@@ -428,6 +428,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         var joiner = new StringJoiner(", ");
         item.values().forEach(s -> joiner.add(s));
         dialog.setValue(joiner.toString());
+        dialog.setVisible(true);
     }
 
     protected void onCategoryExpanded(InspectorCategory category, boolean expanded) {

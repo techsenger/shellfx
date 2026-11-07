@@ -46,6 +46,7 @@ public class WindowsItemHandler extends AbstractItemHandler {
             view.initialize();
             viewModel.setTitle("Window " + i);
             getComponent().getComposer().addWindow(view);
+            viewModel.setVisible(true);
         }
         getComponent().getComposer().arrangeWindows(WindowArrangement.CASCADE);
         NodeUtils.requestFocus(view.getNode());

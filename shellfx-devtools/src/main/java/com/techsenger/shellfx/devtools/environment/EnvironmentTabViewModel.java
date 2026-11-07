@@ -151,6 +151,7 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
             dialog.setTitle("Property Dialog");
             dialog.setName(i.getName());
             dialog.setValue(i.getValue());
+            dialog.setVisible(true);
         }
     }
 

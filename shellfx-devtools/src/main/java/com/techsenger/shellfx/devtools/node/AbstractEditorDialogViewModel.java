@@ -109,5 +109,6 @@ public abstract class AbstractEditorDialogViewModel<C extends EditorDialogCompos
         var alertDialog = getComposer().openAlertDialog(alertParams);
         alertDialog.setMessage("Failed to apply the value.");
         alertDialog.setOnClosed(() -> requestFocus());
+        alertDialog.setVisible(true);
     }
 }

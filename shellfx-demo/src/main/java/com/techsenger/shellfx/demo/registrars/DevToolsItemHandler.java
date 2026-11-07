@@ -80,7 +80,7 @@ public class DevToolsItemHandler extends AbstractItemHandler {
     protected void openInWindow() {
         var devTools = createDevToolsWindow();
         devTools.getComposer().addTabDock();
-        devTools.getStage().show();
+        devTools.getViewModel().setVisible(true);
     }
 
     protected DevToolsTabDockView<?> createDevToolsDock() {

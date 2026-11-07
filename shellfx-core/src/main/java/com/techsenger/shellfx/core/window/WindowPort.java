@@ -85,6 +85,32 @@ public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable,
     ReadOnlyBooleanProperty activeProperty();
 
     /**
+     * Returns whether the window is visible. A window is created invisible, so its content can be filled in before it
+     * is shown. An invisible nested window is a part of the component tree, but takes no part in z-order, focus and
+     * modality; an invisible top-level window is not shown on the screen.
+     *
+     * @return {@code true} if the window is visible, {@code false} otherwise
+     */
+    boolean isVisible();
+
+    /**
+     * Shows or hides the window. For {@link WindowType#TOP_LEVEL} windows this is {@code show()} and {@code hide()} of
+     * the stage; a minimized window is still visible. Hiding is not closing: the window stays in the component tree,
+     * and {@link #close()} still has to be called to remove it.
+     *
+     * <p>Showing a window gives it the focus. A top-level window gets it from the platform, so a nested window behaves
+     * the same way. {@code requestFocus()} brings the focus back to the window later.
+     *
+     * <p>The visibility can also be changed by the user or the platform, for example when the owner of a top-level
+     * window is closed; observe {@link #visibleProperty()} for the actual value.
+     *
+     * @param value {@code true} to show the window, {@code false} to hide it
+     */
+    void setVisible(boolean value);
+
+    BooleanProperty visibleProperty();
+
+    /**
      * Returns whether the window is currently maximized.
      *
      * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for

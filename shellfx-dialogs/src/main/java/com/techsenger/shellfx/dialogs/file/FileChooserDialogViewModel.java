@@ -1000,7 +1000,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     private void showWarning(String text) {
         var params = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getSettings(),
                 AlertDialogType.WARNING);
-        getComposer().addAlertDialog(params, text);
+        var dialog = getComposer().addAlertDialog(params, text);
+        dialog.setVisible(true);
     }
 
     private URI directoryUri() {

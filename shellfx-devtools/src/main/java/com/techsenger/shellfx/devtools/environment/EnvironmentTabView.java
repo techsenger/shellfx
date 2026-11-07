@@ -74,7 +74,6 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
                 view.windowContainer.addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
-                dialog.getStage().show();
             }
             return dialog.getViewModel();
         }

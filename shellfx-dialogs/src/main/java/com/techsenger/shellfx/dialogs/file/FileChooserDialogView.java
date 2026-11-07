@@ -128,9 +128,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
                 getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getScene().getWindow());
-                dialog.getStage().show();
             }
-            dialog.requestFocus();
             return dialog.getViewModel();
         }
 

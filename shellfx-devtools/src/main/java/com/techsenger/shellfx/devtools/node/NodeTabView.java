@@ -526,7 +526,6 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
                 windowContainer.addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
-                dialog.getStage().show();
             }
             return dialog.getViewModel();
         }
@@ -545,7 +544,6 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
                 windowContainer.addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
-                dialog.getStage().show();
             }
             return dialog.getViewModel();
         }

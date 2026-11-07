@@ -89,30 +89,35 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                         getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("All done! Time for coffee.");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.INFO_LONG, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
                         getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage(LONG_INFO_MESSAGE);
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.WARNING, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
                         getSettings(), AlertDialogType.WARNING);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Attention! You shouldn't do it!");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.ERROR, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
                         getSettings(), AlertDialogType.ERROR);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Oops! That didn’t work.\nTwice!");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.CONFIRMATION, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
                         getSettings(), AlertDialogType.CONFIRMATION);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Are you really sure?");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.NAME_VALUE, () -> {
                 var params = new DialogParams(null, selectedWindowType.get(), getSettings());
@@ -121,6 +126,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setName("Some Name");
                 dialog.setValue("Some Value");
                 dialog.setRightButtons(NameValueButtons.OK);
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.TEXT, () -> {
                 var params = new TextDialogParams(new TextDialogConfig(), selectedWindowType.get(),
@@ -128,6 +134,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 var dialog = getComposer().openTextDialog(params);
                 dialog.setTitle("Text");
                 dialog.setText("Some text");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.TEXTS, () -> {
                 var params = new TextsDialogParams(new TextsDialogConfig(), selectedWindowType.get(),
@@ -137,6 +144,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.getTexts().setAll(List.of("First", "Second", "Third"));
                 dialog.setEditable(false);
                 dialog.setText("Second");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.TEXT_CHOICE, () -> {
                 var params = new TextChoiceDialogParams(new TextChoiceDialogConfig(), selectedWindowType.get(),
@@ -145,6 +153,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setTitle("Text Choice");
                 dialog.getTexts().setAll(List.of("First", "Second", "Third"));
                 dialog.setText("Second");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.LONG_TEXT, () -> {
                 var params = new LongTextDialogParams(new LongTextDialogConfig(), selectedWindowType.get(),
@@ -152,6 +161,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 var dialog = getComposer().openLongTextDialog(params);
                 dialog.setTitle("Long Text");
                 dialog.setText("First line\nSecond line");
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.PROGRESS, () -> {
                 var params = new ProgressDialogParams(new ProgressDialogConfig(), selectedWindowType.get(),
@@ -162,6 +172,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setStepCount(10);
                 dialog.setCurrentStep(3);
                 dialog.setProgress(0.3);
+                dialog.setVisible(true);
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
@@ -211,7 +222,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), getSettings(),
                 type, () -> this.storages);
-        handleFileChooserResult(getComposer().openFileChooserDialog(params));
+        var dialog = getComposer().openFileChooserDialog(params);
+        setFileChooserResultHandler(dialog);
+        dialog.setVisible(true);
     }
 
     /**
@@ -229,10 +242,12 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         params.setTwoPhaseSortPolicy(TwoPhaseSortPolicy.AFTER_EACH_PHASE);
         // the demo storage is a network one, so the dialog does not pick it as the local default
         params.setInitialDirectory(demoStorage.getUri());
-        handleFileChooserResult(getComposer().openDemoFileChooserDialog(params, demoStorage));
+        var dialog = getComposer().openDemoFileChooserDialog(params, demoStorage);
+        setFileChooserResultHandler(dialog);
+        dialog.setVisible(true);
     }
 
-    private void handleFileChooserResult(FileChooserDialogPort<StorageFile> dialog) {
+    private void setFileChooserResultHandler(FileChooserDialogPort<StorageFile> dialog) {
         dialog.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
                 var result = dialog.getResult();
@@ -247,6 +262,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     private void showPagedDialog(PageMenuType menuType) {
         var config = configManager.getOrCreateConfig(PageDialogConfig.class, PageDialogConfig::new);
         var params = new PageDialogParams(config, selectedWindowType.get(), getSettings(), menuType);
-        getComposer().openPagedDialog(params);
+        var dialog = getComposer().openPagedDialog(params);
+        dialog.setVisible(true);
     }
 }

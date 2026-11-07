@@ -30,7 +30,8 @@ public interface WindowContainerView<VM extends WindowContainerViewModel<?>> ext
     interface Composer extends PopupContainerView.Composer, WindowContainerComposer {
 
         /**
-         * Adds the specified window component to the component tree.
+         * Adds the specified window component to the component tree. The window is added as it is: while it is
+         * invisible, it takes no part in z-order, focus and modality.
          *
          * @param window the window component to add
          */
@@ -162,6 +163,9 @@ public interface WindowContainerView<VM extends WindowContainerViewModel<?>> ext
          * {@link WindowPosition#CENTER} and a small upward offset.
          *
          * <p>If the {@code Stage} bounds are not available, the {@code StackPane} center is used as a fallback.
+         *
+         * <p>An invisible dialog is aligned once, when it becomes visible for the first time, because only then its
+         * content, and therefore its size, is final. Hiding and showing it again keeps its current position.
          *
          * <p>For precise control over dialog positioning, use {@link #addWindow(WindowFxView)} combined with one of
          * the {@link #alignWindow(WindowFxView, WindowPosition, double, double) }

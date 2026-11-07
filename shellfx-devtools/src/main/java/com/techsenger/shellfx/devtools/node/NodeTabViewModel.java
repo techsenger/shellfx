@@ -328,6 +328,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
                 getContextAccess().getSettings(), node, item, declaringClassName, linkOpener);
         var dialog = getComposer().openViewerDialog(params);
         dialog.setOnClosed(() -> focusPropertiesSource.next(null));
+        dialog.setVisible(true);
     }
 
     protected void onEditProperty(EditPropertyTask<?> task) {
@@ -344,6 +345,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             }
             focusPropertiesSource.next(null);
         });
+        dialog.setVisible(true);
     }
 
     protected DevToolsTabDockPort getTabDock() {

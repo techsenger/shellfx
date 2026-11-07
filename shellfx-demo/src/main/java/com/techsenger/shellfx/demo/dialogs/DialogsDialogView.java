@@ -81,7 +81,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new AlertDialogViewModel<>(params);
             var dialogView = new AlertDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -90,7 +90,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new NameValueDialogViewModel<>(params);
             var dialogView = new NameValueDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -99,7 +99,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new TextDialogViewModel<>(params);
             var dialogView = new TextDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -108,7 +108,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new TextsDialogViewModel<>(params);
             var dialogView = new TextsDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -117,7 +117,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new TextChoiceDialogViewModel<>(params);
             var dialogView = new TextChoiceDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -126,7 +126,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new LongTextDialogViewModel<>(params);
             var dialogView = new LongTextDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -135,7 +135,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new ProgressDialogViewModel<>(params);
             var dialogView = new ProgressDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -144,7 +144,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new FileChooserDialogViewModel<>(params);
             var dialogView = new FileChooserDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -154,7 +154,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new DemoFileChooserDialogViewModel(params, demoStorage);
             var dialogView = new DemoFileChooserDialogView(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
@@ -163,18 +163,16 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new PageDialogViewModel<>(params);
             var dialogView = new PageDialogView<>(viewModel, getStylesheetRegistry());
             dialogView.initialize();
-            showDialog(dialogView);
+            addDialog(dialogView);
             return viewModel;
         }
 
-        private void showDialog(DialogView<?> dialog) {
+        private void addDialog(DialogView<?> dialog) {
             if (dialog.getViewModel().getWindowType() == WindowType.NESTED) {
                 getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getScene().getWindow());
-                dialog.getStage().show();
             }
-            dialog.requestFocus();
         }
     }
 

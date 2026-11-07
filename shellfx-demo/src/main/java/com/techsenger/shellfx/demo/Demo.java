@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.shellfx.base.registrar.RegistrarManager;
 import com.techsenger.shellfx.core.DefaultShellContext;
 import com.techsenger.shellfx.core.DefaultShellParams;
 import com.techsenger.shellfx.core.DefaultShellView;
@@ -26,7 +27,6 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.config.ConfigData;
 import com.techsenger.shellfx.core.config.DefaultConfigManager;
-import com.techsenger.shellfx.base.registrar.RegistrarManager;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
 import static com.techsenger.shellfx.demo.ApplicationType.IDE;
@@ -148,11 +148,13 @@ public class Demo extends Application {
         }
 
         // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
-        new RegistrarManager(List.of(new ShellSlotRegistrar(shellView), new ShellControlRegistrar(appType, shellView)))
-                .registerAll();
+        var registrarManager = new RegistrarManager(List.of(
+                new ShellSlotRegistrar(shellView),
+                new ShellControlRegistrar(appType, shellView)));
+        registrarManager.registerAll();
 
         shellView.upgradeMenuBar();
-        shellView.getStage().show();
+        shellViewModel.setVisible(true);
         return shellView;
     }
 

@@ -117,6 +117,8 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final ReadOnlyBooleanWrapper active = new ReadOnlyBooleanWrapper();
 
+    private final BooleanProperty visible = new SimpleBooleanProperty();
+
     private final ReadOnlyDoubleWrapper x = new ReadOnlyDoubleWrapper();
 
     private final ObservableSource<Double> xSource = new SimpleObservableSource<>();
@@ -180,6 +182,21 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     @Override
     public ReadOnlyBooleanProperty activeProperty() {
         return active.getReadOnlyProperty();
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible.get();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible.set(visible);
+    }
+
+    @Override
+    public BooleanProperty visibleProperty() {
+        return visible;
     }
 
     @Override
