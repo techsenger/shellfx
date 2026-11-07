@@ -108,7 +108,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Oops! That didn’t work.\nTwice!");
             }),
-            Map.entry(DialogType.YES_NO, () -> {
+            Map.entry(DialogType.CONFIRMATION, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
                         getSettings(), AlertDialogType.CONFIRMATION);
                 var dialog = getComposer().openAlertDialog(params);
