@@ -63,6 +63,20 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
 
+    private static final String LONG_INFO_MESSAGE = """
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et \
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip \
+            ex ea commodo consequat.
+
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. \
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est \
+            laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque \
+            laudantium.
+
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni \
+            dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia \
+            dolor sit amet, consectetur, adipisci velit.""";
+
     private final ObjectProperty<WindowType> selectedWindowType = new SimpleObjectProperty<>();
 
     private final ConfigManager configManager;
@@ -75,6 +89,12 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                         getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("All done! Time for coffee.");
+            }),
+            Map.entry(DialogType.INFO_LONG, () -> {
+                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                        getSettings(), AlertDialogType.INFO);
+                var dialog = getComposer().openAlertDialog(params);
+                dialog.setMessage(LONG_INFO_MESSAGE);
             }),
             Map.entry(DialogType.WARNING, () -> {
                 var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),

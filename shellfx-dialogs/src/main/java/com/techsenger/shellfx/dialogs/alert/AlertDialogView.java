@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -110,6 +111,14 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
         messageIconViewBox.iconProperty().bind(viewModel.messageIconProperty());
     }
 
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            getViewModel().messageProperty().addListener((ov, oldV, newV) -> fitStageHeight());
+        }
+    }
+
     protected IconViewBox getMessageIconViewBox() {
         return messageIconViewBox;
     }
@@ -120,5 +129,23 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
 
     protected HBox getMessageBox() {
         return messageBox;
+    }
+
+    /**
+     * A stage is sized synchronously inside show(), and the message is usually set right after it, so the height has to
+     * be fitted to the message here; a nested dialog follows its content by itself.
+     */
+    private void fitStageHeight() {
+        var stage = getStage();
+        var scene = stage.getScene();
+        if (!stage.isShowing()) {
+            return;
+        }
+        var root = getNode();
+        root.applyCss();
+        // Stage#sizeToScene() is not used: it changes the width too, setting it to the width of the unwrapped message
+        // instead of the width of the dialog, so only the height is fitted, for the current width of the scene.
+        var height = root.prefHeight(scene.getWidth());
+        stage.setHeight(height + stage.getHeight() - scene.getHeight());
     }
 }
