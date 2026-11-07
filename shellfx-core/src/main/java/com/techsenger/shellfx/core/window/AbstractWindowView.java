@@ -333,6 +333,10 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         return (Composer) super.getComposer();
     }
 
+    public StackPane getContentPane() {
+        return contentPane;
+    }
+
     @Override
     protected Composer createComposer() {
         return new AbstractWindowView<VM>.Composer();
@@ -511,141 +515,6 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         return pulseListenerManager;
     }
 
-    private void updateAlwaysOnTop(boolean alwaysOnTop) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setAlwaysOnTop(alwaysOnTop);
-        } else if (this.windowManager != null) {
-            this.windowManager.updateWindow(this);
-        }
-    }
-
-    private void updateMaximized(boolean maximized) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setMaximized(maximized);
-        } else {
-            var parent = getComposer().getParent();
-            if (parent != null) {
-                if (maximized) {
-                    parent.getComposer().maximizeWindow(this);
-                } else {
-                    parent.getComposer().restoreWindow(this);
-                }
-            }
-        }
-        this.maximized.set(maximized);
-    }
-
-    private void updateMaximizable(boolean maximizable) {
-        if (maximizable) {
-            if (this.maximizeButton.getParent() == null) {
-                rightBox.getChildren().add(getMaximizeButtonIndex(), this.maximizeButton);
-                if (getViewModel().getWindowType() == WindowType.NESTED) {
-                    titleBar.addEventHandler(MouseEvent.MOUSE_CLICKED, maximizeHandler);
-                }
-            }
-        } else {
-            if (this.maximizeButton.getParent() != null) {
-                rightBox.getChildren().remove(this.maximizeButton);
-                if (getViewModel().getWindowType() == WindowType.NESTED) {
-                    titleBar.removeEventHandler(MouseEvent.MOUSE_CLICKED, maximizeHandler);
-                }
-            }
-        }
-    }
-
-    private void updateMinimized(boolean minimized) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setIconified(minimized);
-        } else {
-            var parent = getComposer().getParent();
-            if (parent != null) {
-                if (minimized) {
-                    parent.getComposer().minimizeWindow(this);
-                } else {
-                    parent.getComposer().restoreWindow(this);
-                }
-            }
-        }
-        this.minimized.set(minimized);
-    }
-
-    private void updateMinimizable(boolean minimizable) {
-        if (minimizable) {
-            if (this.minimizeButton.getParent() == null) {
-                rightBox.getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
-            }
-        } else {
-            if (this.minimizeButton.getParent() != null) {
-                rightBox.getChildren().remove(this.minimizeButton);
-            }
-        }
-    }
-
-    private void updateDensity(@Nullable Density density) {
-        checkIfTopLevel();
-        if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().remove(this.density.getStyleClass());
-        }
-        this.density = density;
-        if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().add(this.density.getStyleClass());
-        }
-    }
-
-    private void updateTheme(Theme theme) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
-            this.stylesheetManager.setTheme(theme);
-        }
-    }
-
-    private void updateRegularFont(Font font) {
-        checkIfTopLevel();
-        this.fontApplier.setRegularFont(font);
-    }
-
-    private void updateMonospaceFont(Font font) {
-        checkIfTopLevel();
-        this.fontApplier.setMonospaceFont(font);
-    }
-
-    private void updateBlocked(boolean blocked) {
-        if (blocked) {
-            this.blockPane = new Pane();
-            this.blockPane.setMouseTransparent(false);
-            this.windowNode.getChildren().add(this.blockPane);
-        } else {
-            this.windowNode.getChildren().remove(this.blockPane);
-            this.blockPane = null;
-        }
-    }
-
-    void updateActive(boolean active) {
-        windowBox.pseudoClassStateChanged(PseudoClasses.INACTIVE, !active);
-    }
-
-    private void updateX(double x) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            // NaN is the Stage's own sentinel for "not positioned yet"; forwarding it into setX would mark the
-            // Stage as explicitly positioned and suppress the platform's default centering on first show()
-            if (!Double.isNaN(x)) {
-                this.stage.setX(x);
-            }
-        } else {
-            this.windowNode.setLayoutX(x);
-        }
-    }
-
-    private void updateY(double y) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            if (!Double.isNaN(y)) {
-                this.stage.setY(y);
-            }
-        } else {
-            this.windowNode.setLayoutY(y);
-        }
-    }
-
     @Override
     protected void removeListeners() {
         super.removeListeners();
@@ -764,10 +633,6 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         return contentBox;
     }
 
-    public StackPane getContentPane() {
-        return contentPane;
-    }
-
     protected VBox getWindowBox() {
         return windowBox;
     }
@@ -839,6 +704,10 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         return shadowVisible;
     }
 
+    void updateActive(boolean active) {
+        windowBox.pseudoClassStateChanged(PseudoClasses.INACTIVE, !active);
+    }
+
     void setWindowManager(@Nullable WindowManager windowManager) {
         this.windowManager = windowManager;
     }
@@ -859,6 +728,137 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
         getViewModel().minimizedWrapper().set(minimized);
         this.minimized.set(minimized);
+    }
+
+    private void updateAlwaysOnTop(boolean alwaysOnTop) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            this.stage.setAlwaysOnTop(alwaysOnTop);
+        } else if (this.windowManager != null) {
+            this.windowManager.updateWindow(this);
+        }
+    }
+
+    private void updateMaximized(boolean maximized) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            this.stage.setMaximized(maximized);
+        } else {
+            var parent = getComposer().getParent();
+            if (parent != null) {
+                if (maximized) {
+                    parent.getComposer().maximizeWindow(this);
+                } else {
+                    parent.getComposer().restoreWindow(this);
+                }
+            }
+        }
+        this.maximized.set(maximized);
+    }
+
+    private void updateMaximizable(boolean maximizable) {
+        if (maximizable) {
+            if (this.maximizeButton.getParent() == null) {
+                rightBox.getChildren().add(getMaximizeButtonIndex(), this.maximizeButton);
+                if (getViewModel().getWindowType() == WindowType.NESTED) {
+                    titleBar.addEventHandler(MouseEvent.MOUSE_CLICKED, maximizeHandler);
+                }
+            }
+        } else {
+            if (this.maximizeButton.getParent() != null) {
+                rightBox.getChildren().remove(this.maximizeButton);
+                if (getViewModel().getWindowType() == WindowType.NESTED) {
+                    titleBar.removeEventHandler(MouseEvent.MOUSE_CLICKED, maximizeHandler);
+                }
+            }
+        }
+    }
+
+    private void updateMinimized(boolean minimized) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            this.stage.setIconified(minimized);
+        } else {
+            var parent = getComposer().getParent();
+            if (parent != null) {
+                if (minimized) {
+                    parent.getComposer().minimizeWindow(this);
+                } else {
+                    parent.getComposer().restoreWindow(this);
+                }
+            }
+        }
+        this.minimized.set(minimized);
+    }
+
+    private void updateMinimizable(boolean minimizable) {
+        if (minimizable) {
+            if (this.minimizeButton.getParent() == null) {
+                rightBox.getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
+            }
+        } else {
+            if (this.minimizeButton.getParent() != null) {
+                rightBox.getChildren().remove(this.minimizeButton);
+            }
+        }
+    }
+
+    private void updateDensity(@Nullable Density density) {
+        checkIfTopLevel();
+        if (this.density != null) {
+            this.stage.getScene().getRoot().getStyleClass().remove(this.density.getStyleClass());
+        }
+        this.density = density;
+        if (this.density != null) {
+            this.stage.getScene().getRoot().getStyleClass().add(this.density.getStyleClass());
+        }
+    }
+
+    private void updateTheme(Theme theme) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
+            this.stylesheetManager.setTheme(theme);
+        }
+    }
+
+    private void updateRegularFont(Font font) {
+        checkIfTopLevel();
+        this.fontApplier.setRegularFont(font);
+    }
+
+    private void updateMonospaceFont(Font font) {
+        checkIfTopLevel();
+        this.fontApplier.setMonospaceFont(font);
+    }
+
+    private void updateBlocked(boolean blocked) {
+        if (blocked) {
+            this.blockPane = new Pane();
+            this.blockPane.setMouseTransparent(false);
+            this.windowNode.getChildren().add(this.blockPane);
+        } else {
+            this.windowNode.getChildren().remove(this.blockPane);
+            this.blockPane = null;
+        }
+    }
+
+    private void updateX(double x) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            // NaN is the Stage's own sentinel for "not positioned yet"; forwarding it into setX would mark the
+            // Stage as explicitly positioned and suppress the platform's default centering on first show()
+            if (!Double.isNaN(x)) {
+                this.stage.setX(x);
+            }
+        } else {
+            this.windowNode.setLayoutX(x);
+        }
+    }
+
+    private void updateY(double y) {
+        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+            if (!Double.isNaN(y)) {
+                this.stage.setY(y);
+            }
+        } else {
+            this.windowNode.setLayoutY(y);
+        }
     }
 
     private void updateWidth(double value) {

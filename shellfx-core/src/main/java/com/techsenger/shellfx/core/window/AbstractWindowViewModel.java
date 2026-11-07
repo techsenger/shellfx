@@ -352,13 +352,13 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
-    public void setBlocked(boolean blocked) {
-        this.blocked.set(blocked);
+    public boolean isBlocked() {
+        return blocked.get();
     }
 
     @Override
-    public boolean isBlocked() {
-        return blocked.get();
+    public void setBlocked(boolean blocked) {
+        this.blocked.set(blocked);
     }
 
     @Override
