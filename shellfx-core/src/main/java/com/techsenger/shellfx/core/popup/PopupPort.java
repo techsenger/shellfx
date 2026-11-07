@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.close.CloseAwarePort;
 import com.techsenger.shellfx.core.traits.Waitable;
 import com.techsenger.shellfx.material.RequestSetter;
+import javafx.beans.property.BooleanProperty;
 
 /**
  * Provides full access to the component's client API.
@@ -44,6 +45,25 @@ public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
      * @return
      */
     boolean isModal();
+
+    /**
+     * Returns whether the popup is visible. A popup is created invisible, so its content can be filled in before it
+     * is shown. An invisible popup is a part of the component tree, but takes no part in z-order, focus and modality.
+     *
+     * @return {@code true} if the popup is visible, {@code false} otherwise
+     */
+    boolean isVisible();
+
+    /**
+     * Makes the popup visible or invisible. Becoming invisible is not closing: the popup stays in the component tree,
+     * and {@link #close()} still has to be called to remove it. A modal popup blocks the container only while it is
+     * visible. A popup never takes the focus itself: call {@link #requestFocus()} or let the user click it.
+     *
+     * @param value {@code true} to make the popup visible, {@code false} to make it invisible
+     */
+    void setVisible(boolean value);
+
+    BooleanProperty visibleProperty();
 
     /**
      * Sets the width of the popup. Using this method is optional because, by default, the popup width is

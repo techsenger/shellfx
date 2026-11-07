@@ -21,9 +21,9 @@ import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
 
 /**
  *
@@ -99,6 +99,7 @@ public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaV
     }
 
     protected void onPopupOpen(OverlayScope scope) {
-        getComposer().openDemoPopup(scope);
+        var popup = getComposer().openDemoPopup(scope);
+        popup.setVisible(true);
     }
 }

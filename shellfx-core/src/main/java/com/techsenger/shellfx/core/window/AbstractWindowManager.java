@@ -795,11 +795,9 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    @Override
-    protected void focusLast() {
-        if (getLastPopup() != null) {
-            super.focusLast();
-        } else if (this.lastWindow != null) {
+    private void focusLast() {
+        // popups never take the focus automatically
+        if (this.lastWindow != null) {
             // there is a time gap, if a window is activated by focus, so it looks very stange
             // that's why we do manual activation here
             deactivateAllWindows(this.lastWindow);

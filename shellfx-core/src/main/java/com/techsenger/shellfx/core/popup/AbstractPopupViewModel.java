@@ -37,6 +37,8 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
 
     private final ObservableSource<Double> heightSource = new SimpleObservableSource<>();
 
+    private final BooleanProperty visible = new SimpleBooleanProperty();
+
     private final BooleanProperty waiting = new SimpleBooleanProperty();
 
     private Runnable onCloseRequest = () -> closeSafely();
@@ -76,6 +78,21 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
     @RequestSetter
     public void setHeight(double height) {
         this.heightSource.next(height);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible.get();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible.set(visible);
+    }
+
+    @Override
+    public BooleanProperty visibleProperty() {
+        return visible;
     }
 
     @Override

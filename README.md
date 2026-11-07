@@ -514,6 +514,15 @@ tabs are closed.
 `Popup` can be added to any component that implements the `PopupContainer` interface. The platform provides two
 components that implement this interface: `Tab` and `Window`.
 
+Like a window, a popup is created invisible: the client fills it in and calls `setVisible(true)` of its `Port`. An
+invisible popup is a part of the component tree, but takes no part in z-order and modality: a modal popup blocks its
+container only while it is visible. Making a popup invisible is not closing it: it stays in the component tree and has
+to be closed to be removed.
+
+However, a popup differs from a window in one respect: it never takes the focus automatically, because notifications
+must not interrupt the user. The focus moves to a popup only when the client calls `requestFocus()` or the user clicks
+it.
+
 ### Area <a name="core-area"></a>
 
 `Area` is an abstract base component that represents a rectangular region. Naturally, `AreaView#getNode()` returns a

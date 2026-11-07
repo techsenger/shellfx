@@ -26,14 +26,26 @@ import javafx.collections.ObservableList;
  */
 public interface PopupManager {
 
+    /**
+     * Adds the popup to the container. This is the first phase: the popup takes part in z-order, focus and modality
+     * only while it is visible, which is the second phase.
+     *
+     * @param view the popup to add
+     * @param anchors the position of the popup in the container
+     */
     void addPopup(PopupView<?> view, Anchors anchors);
 
+    /**
+     * Removes the popup, whether it is visible or not.
+     *
+     * @param view the popup to remove
+     */
     void removePopup(PopupView<?> view);
 
     /**
      * Returns an unmodifiable list of popups.
      *
-     * @return the list of popups. If no popups are present, an empty list is returned.
+     * @return the list of popups, invisible ones included. If no popups are present, an empty list is returned.
      */
     @Unmodifiable ObservableList<PopupView<?>> getPopups();
 

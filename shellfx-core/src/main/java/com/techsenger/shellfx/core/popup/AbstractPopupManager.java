@@ -23,6 +23,7 @@ import com.techsenger.shellfx.material.Anchors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -39,6 +40,9 @@ import javafx.scene.layout.StackPane;
 public abstract class AbstractPopupManager implements PopupManager {
 
     protected static final class PopupPane extends AnchorPane {
+
+        // Reacts to the popup becoming visible or invisible; kept here to be removed together with the popup.
+        private @Nullable ChangeListener<Boolean> visibilityListener;
 
         private PopupPane(Node... nodes) {
             super(nodes);
@@ -86,32 +90,22 @@ public abstract class AbstractPopupManager implements PopupManager {
     public void addPopup(PopupView<?> view, Anchors anchors) {
         modifiablePopups.add(view);
         doAdd(view, view.getViewModel().isModal(), anchors);
-        reorderPopups();
-        focusLast();
     }
 
     @Override
     public void removePopup(PopupView<?> view) {
         if (modifiablePopups.remove(view)) {
+            // an invisible popup took no part in z-order and focus, so its removal changes none of them
             doRemove(view, view.getViewModel().isModal());
-            reorderPopups();
-            focusLast();
+            if (view.getViewModel().isVisible()) {
+                reorderPopups();
+            }
         }
     }
 
     @Override
     public @Unmodifiable ObservableList<PopupView<?>> getPopups() {
         return this.popups;
-    }
-
-    protected void focusLast() {
-        if (this.lastPopup != null) {
-            this.lastPopup.requestFocus();
-        }
-    }
-
-    protected PopupView<?> getLastPopup() {
-        return lastPopup;
     }
 
     protected Supplier<StackPane> getStackPane() {
@@ -146,26 +140,48 @@ public abstract class AbstractPopupManager implements PopupManager {
 
     protected void doAdd(ChildView<?> view, boolean modal, Anchors anchors) {
         Pane node = (Pane) view.getNode();
+        var popupView = (PopupView<?>) view;
         var bgPane = new PopupPane(node);
+        bgPane.visibilityListener = (ov, oldV, newV) -> {
+            if (newV) {
+                onPopupShown(popupView);
+            } else {
+                onPopupHidden(popupView);
+            }
+        };
+        popupView.getViewModel().visibleProperty().addListener(bgPane.visibilityListener);
+        // the pane is shown by onPopupShown(), the same way as when the popup becomes visible later
+        bgPane.setVisible(false);
+        bgPane.setManaged(false);
         AnchorPane.setTopAnchor(node, anchors.getTop());
         AnchorPane.setRightAnchor(node, anchors.getRight());
         AnchorPane.setBottomAnchor(node, anchors.getBottom());
         AnchorPane.setLeftAnchor(node, anchors.getLeft());
-        if (modal) {
-            onModalAdded();
-        } else {
+        if (!modal) {
             // Do not use setMouseTransparent(true) here — it propagates to all children, making them unresponsive to
             // mouse events regardless of their own settings. Instead, disable bounds-based picking so the pane itself
             // does not consume mouse events, while children remain fully interactive.
             bgPane.setPickOnBounds(false);
         }
         this.stackPane.get().getChildren().add(bgPane);
+        if (popupView.getViewModel().isVisible()) {
+            onPopupShown(popupView);
+        }
     }
 
     protected void doRemove(ChildView<?> view, boolean modal) {
         Pane node = (Pane) view.getNode();
+        var modalRemoved = modal;
+        if (view instanceof PopupView<?> popup) {
+            var bgPane = getPopupPane(popup);
+            if (bgPane != null && bgPane.visibilityListener != null) {
+                popup.getViewModel().visibleProperty().removeListener(bgPane.visibilityListener);
+            }
+            // an invisible modal popup never blocked the container
+            modalRemoved = modal && popup.getViewModel().isVisible();
+        }
         this.stackPane.get().getChildren().remove(node.getParent());
-        if (modal) {
+        if (modalRemoved) {
             onModalRemoved();
         }
     }
@@ -174,6 +190,9 @@ public abstract class AbstractPopupManager implements PopupManager {
         this.lastPopup = null;
         List<PopupView<?>> modalPopups = new ArrayList<>();
         for (var popup : popups) {
+            if (!popup.getViewModel().isVisible()) {
+                continue;
+            }
             this.lastPopup = popup;
             var pane = getPopupPane(popup);
             if (pane != null) {
@@ -200,6 +219,31 @@ public abstract class AbstractPopupManager implements PopupManager {
             return this.lastPopup;
         } else {
             return null;
+        }
+    }
+
+    private void onPopupShown(PopupView<?> popup) {
+        var bgPane = getPopupPane(popup);
+        if (bgPane != null) {
+            bgPane.setVisible(true);
+            bgPane.setManaged(true);
+        }
+        reorderPopups();
+        // A popup never takes the focus itself: the client calls requestFocus() or the user clicks it.
+        if (popup.getViewModel().isModal()) {
+            onModalAdded();
+        }
+    }
+
+    private void onPopupHidden(PopupView<?> popup) {
+        var bgPane = getPopupPane(popup);
+        if (bgPane != null) {
+            bgPane.setVisible(false);
+            bgPane.setManaged(false);
+        }
+        reorderPopups();
+        if (popup.getViewModel().isModal()) {
+            onModalRemoved();
         }
     }
 
