@@ -35,6 +35,8 @@ import com.techsenger.tabpanepro.core.skin.DragAndDropUtils;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.toolkit.core.Pair;
+import com.techsenger.toolkit.fx.pulse.LayoutPhase;
+import com.techsenger.toolkit.fx.pulse.LayoutPulseListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -128,6 +130,11 @@ import org.slf4j.LoggerFactory;
  * dynamically based on the values of side and edgeMode together with the orientation of the parent SplitPane,
  * ensuring that the system adapts correctly whether docking occurs inside a node, along its edge, or at the boundary
  * of a larger layout.
+ *
+ * <p>Sizes in pixels. A divider is a fraction of the size of a split pane, which is known only after a layout pass, so
+ * a size in pixels of a TabDock added before that is remembered and applied in a post layout pulse listener, in the
+ * first pulse that gives the split pane a size. The layout pass of that pulse is already done, so the listener sets
+ * the dividers and calls {@code layout()} again, and the first frame is rendered with the right sizes.
  *
  * <p>All possible cases:
  * | #  | SplitPane   | EdgeMode | Side       | Node Location | Action                                              |
@@ -563,6 +570,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
         void minimizeChild(AbstractContainer child) {
             splitPane.minimize(child);
+            if (child instanceof AbstractAreaContainer<?> areaContainer) {
+                areaContainer.setPendingSize(Double.NaN);
+            }
             // logicalParent stays unchanged — child remains a logical child of this split
         }
 
@@ -574,6 +584,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         void removePermanently(AbstractContainer child) {
             splitPane.removePermanently(child);
             child.setLogicalParent(null);
+            if (child instanceof AbstractAreaContainer<?> areaContainer) {
+                areaContainer.setPendingSize(Double.NaN);
+            }
         }
 
         boolean shouldBeNormalized() {
@@ -619,6 +632,12 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
          */
         private final Pane eventPane = new Pane();
 
+        /**
+         * The size in pixels that the container is to get when its split pane has a size, {@code NaN} if there is
+         * no such size.
+         */
+        private double pendingSize = Double.NaN;
+
         AbstractAreaContainer(DockHostView<?> dockHost, T area) {
             super(dockHost);
             this.area = area;
@@ -633,6 +652,14 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
         T getArea() {
             return area;
+        }
+
+        double getPendingSize() {
+            return pendingSize;
+        }
+
+        void setPendingSize(double pendingSize) {
+            this.pendingSize = pendingSize;
         }
 
         @Override
@@ -1885,13 +1912,19 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             if (dividerSize < 0) {
                 dividerSize = splitPane.computeDividerSize();
             }
-            var mainIndex = indexOfMain(targetParent);
-            if (mainIndex >= 0) {
-                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        size, donorIndices);
+            if (oldSplitPaneSize <= 0 || dockHost.hasPendingSizes(splitPane)) {
+                // there is no size to turn the size in pixels into a fraction yet, the container waits for it
+                dockContainer.setPendingSize(size);
+                dockHost.schedulePendingSizes();
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size,
-                        donorIndices);
+                var mainIndex = indexOfMain(targetParent);
+                if (mainIndex >= 0) {
+                    splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex,
+                            index, size, donorIndices);
+                } else {
+                    splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                            size, donorIndices);
+                }
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Added {} at {} of {}; donors: {}, operation: {}",
@@ -1944,13 +1977,19 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             if (dividerSize < 0) {
                 dividerSize = splitPane.computeDividerSize();
             }
-            var mainIndex = indexOfMain(parentContainer);
-            if (mainIndex >= 0) {
-                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        size, donorIndices);
+            if (oldSplitPaneSize <= 0 || dockHost.hasPendingSizes(splitPane)) {
+                // there is no size to turn the size in pixels into a fraction yet, the container waits for it
+                dockContainer.setPendingSize(size);
+                dockHost.schedulePendingSizes();
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size,
-                        donorIndices);
+                var mainIndex = indexOfMain(parentContainer);
+                if (mainIndex >= 0) {
+                    splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex,
+                            index, size, donorIndices);
+                } else {
+                    splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                            size, donorIndices);
+                }
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Added {} into {}; donors: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
@@ -2593,6 +2632,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
          * The space for {@code dock} is taken from siblings resolved via {@code dock}'s {@link SpaceResolver},
          * consulted only if the target position offers more than one candidate — see {@link SpaceResolver} for the
          * full rule.
+         * <p>
+         * If the layout has no size yet, {@code size} is applied in the first layout pulse that gives the split pane a
+         * size, before the first frame is rendered; see the description of the class.
          *
          * @param dock the TabDock to add
          * @param side the side of the layout to add it to
@@ -2621,6 +2663,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
          * The space for {@code tabDock} is taken from siblings resolved via {@code tabDock}'s {@link SpaceResolver},
          * consulted only if the anchor position offers more than one candidate — see {@link SpaceResolver} for the full
          * rule.
+         * <p>
+         * If the layout has no size yet, {@code size} is applied in the first layout pulse that gives the split pane a
+         * size, before the first frame is rendered; see the description of the class.
          *
          * @param tabDock the TabDock to add
          * @param node the live node to add the new TabDock next to
@@ -2930,10 +2975,14 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             if (node instanceof AreaNode areaNode) {
                 var area = areaNode.getArea();
                 getModifiableChildren().add(area);
+                var container = ContainerUtils.createContainer(view, area);
                 if (areaNode.isMain()) {
                     setMain(area);
+                    // only the minimum size that the node sets itself limits the main area, 0 if it sets none
+                    var region = area.getNode();
+                    container.setMinSize(Math.max(0, region.getMinWidth()), Math.max(0, region.getMinHeight()));
                 }
-                return ContainerUtils.createContainer(view, area);
+                return container;
             } else if (node instanceof GroupNode groupNode) {
                 var splitPane = new DockSplitPane(getDescriptor().getLogPrefix());
                 var splitPaneContainer = new SplitPaneContainer(view, splitPane);
@@ -3068,6 +3117,8 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
     private DropPosition dropPosition;
 
+    private @Nullable LayoutPulseListener pendingSizesListener;
+
     public DockHostView(VM viewModel) {
         super(viewModel);
     }
@@ -3090,6 +3141,29 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
     @Override
     protected Composer createComposer() {
         return new DockHostView.Composer();
+    }
+
+    /**
+     * Arranges the pixel sizes of the TabDocks added while the layout had no size yet. They are applied once, in the
+     * first layout pulse after this call, from the root down, after layout and before rendering, so the intermediate
+     * state is never drawn. Does nothing if it is already arranged.
+     */
+    void schedulePendingSizes() {
+        if (pendingSizesListener != null) {
+            return;
+        }
+        LayoutPulseListener listener = () -> {
+            this.pendingSizesListener = null;
+            var root = getComposer().rootContainer;
+            if (root != null && resolvePendingSizes(root)) {
+                // the sizes stay on the containers and are applied when the next TabDock is added
+                logger.warn("{} The sizes in pixels are not applied: a split pane has no size",
+                        getDescriptor().getLogPrefix());
+            }
+            return false;
+        };
+        this.pendingSizesListener = listener;
+        getPulseListenerManager().addListener(LayoutPhase.POST, listener);
     }
 
     protected DragAndDropContext getDragAndDropContext() {
@@ -3124,6 +3198,16 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         super.bind();
         getViewModel().centerWidthWrapper().bind(centerStackPane.widthProperty());
         getViewModel().centerHeightWrapper().bind(centerStackPane.heightProperty());
+    }
+
+    @Override
+    protected void removeListeners() {
+        var listener = this.pendingSizesListener;
+        if (listener != null) {
+            this.pendingSizesListener = null;
+            getPulseListenerManager().removeListener(LayoutPhase.POST, listener);
+        }
+        super.removeListeners();
     }
 
     DragAndDropHandler getDragAndDropHandler() {
@@ -3167,5 +3251,46 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             builder.append("]");
         });
         return builder.toString();
+    }
+
+    /**
+     * Tells whether some containers of the split pane wait for its size to get their size in pixels.
+     */
+    private boolean hasPendingSizes(DockSplitPane splitPane) {
+        return splitPane.getItems().stream().anyMatch(item -> item instanceof AbstractAreaContainer<?> area
+                && !Double.isNaN(area.getPendingSize()));
+    }
+
+    /**
+     * Applies the pending pixel sizes of the given split pane and then of the nested ones, so a nested pane already
+     * has its size, which depends on the dividers of its parent, when its turn comes.
+     *
+     * @return true if some pane still has no size, so the sizes have to be applied in a later pulse
+     */
+    private boolean resolvePendingSizes(SplitPaneContainer container) {
+        var splitPane = container.getSplitPane();
+        var pending = false;
+        if (hasPendingSizes(splitPane)) {
+            var items = splitPane.getItems();
+            var pixelSizes = new double[items.size()];
+            for (var i = 0; i < pixelSizes.length; i++) {
+                pixelSizes[i] = items.get(i) instanceof AbstractAreaContainer<?> area
+                        ? area.getPendingSize() : Double.NaN;
+            }
+            if (splitPane.updateDividersOnPixelSizes(pixelSizes)) {
+                items.stream().filter(item -> item instanceof AbstractAreaContainer<?>)
+                        .forEach(item -> ((AbstractAreaContainer<?>) item).setPendingSize(Double.NaN));
+                // the pulse has already passed the layout, so the new dividers are laid out here, before rendering
+                splitPane.layout();
+            } else {
+                pending = true;
+            }
+        }
+        for (var item : List.copyOf(splitPane.getItems())) {
+            if (item instanceof SplitPaneContainer nested && resolvePendingSizes(nested)) {
+                pending = true;
+            }
+        }
+        return pending;
     }
 }

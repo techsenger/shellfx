@@ -67,6 +67,12 @@ class DockSplitPane extends SplitPane {
     private static final Logger logger = LoggerFactory.getLogger(DockSplitPane.class);
 
     /**
+     * The part of a divider that is counted with the items before it: the position of a divider is where its center
+     * is, so half of the divider is before the position.
+     */
+    private static final double DIVIDER_HALF = 0.5;
+
+    /**
      * Maps a pre-removal item index to its corresponding index in the post-removal array, where the removed item
      * at {@code removedIndex} is gone and every index after it shifts back by one.
      *
@@ -365,6 +371,81 @@ class DockSplitPane extends SplitPane {
     void logState(String note) {
         logger.debug("{} {} child sizes: {}, dividers: {}", logPrefix, note,
                 getChildSizes(), getDividerPositions());
+    }
+
+    /**
+     * Gives the items that have a size in pixels exactly that size, and shares the rest of the pane between the other
+     * items in proportion to the space they have now. The other items keep at least their minimum size, so if the
+     * sizes in pixels do not fit into the rest of the pane, they are reduced proportionally.
+     *
+     * @param pixelSizes the sizes in pixels of the live items, in order; {@code NaN} for an item that has none
+     * @return true if the sizes are applied, false if this pane has no size yet
+     * @throws IllegalArgumentException if there is not a size for every live item
+     */
+    boolean updateDividersOnPixelSizes(double[] pixelSizes) {
+        var items = getItems();
+        var count = items.size();
+        if (pixelSizes.length != count) {
+            throw new IllegalArgumentException("There are " + count + " items, but " + pixelSizes.length
+                    + " sizes");
+        }
+        // taken from the layout that has been done already, 0 if there is none
+        var dividerSize = Math.max(0, computeDividerSize());
+        var totalSize = computeNewSize(dividerSize);
+        if (totalSize <= 0) {
+            totalSize = computeNewSize(0);
+            dividerSize = 0;
+        }
+        if (totalSize <= 0) {
+            return false;
+        }
+        var positions = getDividerPositions();
+        var currentSizes = positions.length == count - 1 ? computeOldSizes(totalSize, positions) : new double[count];
+        var horizontal = getOrientation() != Orientation.VERTICAL;
+        double pixelsTotal = 0;
+        double flexibleTotal = 0;
+        double flexibleMinTotal = 0;
+        var flexibleCount = 0;
+        var minSizes = new double[count];
+        for (var i = 0; i < count; i++) {
+            if (Double.isNaN(pixelSizes[i])) {
+                var item = items.get(i);
+                flexibleCount++;
+                flexibleTotal += currentSizes[i];
+                minSizes[i] = Math.max(0, horizontal ? item.minWidth(-1) : item.minHeight(-1));
+                flexibleMinTotal += minSizes[i];
+            } else {
+                pixelsTotal += pixelSizes[i];
+            }
+        }
+        // the items that have no size in pixels keep at least their minimum size, so the sizes in pixels give way
+        var pixelsScale = pixelsTotal > 0 ? Math.min(1.0, Math.max(0, totalSize - flexibleMinTotal) / pixelsTotal)
+                : 1.0;
+        var spare = Math.max(0, totalSize - pixelsTotal * pixelsScale - flexibleMinTotal);
+        var sizes = new double[count];
+        for (var i = 0; i < count; i++) {
+            if (Double.isNaN(pixelSizes[i])) {
+                var weight = flexibleTotal > 0 ? currentSizes[i] / flexibleTotal : 1.0 / flexibleCount;
+                sizes[i] = minSizes[i] + spare * weight;
+            } else {
+                sizes[i] = pixelSizes[i] * pixelsScale;
+            }
+        }
+        // the position of a divider is where its center is, so the dividers before it and its own half count too
+        var fullSize = totalSize + (count - 1) * dividerSize;
+        var newPositions = new double[count - 1];
+        double cumulativeSize = 0;
+        for (var i = 0; i < count - 1; i++) {
+            cumulativeSize += sizes[i];
+            newPositions[i] = Math.max(0.0,
+                    Math.min(1.0, (cumulativeSize + (i + DIVIDER_HALF) * dividerSize) / fullSize));
+        }
+        snapPositions(newPositions);
+        setDividerPositions(newPositions);
+        logger.debug("{} Updated dividers on pixel sizes; pixelSizes: {}, totalSize: {}, dividerSize: {}, "
+                + "oldPositions: {}, newPositions: {}", logPrefix, pixelSizes, totalSize, dividerSize, positions,
+                newPositions);
+        return true;
     }
 
     /**
@@ -769,30 +850,36 @@ class DockSplitPane extends SplitPane {
     /**
      * Computes SplitPane divider size - width for vertical dividers, height for horizontal dividers.
      * <p>
-     * Derived by measuring the current live layout: the total pane size minus the summed bounds of every live
-     * item, divided evenly across the gaps between them. Returns {@code -1} (unmeasurable) if there are no
-     * dividers yet, or if this SplitPane has not yet been laid out (its size is not yet known).
+     * Derived from the last layout: the position of a divider is where its center is, so the center is the sizes of
+     * the items before the divider, the dividers before it and half of the divider. The sizes of the items are
+     * rounded down to whole pixels, which can only make the result larger, so the smallest result over all the
+     * dividers is returned. Returns {@code -1} (unmeasurable) if there are no dividers yet, if this SplitPane has not
+     * yet been laid out (its size is not yet known), or if some item before the last one has no size.
      *
      * @return the measured divider size in pixels, or {@code -1} if not currently measurable
      */
     double computeDividerSize() {
-        var dividers = getDividerPositions();
-        if (dividers.length == 0) {
+        var positions = getDividerPositions();
+        if (positions.length == 0) {
             return -1;
         }
-        double paneSize = getOrientation() == Orientation.HORIZONTAL ? getWidth() : getHeight();
+        var horizontal = getOrientation() == Orientation.HORIZONTAL;
+        double paneSize = horizontal ? getWidth() : getHeight();
         if (paneSize <= 0) {
             return -1;
         }
-        double totalItemsSize = 0;
-        for (var item : getItems()) {
-            double itemSize = getOrientation() == Orientation.HORIZONTAL
-                    ? item.getBoundsInParent().getWidth()
-                    : item.getBoundsInParent().getHeight();
-            totalItemsSize += itemSize;
+        double itemsSize = 0;
+        double dividerSize = Double.MAX_VALUE;
+        for (var i = 0; i < positions.length; i++) {
+            var bounds = getItems().get(i).getBoundsInParent();
+            var itemSize = horizontal ? bounds.getWidth() : bounds.getHeight();
+            if (itemSize <= 0) {
+                return -1;
+            }
+            itemsSize += itemSize;
+            dividerSize = Math.min(dividerSize, (positions[i] * paneSize - itemsSize) / (i + DIVIDER_HALF));
         }
-        double totalDividersSize = paneSize - totalItemsSize;
-        double dividerSize = totalDividersSize / (getItems().size() - 1);
+        dividerSize = Math.max(0, dividerSize);
         logger.debug("{} Computed dividerSize: {}", logPrefix, dividerSize);
         return dividerSize;
     }

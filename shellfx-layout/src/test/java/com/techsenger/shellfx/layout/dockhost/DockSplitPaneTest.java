@@ -360,6 +360,80 @@ class DockSplitPaneTest {
     }
 
     @Test
+    void updateDividersOnPixelSizes_paneHasNoSize_returnsFalseAndKeepsDividers() {
+        populate(pane, 2);
+        var before = pane.getDividerPositions();
+
+        var updated = pane.updateDividersOnPixelSizes(new double[] {250, Double.NaN});
+
+        assertThat(updated).isFalse();
+        assertThat(pane.getDividerPositions()).containsExactly(before, EXACT);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_paneHasSize_givesTheItemItsPixelSize() {
+        populate(pane, 2);
+        pane.resize(1000, 600);
+
+        var updated = pane.updateDividersOnPixelSizes(new double[] {250, Double.NaN});
+
+        assertThat(updated).isTrue();
+        assertThat(pane.getDividerPositions()).containsExactly(new double[] {0.25}, EXACT);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_twoDocks_bothGetTheirPixelSizes() {
+        populate(pane, 3);
+        pane.resize(1000, 600);
+
+        pane.updateDividersOnPixelSizes(new double[] {250, Double.NaN, 200});
+
+        assertThat(pane.getDividerPositions()).containsExactly(new double[] {0.25, 0.8}, EXACT);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_threeDocks_allGetTheirPixelSizes() {
+        populate(pane, 4);
+        pane.resize(1000, 600);
+
+        pane.updateDividersOnPixelSizes(new double[] {150, 100, Double.NaN, 200});
+
+        // sizes 150, 100, 550 (the item that has no size in pixels), 200
+        assertThat(pane.getDividerPositions()).containsExactly(new double[] {0.15, 0.25, 0.8}, EXACT);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_sizesDoNotFit_itemWithoutSizeKeepsItsMinimumSize() {
+        populate(pane, 3);
+        ((Region) pane.getItems().get(1)).setMinWidth(100);
+        pane.resize(300, 600);
+
+        pane.updateDividersOnPixelSizes(new double[] {250, Double.NaN, 200});
+
+        // the docks share 200 pixels in proportion to what they asked for: 111, 89; whole pixels: 111, 100, 89
+        assertThat(pane.getDividerPositions()).containsExactly(new double[] {111.0 / 300, 211.0 / 300}, LOOSE);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_verticalPane_usesHeight() {
+        pane.setOrientation(Orientation.VERTICAL);
+        populate(pane, 2);
+        pane.resize(800, 600);
+
+        pane.updateDividersOnPixelSizes(new double[] {Double.NaN, 100});
+
+        assertThat(pane.getDividerPositions()).containsExactly(new double[] {500.0 / 600}, LOOSE);
+    }
+
+    @Test
+    void updateDividersOnPixelSizes_sizesDoNotMatchItems_throwsIllegalArgumentException() {
+        populate(pane, 2);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> pane.updateDividersOnPixelSizes(new double[] {250}));
+    }
+
+    @Test
     void updateDividersOnAddWithoutMain_singleDonor_takesFullRequestedSizeFromIt() {
         populate(pane, 3);
         pane.resize(1000, 600);
