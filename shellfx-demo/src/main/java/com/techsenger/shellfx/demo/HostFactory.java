@@ -30,6 +30,7 @@ import com.techsenger.shellfx.layout.dockhost.TabDockView;
 import com.techsenger.shellfx.layout.tabhost.ProminentTabHostParams;
 import com.techsenger.shellfx.layout.tabhost.ProminentTabHostView;
 import com.techsenger.shellfx.layout.tabhost.ProminentTabHostViewModel;
+import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 
 /**
  *
@@ -40,7 +41,15 @@ public final class HostFactory {
     public static ProminentTabHostView<?> createProminentTabHost(ShellSettings settings) {
         var params = new ProminentTabHostParams(null, settings);
         var viewModel = new ProminentTabHostViewModel<>(params);
-        var view = new ProminentTabHostView<>(viewModel);
+        var view = new ProminentTabHostView<>(viewModel) {
+            @Override
+            protected void build() {
+                super.build();
+                getNode().setDragAndDropContext(new DragAndDropContext());
+                getNode().setTabDragEnabled(true);
+                getNode().setTabDropEnabled(true);
+            }
+        };
         viewModel.getComposer().tabCountProperty().addListener((ov, oldV, newV) ->
                 viewModel.setTabHeaderVisible(newV.intValue() > 0));
         view.initialize();

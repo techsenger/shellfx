@@ -1263,6 +1263,19 @@
     -fx-pref-width: 2px;
 }
 
+.tab-drag-content {
+    -fx-border-color: -color-border-default -color-border-default transparent -color-border-default;
+    -fx-border-width: 1px 1px 0 1px;
+    /* the preview is semi-transparent, so the drop position stays visible under it */
+    -fx-opacity: 0.7;
+}
+
+/* the bottom line closes the gap under the dragged tab image, where the tab header's own border is not captured */
+.tab-drag-content.prominent {
+    -fx-border-color: transparent transparent -color-border-default transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
 /*
     Chart
 */

@@ -45,6 +45,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -308,6 +309,8 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         getTabHeaderArea().setPolicy(TabHeaderAreaPolicy.ALWAYS_VISIBLE);
         getTabHeaderArea().getFirstArea().getChildren().add(tabHeaderFirstBox);
         getTabHeaderArea().getLastArea().getChildren().add(tabHeaderLastBox);
+        getTabHeaderArea().setTabDragCursor(Cursor.CLOSED_HAND);
+        getTabHeaderArea().setTabDragScrollStep(10.0);
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
         getTabHeaderArea().setTabHeaderFactory(c -> {
             var header = new TabPaneProSkin.TabHeaderSkin(c);

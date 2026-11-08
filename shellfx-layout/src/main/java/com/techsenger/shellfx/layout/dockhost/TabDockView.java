@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseDragEvent;
@@ -130,10 +129,8 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
         this.getNode().getStyleClass().add("tab-dock");
 
         var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
         tabHeaderArea.setTabDragContentFactory((s) -> getComposer().getDockHost()
                 .getDragAndDropHandler().createTabDragContent(s));
-        tabHeaderArea.setTabDragScrollStep(10.0);
 
     }
 

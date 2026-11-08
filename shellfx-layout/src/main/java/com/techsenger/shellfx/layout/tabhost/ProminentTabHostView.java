@@ -18,6 +18,7 @@ package com.techsenger.shellfx.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.skin.DragAndDropUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Font;
@@ -37,8 +38,8 @@ public class ProminentTabHostView<VM extends ProminentTabHostViewModel<?>> exten
     @Override
     protected void build() {
         super.build();
-        getNode().getStylesheets().add(
-                ProminentTabHostView.class.getResource("prominent-tab-host.css").toExternalForm());
+        var css = ProminentTabHostView.class.getResource("prominent-tab-host.css").toExternalForm();
+        getNode().getStylesheets().add(css);
         getNode().setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         getNode().getStyleClass().addAll(StyleClasses.PROMINENT, Styles.DENSE);
         var tabHeaderArea = getTabHeaderArea();
@@ -48,6 +49,14 @@ public class ProminentTabHostView<VM extends ProminentTabHostViewModel<?>> exten
             return header;
         });
         tabHeaderArea.setTabGap(-10.0);
+        // puts the drop indicator exactly into the notch between two slanted tabs
+        var offset = SlantedTabHeaderSkin.getDropOffsetResolver().apply(getNode().getSide(), tabHeaderArea.getTabGap());
+        tabHeaderArea.getTabDropPosition().setOffset(offset);
+        tabHeaderArea.setTabDragContentFactory(h -> {
+            var content = DragAndDropUtils.createTabDragContent(h);
+            content.getStyleClass().add(StyleClasses.PROMINENT);
+            return content;
+        });
         // right corner is on top
         tabHeaderArea.setTabViewOrderResolver((tabHeader, index, tabCount, selected) -> {
             if (selected) {
