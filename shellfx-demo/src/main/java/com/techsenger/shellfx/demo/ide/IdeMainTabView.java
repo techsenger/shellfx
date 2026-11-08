@@ -27,6 +27,7 @@ import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.demo.area.DemoAreaParams;
 import com.techsenger.shellfx.demo.area.DemoAreaView;
 import com.techsenger.shellfx.demo.area.DemoAreaViewModel;
+import com.techsenger.shellfx.layout.dockhost.DockHostPort;
 import com.techsenger.shellfx.material.Anchors;
 import java.util.List;
 import javafx.scene.input.InputEvent;
@@ -100,7 +101,9 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
             var settings = getShell().getContext().getSettings();
             var params = new DemoAreaParams(null, settings);
             var viewModel = new DemoAreaViewModel<>(params);
-            var areaView = new DemoAreaView<>(viewModel, getShell(), view);
+            // in the IDE application the workspace is the dock host the area is placed in
+            var dockHostPort = (DockHostPort) getShell().getViewModel().getComposerAccess().getWorkspacePort();
+            var areaView = new DemoAreaView<>(viewModel, getShell(), view, dockHostPort);
             areaView.initialize();
             return areaView;
         }

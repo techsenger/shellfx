@@ -29,13 +29,21 @@ import com.techsenger.shellfx.demo.dialog.DemoDialogView;
 import com.techsenger.shellfx.demo.dialog.DemoDialogViewModel;
 import com.techsenger.shellfx.demo.popup.DemoPopupView;
 import com.techsenger.shellfx.demo.popup.DemoPopupViewModel;
+import com.techsenger.shellfx.layout.dockhost.DockHostPort;
+import com.techsenger.shellfx.layout.dockhost.DockUserPermission;
 import com.techsenger.shellfx.material.Anchors;
 import com.techsenger.shellfx.material.style.Spacing;
+import java.util.EnumMap;
+import java.util.Map;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -57,6 +65,8 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
         private ShellView<?> shell;
 
         private PopupContainerView<?> container;
+
+        private DockHostPort dockHostPort;
 
         @Override
         public DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
@@ -86,9 +96,18 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
             return viewModel;
         }
 
+        @Override
+        public DockHostPort getDockHostPort() {
+            return dockHostPort;
+        }
+
         private void setContainer(ShellView<?> shell, PopupContainerView<?> container) {
             this.shell = shell;
             this.container = container;
+        }
+
+        private void setDockHostPort(DockHostPort dockHostPort) {
+            this.dockHostPort = dockHostPort;
         }
     }
 
@@ -115,6 +134,16 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
 
     private final StackPane stackPane = new StackPane(vBox);
 
+    private final ScrollPane scrollPane = new ScrollPane(stackPane);
+
+    private final Separator userPermissionsSeparator = new Separator();
+
+    private final Label userPermissionsLabel = new Label("Dock User Permissions:");
+
+    private final GridPane userPermissionsGridPane = new GridPane();
+
+    private final Map<DockUserPermission, CheckBox> checkBoxesByPermission = new EnumMap<>(DockUserPermission.class);
+
     /**
      * Creates a view.
      *
@@ -122,10 +151,13 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
      * @param shell the shell the dialogs and popups of the window scope are opened in
      * @param container the container the popups of the tab scope are opened in; the dialogs of that scope are offered
      *     only if it is a {@link WindowContainerView}
+     * @param dockHostPort the dock host the area is placed in, whose user permissions the area can change
      */
-    public DemoAreaView(VM viewModel, ShellView<?> shell, PopupContainerView<?> container) {
+    public DemoAreaView(VM viewModel, ShellView<?> shell, PopupContainerView<?> container,
+            DockHostPort dockHostPort) {
         super(viewModel);
         getComposer().setContainer(shell, container);
+        getComposer().setDockHostPort(dockHostPort);
     }
 
     @Override
@@ -135,7 +167,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
 
     @Override
     public Region getNode() {
-        return stackPane;
+        return scrollPane;
     }
 
     @Override
@@ -152,6 +184,10 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
     protected void build() {
         super.build();
         StackPane.setAlignment(vBox, Pos.CENTER);
+        // the content stays centered while it fits and is scrolled when it does not
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        stackPane.setPadding(new Insets(Spacing.getVertical(), 0, Spacing.getVertical(), 0));
         setupButton(shellDialogButton);
         setupButton(tabDialogButton);
         this.tabDialogButton.setVisible(getComposer().container instanceof WindowContainerView<?>);
@@ -162,6 +198,16 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
         vBox.setSpacing(Spacing.getVertical());
         dialogHBox.setSpacing(Spacing.getHorizontal());
         popupHBox.setSpacing(Spacing.getHorizontal());
+        // two permissions in a row, so the block is not wider than the others
+        userPermissionsGridPane.setHgap(Spacing.getHorizontal());
+        userPermissionsGridPane.setVgap(Spacing.getVertical());
+        for (var permission : DockUserPermission.values()) {
+            var checkBox = new CheckBox(permission.name());
+            checkBoxesByPermission.put(permission, checkBox);
+            var index = permission.ordinal();
+            userPermissionsGridPane.add(checkBox, index % 2, index / 2);
+        }
+        vBox.getChildren().addAll(userPermissionsSeparator, userPermissionsLabel, userPermissionsGridPane);
     }
 
     @Override
@@ -171,6 +217,8 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
         this.fooDisabledCheckBox.selectedProperty().bindBidirectional(viewModel.fooDisabledProperty());
         this.barIncludedCheckBox.selectedProperty().bindBidirectional(viewModel.barIncludedProperty());
         this.barDisabledCheckBox.selectedProperty().bindBidirectional(viewModel.barDisabledProperty());
+        viewModel.getGrantedByPermission().forEach((permission, granted) ->
+                checkBoxesByPermission.get(permission).selectedProperty().bindBidirectional(granted));
     }
 
     @Override

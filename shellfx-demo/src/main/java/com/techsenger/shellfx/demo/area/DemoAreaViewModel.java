@@ -16,14 +16,21 @@
 
 package com.techsenger.shellfx.demo.area;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.dialog.DemoDailogResultButtons;
+import com.techsenger.shellfx.layout.dockhost.DockUserPermission;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 
 /**
  *
@@ -38,7 +45,18 @@ public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaV
 
     private final BooleanProperty barDisabled = new SimpleBooleanProperty();
 
+    private final Map<DockUserPermission, BooleanProperty> modifiableGrantedByPermission =
+            new EnumMap<>(DockUserPermission.class);
+
+    private final Map<DockUserPermission, BooleanProperty> grantedByPermission =
+            Collections.unmodifiableMap(modifiableGrantedByPermission);
+
+    private final SetChangeListener<DockUserPermission> dockUserPermissionsListener =
+            c -> updateDockUserPermissions();
+
     private final ShellSettings settings;
+
+    private ObservableSet<DockUserPermission> dockUserPermissions;
 
     public DemoAreaViewModel(DemoAreaParams params) {
         super(params);
@@ -87,6 +105,38 @@ public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaV
         return barDisabled;
     }
 
+    /**
+     * Returns the properties that are true while the dock host gives the user the permission; a change of a property
+     * gives or takes away the permission.
+     */
+    public @Unmodifiable Map<DockUserPermission, BooleanProperty> getGrantedByPermission() {
+        return grantedByPermission;
+    }
+
+    @Override
+    protected void preInitialize() {
+        super.preInitialize();
+        for (var permission : DockUserPermission.values()) {
+            var property = new SimpleBooleanProperty();
+            property.addListener((ov, oldV, newV) -> updateDockHostPermission(permission, newV));
+            modifiableGrantedByPermission.put(permission, property);
+        }
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        this.dockUserPermissions = getComposer().getDockHostPort().getUserPermissions();
+        this.dockUserPermissions.addListener(dockUserPermissionsListener);
+        updateDockUserPermissions();
+    }
+
+    @Override
+    protected void preDeinitialize() {
+        dockUserPermissions.removeListener(dockUserPermissionsListener);
+        super.preDeinitialize();
+    }
+
     protected void onDialogOpen(OverlayScope scope) {
         var params = new DialogParams(null, WindowType.NESTED, settings);
         var dialog = getComposer().openDemoDialog(scope, true, params);
@@ -101,5 +151,26 @@ public class DemoAreaViewModel<C extends DemoAreaComposer> extends AbstractAreaV
     protected void onPopupOpen(OverlayScope scope) {
         var popup = getComposer().openDemoPopup(scope);
         popup.setVisible(true);
+    }
+
+    /**
+     * Copies the permissions of the dock host into the properties.
+     */
+    private void updateDockUserPermissions() {
+        grantedByPermission.forEach((permission, property) ->
+                property.set(dockUserPermissions.contains(permission)));
+    }
+
+    /**
+     * Gives the dock host's user the permission or takes it away, following the property.
+     */
+    private void updateDockHostPermission(DockUserPermission permission, boolean permitted) {
+        if (dockUserPermissions != null) {
+            if (permitted) {
+                dockUserPermissions.add(permission);
+            } else {
+                dockUserPermissions.remove(permission);
+            }
+        }
     }
 }

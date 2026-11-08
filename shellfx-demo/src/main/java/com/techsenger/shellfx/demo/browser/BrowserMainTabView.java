@@ -51,13 +51,15 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
 
         private final BrowserMainTabView<VM> view = BrowserMainTabView.this;
 
+        private DockHostView<?> dockHost;
+
         @Override
         public void compose() {
             super.compose();
-            var dockHost = HostFactory.createDockHost(getViewModel().getConfig().getDockHost(), getShell());
+            this.dockHost = HostFactory.createDockHost(getViewModel().getConfig().getDockHost(), getShell());
             getModifiableChildren().add(dockHost);
-            view.dockHost = dockHost;
-            view.addLayout();
+            view.getContentBox().getChildren().add(dockHost.getNode());
+            addFooter();
 
             var leftTabDock = HostFactory.createLeftTabDock(getShell(), dockHost);
             var demoArea = createDemoArea();
@@ -71,20 +73,28 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
 
         @Override
         public void addUtilityDock(TabDockView<?> tabDock) {
-            view.dockHost.getComposer().addTabDock(tabDock, Side.BOTTOM, 250);
+            dockHost.getComposer().addTabDock(tabDock, Side.BOTTOM, 250);
         }
 
         protected DemoAreaView<?> createDemoArea() {
             var settings = getShell().getContext().getSettings();
             var params = new DemoAreaParams(null, settings);
             var viewModel = new DemoAreaViewModel<>(params);
-            var areaView = new DemoAreaView<>(viewModel, getShell(), view);
+            var areaView = new DemoAreaView<>(viewModel, getShell(), view, dockHost.getViewModel());
             areaView.initialize();
             return areaView;
         }
-    }
 
-    private DockHostView<?> dockHost;
+        private void addFooter() {
+            var lastArea = dockHost.getComposer().getBottomBar().getLastArea();
+            var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
+                    new Label("Label 2"));
+            hBox.setRotate(-180);
+            hBox.setAlignment(Pos.CENTER_LEFT);
+            hBox.setPadding(new Insets(0, 10, 0, 0));
+            lastArea.getChildren().add(hBox);
+        }
+    }
 
     public BrowserMainTabView(VM viewModel, ShellView<?> shell) {
         super(viewModel, shell);
@@ -119,16 +129,5 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
         toolbar.getStyleClass().add(StyleClasses.BLEND);
         getContentBox().getChildren().add(toolbar);
 
-    }
-
-    private void addLayout() {
-        getContentBox().getChildren().add(dockHost.getNode());
-        var lastArea = dockHost.getComposer().getBottomBar().getLastArea();
-        var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
-                new Label("Label 2"));
-        hBox.setRotate(-180);
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.setPadding(new Insets(0, 10, 0, 0));
-        lastArea.getChildren().add(hBox);
     }
 }

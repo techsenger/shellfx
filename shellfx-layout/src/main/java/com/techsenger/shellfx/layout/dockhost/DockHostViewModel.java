@@ -17,8 +17,11 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
+import java.util.EnumSet;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 
 /**
  *
@@ -26,6 +29,9 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  */
 public class DockHostViewModel<C extends DockHostComposer> extends AbstractAreaViewModel<C>
         implements DockHostPort {
+
+    private final ObservableSet<DockUserPermission> userPermissions =
+            FXCollections.observableSet(EnumSet.allOf(DockUserPermission.class));
 
     private final ReadOnlyDoubleWrapper centerWidth = new ReadOnlyDoubleWrapper();
 
@@ -38,6 +44,11 @@ public class DockHostViewModel<C extends DockHostComposer> extends AbstractAreaV
     @Override
     public DockHostPort.ComposerAccess getComposerAccess() {
         return getComposer();
+    }
+
+    @Override
+    public ObservableSet<DockUserPermission> getUserPermissions() {
+        return userPermissions;
     }
 
     @Override

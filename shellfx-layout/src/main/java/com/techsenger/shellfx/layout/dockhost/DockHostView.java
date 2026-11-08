@@ -333,7 +333,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
         void onContainerMouseDragOver(MousePosition mousePosition) {
             hideIndicator();
-            dockHost.dropPosition = dockHost.dropPositionResolver.provideBasePosition(mousePosition);
+            // without the permission there is no drop position, so there is no indicator and nothing to drop
+            dockHost.dropPosition = isDropPermitted()
+                    ? dockHost.dropPositionResolver.provideBasePosition(mousePosition) : null;
             showIndicator();
         }
 
@@ -353,9 +355,18 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition,
                 TabDockContainer tabDockContainer) {
             hideIndicator();
-            dockHost.dropPosition =
-                    dockHost.dropPositionResolver.provideTabAreaPosition(mousePosition, tabDockContainer);
+            // the tab insertion line of the tab header area is not affected: it belongs to the tab pane
+            dockHost.dropPosition = isDropPermitted()
+                    ? dockHost.dropPositionResolver.provideTabAreaPosition(mousePosition, tabDockContainer) : null;
             showIndicator();
+        }
+
+        /**
+         * Tells whether the user may drop what is being dragged: a tab creates a new dock, a dock is moved.
+         */
+        private boolean isDropPermitted() {
+            var permissionToCheck = this.dragDock == null ? DockUserPermission.CREATE : DockUserPermission.MOVE;
+            return dockHost.getViewModel().getUserPermissions().contains(permissionToCheck);
         }
 
         private void processDropInsideTabHeaderArea() {

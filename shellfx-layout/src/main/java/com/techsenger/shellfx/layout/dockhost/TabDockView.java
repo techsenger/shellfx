@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.tab.TabView;
 import com.techsenger.shellfx.layout.style.LayoutIcons;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.SetChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseDragEvent;
@@ -48,6 +50,12 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
 
         private final ObjectProperty<SpaceResolver> spaceResolver = new SimpleObjectProperty<>(SpaceResolver.nearest());
 
+        private final SetChangeListener<DockUserPermission> permissionListener = c -> {
+            view.updateDraggable();
+            view.updateMinimizable();
+        };
+
+        @Nullable
         private DockHostView<?> dockHost;
 
         public ObjectProperty<SpaceResolver> spaceResolverProperty() {
@@ -76,11 +84,18 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
             dockHost.getComposer().closeTabDock(TabDockView.this);
         }
 
-        public void setDockHost(DockHostView<?> dockHost) {
-            if (this.dockHost == null) {
-                this.dockHost = dockHost;
-                getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
+        public void setDockHost(@Nullable DockHostView<?> dockHost) {
+            if (this.dockHost == dockHost) {
+                return;
             }
+            removePermissionListener();
+            this.dockHost = dockHost;
+            if (dockHost != null) {
+                getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
+                addPermissionListener();
+            }
+            updateDraggable();
+            updateMinimizable();
         }
 
         @Override
@@ -90,6 +105,21 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
 
         protected DockHostView<?> getDockHost() {
             return dockHost;
+        }
+
+        private void addPermissionListener() {
+            if (dockHost != null) {
+                dockHost.getViewModel().getUserPermissions().addListener(permissionListener);
+            }
+        }
+
+        /**
+         * Stops following the user permissions of the dock host; does nothing if it is not followed.
+         */
+        private void removePermissionListener() {
+            if (dockHost != null) {
+                dockHost.getViewModel().getUserPermissions().removeListener(permissionListener);
+            }
         }
     }
 
@@ -138,9 +168,15 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
     protected void addListeners() {
         super.addListeners();
         var viewModel = getViewModel();
-        ValueUtils.callAndAddListener(viewModel.draggableProperty(), (ov, oldV, newV) -> updateDraggable(newV));
-        ValueUtils.callAndAddListener(viewModel.minimizableProperty(), (ov, oldV, newV) -> updateMinimizable(newV));
+        ValueUtils.callAndAddListener(viewModel.draggableProperty(), (ov, oldV, newV) -> updateDraggable());
+        ValueUtils.callAndAddListener(viewModel.minimizableProperty(), (ov, oldV, newV) -> updateMinimizable());
         ValueUtils.callAndAddListener(viewModel.closableProperty(), (ov, oldV, newV) -> updateClosable(newV));
+    }
+
+    @Override
+    protected void removeListeners() {
+        getComposer().removePermissionListener();
+        super.removeListeners();
     }
 
     @Override
@@ -204,20 +240,20 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
         return 0;
     }
 
-    private void updateDraggable(boolean value) {
-        if (value) {
+    private void updateDraggable() {
+        if (getViewModel().isDraggable() && isPermitted(DockUserPermission.MOVE)) {
             if (dragIconView.getParent() == null) {
                 getTabHeaderFirstBox().getChildren().add(getDragIconViewIndex(), dragIconView);
             }
         } else {
             if (dragIconView.getParent() != null) {
-                getTabHeaderLastBox().getChildren().remove(dragIconView);
+                getTabHeaderFirstBox().getChildren().remove(dragIconView);
             }
         }
     }
 
-    private void updateMinimizable(boolean value) {
-        if (value) {
+    private void updateMinimizable() {
+        if (getViewModel().isMinimizable() && isPermitted(DockUserPermission.MINIMIZE)) {
             if (this.minimizeButton.getParent() == null) {
                 getTabHeaderLastBox().getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
             }
@@ -238,6 +274,12 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
                 getTabHeaderLastBox().getChildren().remove(this.closeButton);
             }
         }
+    }
+
+    private boolean isPermitted(DockUserPermission permission) {
+        var dockHost = getComposer().getDockHost();
+        // a dock that is not in a dock host yet has nothing to restrict it
+        return dockHost == null || dockHost.getViewModel().getUserPermissions().contains(permission);
     }
 
     private DockHostView.DragAndDropHandler provideDragAndDropHandler() {

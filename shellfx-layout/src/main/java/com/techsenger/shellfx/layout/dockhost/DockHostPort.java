@@ -19,6 +19,7 @@ package com.techsenger.shellfx.layout.dockhost;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.collections.ObservableSet;
 import javafx.geometry.Side;
 
 /**
@@ -65,6 +66,15 @@ public interface DockHostPort extends AreaPort {
 
     @Override
     ComposerAccess getComposerAccess();
+
+    /**
+     * Returns the operations with docks the user is allowed to perform; all of them by default. The set can be
+     * changed at any time and a change takes effect on the next action of the user: it does not undo what has
+     * already been done, for example a minimized dock stays minimized.
+     *
+     * @return the modifiable set of permissions.
+     */
+    ObservableSet<DockUserPermission> getUserPermissions();
 
     double getCenterWidth();
 

@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupPort;
+import com.techsenger.shellfx.layout.dockhost.DockHostPort;
 
 /**
  *
@@ -31,4 +32,9 @@ public interface DemoAreaComposer extends ChildComposer {
     DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params);
 
     PopupPort openDemoPopup(OverlayScope scope);
+
+    /**
+     * Returns the dock host the area is placed in.
+     */
+    DockHostPort getDockHostPort();
 }
