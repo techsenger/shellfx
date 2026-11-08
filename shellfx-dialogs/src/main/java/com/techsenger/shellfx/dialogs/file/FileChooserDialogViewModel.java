@@ -24,7 +24,6 @@ import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.SettingsListener;
-import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
@@ -998,8 +997,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void showWarning(String text) {
-        var params = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getSettings(),
-                AlertDialogType.WARNING);
+        var params = new AlertDialogParams(getWindowType(), getSettings(), AlertDialogType.WARNING);
         var dialog = getComposer().addAlertDialog(params, text);
         dialog.setVisible(true);
     }

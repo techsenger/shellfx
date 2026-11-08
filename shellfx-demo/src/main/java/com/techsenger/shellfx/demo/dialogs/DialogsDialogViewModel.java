@@ -25,7 +25,6 @@ import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.page.PageDialogConfig;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.demo.page.PageMenuType;
-import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogButtons;
@@ -85,35 +84,35 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
-                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                var params = new AlertDialogParams(selectedWindowType.get(),
                         getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("All done! Time for coffee.");
                 dialog.setVisible(true);
             }),
             Map.entry(DialogType.INFO_LONG, () -> {
-                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                var params = new AlertDialogParams(selectedWindowType.get(),
                         getSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage(LONG_INFO_MESSAGE);
                 dialog.setVisible(true);
             }),
             Map.entry(DialogType.WARNING, () -> {
-                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                var params = new AlertDialogParams(selectedWindowType.get(),
                         getSettings(), AlertDialogType.WARNING);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Attention! You shouldn't do it!");
                 dialog.setVisible(true);
             }),
             Map.entry(DialogType.ERROR, () -> {
-                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                var params = new AlertDialogParams(selectedWindowType.get(),
                         getSettings(), AlertDialogType.ERROR);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Oops! That didn’t work.\nTwice!");
                 dialog.setVisible(true);
             }),
             Map.entry(DialogType.CONFIRMATION, () -> {
-                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                var params = new AlertDialogParams(selectedWindowType.get(),
                         getSettings(), AlertDialogType.CONFIRMATION);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Are you really sure?");

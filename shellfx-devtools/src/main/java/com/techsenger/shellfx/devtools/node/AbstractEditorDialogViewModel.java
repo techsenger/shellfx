@@ -20,7 +20,6 @@ import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
-import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import java.util.function.Consumer;
@@ -104,8 +103,7 @@ public abstract class AbstractEditorDialogViewModel<C extends EditorDialogCompos
     }
 
     void openErrorDialog() {
-        var alertParams = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getSettings(),
-                AlertDialogType.ERROR);
+        var alertParams = new AlertDialogParams(getWindowType(), getSettings(), AlertDialogType.ERROR);
         var alertDialog = getComposer().openAlertDialog(alertParams);
         alertDialog.setMessage("Failed to apply the value.");
         alertDialog.setOnClosed(() -> requestFocus());

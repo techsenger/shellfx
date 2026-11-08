@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.dialogs.alert;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
@@ -127,13 +126,9 @@ public class AlertDialogViewModel<C extends WindowComposer> extends AbstractDial
             setButtonDefault(AlertDialogButtons.YES, true);
         }
         setOnResult((result) -> closeSafely());
-        setMinWidth(400);
-        setMinHeight(140);
+        setMinWidth(450);
+        setMaxWidth(600);
+        setMinHeight(150);
         setResizable(false);
-    }
-
-    @Override
-    protected @Nullable AlertDialogConfig getConfig() {
-        return (AlertDialogConfig) super.getConfig();
     }
 }

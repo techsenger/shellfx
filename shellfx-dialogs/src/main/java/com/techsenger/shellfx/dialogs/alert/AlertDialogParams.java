@@ -29,9 +29,8 @@ public class AlertDialogParams extends DialogParams {
 
     private final AlertDialogType dialogType;
 
-    public AlertDialogParams(AlertDialogConfig config, WindowType type, ShellSettings setting,
-            AlertDialogType dialogType) {
-        super(config, type, setting);
+    public AlertDialogParams(WindowType type, ShellSettings setting, AlertDialogType dialogType) {
+        super(null, type, setting);
         this.dialogType = dialogType;
     }
 
@@ -40,14 +39,8 @@ public class AlertDialogParams extends DialogParams {
     }
 
     @Override
-    public AlertDialogConfig getConfig() {
-        return (AlertDialogConfig) super.getConfig();
-    }
-
-    @Override
     public void validate() {
         super.validate();
-        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(dialogType);
     }
 }

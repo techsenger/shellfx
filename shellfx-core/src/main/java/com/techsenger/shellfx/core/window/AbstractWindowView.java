@@ -225,7 +225,25 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private final StackPane contentPane = new StackPane(contentBox);
 
-    private final VBox windowBox = new VBox(contentPane);
+    /**
+     * Keeps the preferred size of the window within the minimum and maximum size of the view model, so a window
+     * is opened with a size that follows them, not only the content.
+     */
+    private final VBox windowBox = new VBox(contentPane) {
+
+        @Override
+        protected double computePrefWidth(double height) {
+            var viewModel = getViewModel();
+            return Math.max(viewModel.getMinWidth(), Math.min(viewModel.getMaxWidth(), super.computePrefWidth(height)));
+        }
+
+        @Override
+        protected double computePrefHeight(double width) {
+            var viewModel = getViewModel();
+            return Math.max(viewModel.getMinHeight(),
+                    Math.min(viewModel.getMaxHeight(), super.computePrefHeight(width)));
+        }
+    };
 
     private final StackPane windowNode = new StackPane(windowBox);
 
@@ -392,11 +410,11 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             DoubleProperty resultMinWidth = new SimpleDoubleProperty();
             resultMinWidth.bind(Bindings.when(viewModel.minWidthProperty().isEqualTo(0))
                     .then(calculatedMinWidth)
-                    .otherwise(Bindings.min(viewModel.minWidthProperty(), calculatedMinWidth)));
+                    .otherwise(viewModel.minWidthProperty()));
             DoubleProperty resultMinHeight = new SimpleDoubleProperty();
             resultMinHeight.bind(Bindings.when(viewModel.minHeightProperty().isEqualTo(0))
                     .then(calculatedMinHeight)
-                    .otherwise(Bindings.min(viewModel.minHeightProperty(), calculatedMinHeight)));
+                    .otherwise(viewModel.minHeightProperty()));
             this.resizer = new RegionResizer(resultMinWidth, resultMinHeight, viewModel.maxWidthProperty(),
                     viewModel.maxHeightProperty(),
                     (e) -> {
@@ -495,6 +513,10 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         updateMinimized(viewModel.isMinimized());
         viewModel.minimizedSource().addListener((value) -> updateMinimized(value));
         ValueUtils.callAndAddListener(viewModel.minimizableProperty(), (ov, oldV, newV) -> updateMinimizable(newV));
+        viewModel.minWidthProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
+        viewModel.maxWidthProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
+        viewModel.minHeightProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
+        viewModel.maxHeightProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
         viewModel.widthSource().addListener((value) -> updateWidth(value));
         viewModel.heightSource().addListener((value) -> updateHeight(value));
         updateX(viewModel.getX());
