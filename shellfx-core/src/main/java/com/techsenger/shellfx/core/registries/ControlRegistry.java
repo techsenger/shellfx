@@ -141,9 +141,28 @@ public final class ControlRegistry extends AbstractStateRegistry {
     public <V extends ParentView<?>, C> Registration register(GroupSlot<V, C> group, int position,
             ControlProviderFactory<V, ? extends C> factory) {
         Objects.requireNonNull(group, "Group can't be null");
-        var registration = new LeafRegistration(group, position, factory);
-        index.add(group.getComponentClass(), registration);
-        return registration;
+        return addLeaf(group.getComponentClass(), group, position, factory);
+    }
+
+    /**
+     * Registers the provider of a control that is put into a group, for views of a subtype of the view the group is
+     * declared for. The provider gets only views of {@code viewClass}, while the control still joins the same group
+     * as the controls registered for the group's own view type.
+     *
+     * @param group     the slot of the group the control will belong to, never {@code null}; its view type must
+     *                  be {@code viewClass} or its supertype
+     * @param position  the position of the control among the other controls of the group
+     * @param viewClass the class of the view the provider is written for
+     * @param factory   the factory of the provider of the control
+     * @param <V>       the view type of the component the provider is written for
+     * @param <C>       the type of the controls the group holds
+     * @return a {@link Registration} that can be used to undo this contribution
+     */
+    public <V extends ParentView<?>, C> Registration register(GroupSlot<? super V, C> group, int position,
+            Class<V> viewClass, ControlProviderFactory<V, ? extends C> factory) {
+        Objects.requireNonNull(viewClass, "View class can't be null");
+        Objects.requireNonNull(group, "Group can't be null");
+        return addLeaf(viewClass, group, position, factory);
     }
 
     /**
@@ -151,6 +170,13 @@ public final class ControlRegistry extends AbstractStateRegistry {
      */
     Set<AbstractControlRegistration> getRegistrationsFor(Object instance) {
         return index.resolve(instance);
+    }
+
+    private Registration addLeaf(Class<?> viewClass, GroupSlot<?, ?> group, int position,
+            ControlProviderFactory<? extends ParentView<?>, ?> factory) {
+        var registration = new LeafRegistration(group, position, factory);
+        index.add(viewClass, registration);
+        return registration;
     }
 
     private <V extends ParentView<?>> Registration addNode(Slot<V> slot,

@@ -122,4 +122,21 @@ public abstract class AbstractControlRegistrar extends AbstractRegistrar<Control
             ControlProviderFactory<V, ? extends C> factory) {
         addRegistration(getRegistry().register(group, position, factory));
     }
+
+    /**
+     * Registers the provider of a control that is put into a group, for views of a subtype of the view the group is
+     * declared for, so the provider gets only views of that subtype.
+     *
+     * @param group     the slot of the group the control will belong to; its view type must be {@code viewClass}
+     *                  or its supertype
+     * @param position  the position of the control among the other controls of the group
+     * @param viewClass the class of the view the provider is written for
+     * @param factory   the factory of the provider of the control
+     * @param <V>       the view type of the component the provider is written for
+     * @param <C>       the type of the controls the group holds
+     */
+    protected <V extends ParentView<?>, C> void register(GroupSlot<? super V, C> group, int position,
+            Class<V> viewClass, ControlProviderFactory<V, ? extends C> factory) {
+        addRegistration(getRegistry().register(group, position, viewClass, factory));
+    }
 }
