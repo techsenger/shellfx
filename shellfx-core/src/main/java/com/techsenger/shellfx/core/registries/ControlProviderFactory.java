@@ -22,6 +22,9 @@ import com.techsenger.patternfx.mvvm.ParentView;
  * Creates a new {@link ControlProvider} for every build of the controls: a provider keeps its control, so one
  * provider can serve only one component view.
  *
+ * <p>The provider may be written for a supertype of {@code V}: it needs no more of the view than that type gives, and
+ * every view of type {@code V} is such a view.
+ *
  * @param <V> the view type of the component the controls are built for
  * @param <C> the type of the control of the created provider; the provider may hold a control of a narrower type
  * @author Pavel Castornii
@@ -29,5 +32,5 @@ import com.techsenger.patternfx.mvvm.ParentView;
 @FunctionalInterface
 public interface ControlProviderFactory<V extends ParentView<?>, C> {
 
-    ControlProvider<V, ? extends C> create();
+    ControlProvider<? super V, ? extends C> create();
 }

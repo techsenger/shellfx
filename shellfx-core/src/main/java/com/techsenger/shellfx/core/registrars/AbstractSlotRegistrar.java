@@ -46,9 +46,10 @@ public abstract class AbstractSlotRegistrar extends AbstractRegistrar<SlotRegist
      * @param menuBar  the slot of the menu bar
      * @param position the position of the menu among the other menus of the menu bar
      * @param menu     the slot of the menu
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      */
-    protected <V extends ParentView<?>> void register(MenuBarSlot<V> menuBar, int position, MenuSlot<V> menu) {
+    protected <V extends ParentView<?>> void register(MenuBarSlot<V> menuBar, int position,
+            MenuSlot<? super V> menu) {
         addRegistration(getRegistry().register(menuBar, position, menu));
     }
 
@@ -58,10 +59,10 @@ public abstract class AbstractSlotRegistrar extends AbstractRegistrar<SlotRegist
      * @param menu     the slot of the menu
      * @param position the position of the group among the other groups of the menu
      * @param group    the slot of the group
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      */
     protected <V extends ParentView<?>> void register(MenuSlot<V> menu, int position,
-            GroupSlot<V, ? extends MenuItem> group) {
+            GroupSlot<? super V, ? extends MenuItem> group) {
         addRegistration(getRegistry().register(menu, position, group));
     }
 
@@ -71,10 +72,10 @@ public abstract class AbstractSlotRegistrar extends AbstractRegistrar<SlotRegist
      * @param contextMenu the slot of the context menu
      * @param position    the position of the group among the other groups of the context menu
      * @param group       the slot of the group
-     * @param <V>         the view type of the component both slots belong to
+     * @param <V>         the view type of the parent slot's component; the child slot may use its supertype
      */
     protected <V extends ParentView<?>> void register(ContextMenuSlot<V> contextMenu, int position,
-            GroupSlot<V, ? extends MenuItem> group) {
+            GroupSlot<? super V, ? extends MenuItem> group) {
         addRegistration(getRegistry().register(contextMenu, position, group));
     }
 
@@ -84,10 +85,10 @@ public abstract class AbstractSlotRegistrar extends AbstractRegistrar<SlotRegist
      * @param toolBar  the slot of the tool bar
      * @param position the position of the group among the other groups of the tool bar
      * @param group    the slot of the group
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      */
     protected <V extends ParentView<?>> void register(ToolBarSlot<V> toolBar, int position,
-            GroupSlot<V, ? extends Control> group) {
+            GroupSlot<? super V, ? extends Control> group) {
         addRegistration(getRegistry().register(toolBar, position, group));
     }
 
@@ -97,10 +98,10 @@ public abstract class AbstractSlotRegistrar extends AbstractRegistrar<SlotRegist
      * @param group    the slot of the group
      * @param position the position of the nested menu among the other controls of the group
      * @param subMenu  the slot of the nested menu
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      */
     protected <V extends ParentView<?>> void register(GroupSlot<V, ? extends MenuItem> group, int position,
-            MenuSlot<V> subMenu) {
+            MenuSlot<? super V> subMenu) {
         addRegistration(getRegistry().register(group, position, subMenu));
     }
 }

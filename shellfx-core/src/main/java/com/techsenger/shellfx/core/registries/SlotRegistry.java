@@ -54,10 +54,11 @@ public final class SlotRegistry extends AbstractStateRegistry {
      * @param menuBar  the slot of the menu bar, never {@code null}
      * @param position the position of the menu among the other menus of the menu bar
      * @param menu     the slot of the menu, never {@code null}
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      * @return a {@link Registration} that can be used to undo this contribution
      */
-    public <V extends ParentView<?>> Registration register(MenuBarSlot<V> menuBar, int position, MenuSlot<V> menu) {
+    public <V extends ParentView<?>> Registration register(MenuBarSlot<V> menuBar, int position,
+            MenuSlot<? super V> menu) {
         return add(menuBar, position, menu);
     }
 
@@ -67,11 +68,11 @@ public final class SlotRegistry extends AbstractStateRegistry {
      * @param menu     the slot of the menu, never {@code null}
      * @param position the position of the group among the other groups of the menu
      * @param group    the slot of the group, never {@code null}
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      * @return a {@link Registration} that can be used to undo this contribution
      */
     public <V extends ParentView<?>> Registration register(MenuSlot<V> menu, int position,
-            GroupSlot<V, ? extends MenuItem> group) {
+            GroupSlot<? super V, ? extends MenuItem> group) {
         return add(menu, position, group);
     }
 
@@ -81,11 +82,11 @@ public final class SlotRegistry extends AbstractStateRegistry {
      * @param contextMenu the slot of the context menu, never {@code null}
      * @param position    the position of the group among the other groups of the context menu
      * @param group       the slot of the group, never {@code null}
-     * @param <V>         the view type of the component both slots belong to
+     * @param <V>         the view type of the parent slot's component; the child slot may use its supertype
      * @return a {@link Registration} that can be used to undo this contribution
      */
     public <V extends ParentView<?>> Registration register(ContextMenuSlot<V> contextMenu, int position,
-            GroupSlot<V, ? extends MenuItem> group) {
+            GroupSlot<? super V, ? extends MenuItem> group) {
         return add(contextMenu, position, group);
     }
 
@@ -95,11 +96,11 @@ public final class SlotRegistry extends AbstractStateRegistry {
      * @param toolBar  the slot of the tool bar, never {@code null}
      * @param position the position of the group among the other groups of the tool bar
      * @param group    the slot of the group, never {@code null}
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      * @return a {@link Registration} that can be used to undo this contribution
      */
     public <V extends ParentView<?>> Registration register(ToolBarSlot<V> toolBar, int position,
-            GroupSlot<V, ? extends Control> group) {
+            GroupSlot<? super V, ? extends Control> group) {
         return add(toolBar, position, group);
     }
 
@@ -109,11 +110,11 @@ public final class SlotRegistry extends AbstractStateRegistry {
      * @param group    the slot of the group, never {@code null}
      * @param position the position of the nested menu among the other controls of the group
      * @param subMenu  the slot of the nested menu, never {@code null}
-     * @param <V>      the view type of the component both slots belong to
+     * @param <V>      the view type of the parent slot's component; the child slot may use its supertype
      * @return a {@link Registration} that can be used to undo this contribution
      */
     public <V extends ParentView<?>> Registration register(GroupSlot<V, ? extends MenuItem> group, int position,
-            MenuSlot<V> subMenu) {
+            MenuSlot<? super V> subMenu) {
         return add(group, position, subMenu);
     }
 
@@ -124,7 +125,7 @@ public final class SlotRegistry extends AbstractStateRegistry {
         return index.resolve(instance);
     }
 
-    private <V extends ParentView<?>> Registration add(Slot<V> parent, int position, Slot<V> child) {
+    private <V extends ParentView<?>> Registration add(Slot<V> parent, int position, Slot<? super V> child) {
         Objects.requireNonNull(parent, "Parent can't be null");
         Objects.requireNonNull(child, "Child can't be null");
         var registration = new SlotRegistration(parent, position, child);
