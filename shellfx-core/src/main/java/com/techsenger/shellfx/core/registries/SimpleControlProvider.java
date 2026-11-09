@@ -90,8 +90,8 @@ public class SimpleControlProvider<V extends ParentView<?>, C> implements Contro
                     + " has already been initialized");
         }
         initialized = true;
-        if (logger.isDebugEnabled()) {
-            logger.debug("{} Initializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} Initializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
                     getSlotText());
         }
     }
@@ -103,8 +103,8 @@ public class SimpleControlProvider<V extends ParentView<?>, C> implements Contro
                     + " has already been deinitialized");
         }
         deinitialized = true;
-        if (logger.isDebugEnabled()) {
-            logger.debug("{} Deinitializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} Deinitializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
                     getSlotText());
         }
     }
