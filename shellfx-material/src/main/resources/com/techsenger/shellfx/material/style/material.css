@@ -127,7 +127,6 @@
     -fx-min-height: 2.35em;
     -fx-max-height: 2.35em;
     -fx-pref-height: 2.35em;
-    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
 }
 
 .density-m .menu-button.size-l {
@@ -161,7 +160,6 @@
     -fx-min-height: 2.10em;
     -fx-max-height: 2.10em;
     -fx-pref-height: 2.10em;
-    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
 }
 
 .density-m .menu-button.size-m {
@@ -192,7 +190,6 @@
 .density-m .button.size-s,
 .density-m .toggle-button.size-s,
 .density-m .menu-button.size-s {
-    -fx-padding: 0px 6px 2px 6px;
     -fx-min-height: 1.77em;
     -fx-max-height: 1.77em;
     -fx-pref-height: 1.77em;
@@ -311,7 +308,6 @@
     -fx-min-height: 2.15em;
     -fx-max-height: 2.15em;
     -fx-pref-height: 2.15em;
-    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }
 
 .density-s .menu-button.size-l {
@@ -345,7 +341,6 @@
     -fx-min-height: 1.90em;
     -fx-max-height: 1.90em;
     -fx-pref-height: 1.90em;
-    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }
 
 .density-s .menu-button.size-m {
@@ -376,7 +371,6 @@
 .density-s .button.size-s,
 .density-s .toggle-button.size-s,
 .density-s .menu-button.size-s {
-    -fx-padding: 0px 6px 2px 6px;
     -fx-min-height: 1.60em;
     -fx-max-height: 1.60em;
     -fx-pref-height: 1.60em;
@@ -495,7 +489,6 @@
     -fx-min-height: 1.95em;
     -fx-max-height: 1.95em;
     -fx-pref-height: 1.95em;
-    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
 }
 
 .density-xs .menu-button.size-l {
@@ -529,7 +522,6 @@
     -fx-min-height: 1.70em;
     -fx-max-height: 1.70em;
     -fx-pref-height: 1.70em;
-    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
 }
 
 .density-xs .menu-button.size-m {
@@ -560,7 +552,6 @@
 .density-xs .button.size-s,
 .density-xs .toggle-button.size-s,
 .density-xs .menu-button.size-s {
-    -fx-padding: 0px 6px 2px 6px;
     -fx-min-height: 1.43em;
     -fx-max-height: 1.43em;
     -fx-pref-height: 1.43em;
