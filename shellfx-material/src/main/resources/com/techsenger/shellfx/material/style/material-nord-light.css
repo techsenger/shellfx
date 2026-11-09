@@ -19,6 +19,7 @@
 */
 
 .root {
+    -color-fg-default: #3a404b; /* 94% fg-default + 6% bg-default (6%, not 8%: Nord is already soft) */
     -color-fg-selection: -color-fg-default;
     -color-bg-selection: -color-accent-1;
     -color-border-selection: -color-accent-3;

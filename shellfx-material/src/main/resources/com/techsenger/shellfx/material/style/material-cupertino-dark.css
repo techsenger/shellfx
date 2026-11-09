@@ -19,6 +19,7 @@
 */
 
 .root {
+    -color-fg-default: #ededed; /* 92% fg-default + 8% bg-default, softer than pure white */
     -color-fg-selection: -color-fg-default;
     -color-bg-selection: -color-accent-8;
     -color-border-selection: -color-accent-5;
