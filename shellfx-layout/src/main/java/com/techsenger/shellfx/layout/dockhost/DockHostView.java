@@ -47,6 +47,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -273,12 +274,30 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             updateDragInProgress(true, DraggableType.TAB);
         }
 
-        void onTabDrag(Tab tab) {
+        void onTabDragStarted(Tab tab) {
             this.dragTab = tab;
             updateDragInProgress(true, DraggableType.TAB);
         }
 
-        void onTabDrop(Tab tab) {
+        /**
+         * Ends the drag of a tab that did not end with a drop on this dock host: the tab was dropped onto another
+         * tab host, or the drag was canceled. The reset is postponed, because a drop onto the area of this host is
+         * delivered after the drag is finished and resets the state itself.
+         */
+        void onTabDragFinished() {
+            // still the FX thread: runLater only lets the drag released event of the area be delivered first
+            Platform.runLater(() -> {
+                if (this.dragInProgress) {
+                    hideIndicator();
+                    updateDragInProgress(false, DraggableType.TAB);
+                    clearOnDrop();
+                    logger.debug("{} Finished tab drag that ended outside of the dock host",
+                            dockHost.getDescriptor().getLogPrefix());
+                }
+            });
+        }
+
+        void onTabDropped(Tab tab) {
             try {
                 processDropInsideTabHeaderArea();
             } finally {

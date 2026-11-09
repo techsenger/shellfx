@@ -195,15 +195,21 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
-                provideDragAndDropHandler().onTabDrag(e.getTab());
+                provideDragAndDropHandler().onTabDragStarted(e.getTab());
                 e.consume();
             }
         });
         // this handler is called when mouse is over TabHeaderArea
         tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
             if (e.getTarget() == getNode()) {
-                provideDragAndDropHandler().onTabDrop(e.getTab());
+                provideDragAndDropHandler().onTabDropped(e.getTab());
                 e.consume();
+            }
+        });
+        // this handler is called on the pane the tab was dragged from, wherever the tab was dropped
+        tabPane.addEventHandler(TabEvent.TAB_DRAG_FINISHED, (e) -> {
+            if (e.getTarget() == getNode()) {
+                provideDragAndDropHandler().onTabDragFinished();
             }
         });
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
