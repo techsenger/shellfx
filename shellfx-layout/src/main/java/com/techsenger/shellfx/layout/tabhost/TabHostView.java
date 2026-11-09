@@ -47,7 +47,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.input.InputEvent;
@@ -77,8 +76,8 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         return (Tab) skin.getProperties().get(TAB_KEY);
     }
 
-    public class Composer extends AbstractAreaView<VM>.Composer implements
-            AreaView.Composer, TabContainerView.Composer, TabHostComposer {
+    public class Composer extends AbstractAreaView<VM>.Composer implements AreaView.Composer, TabContainerView.Composer,
+            TabHostComposer {
 
         private final TabHostView<VM> view = TabHostView.this;
 
@@ -387,7 +386,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         // we use a weak reference as a workaround for JDK-8283449
         contextMenu.getProperties().put(TAB_KEY, new WeakReference<Tab>(tab));
 
-        MenuItem close = new MenuItem("Close", new Label(" "));
+        MenuItem close = new MenuItem("Close Tab");
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
@@ -395,11 +394,11 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
                 getViewModel().onCloseTab(tabFxView.getViewModel());
             }
         });
-        MenuItem closeAll = new MenuItem("Close All");
+        MenuItem closeAll = new MenuItem("Close All Tabs");
         closeAll.setOnAction((e) -> {
             getViewModel().onCloseAllTabs();
         });
-        MenuItem closeOther = new MenuItem("Close Other");
+        MenuItem closeOther = new MenuItem("Close Other Tabs");
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
@@ -407,7 +406,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
                 getViewModel().onCloseOtherTabs(tabFxView.getViewModel());
             }
         });
-        MenuItem closeRight = new MenuItem("Close to the Right");
+        MenuItem closeRight = new MenuItem("Close Tabs to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
@@ -415,7 +414,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
                 getViewModel().onCloseRightTabs(tabFxView.getViewModel());
             }
         });
-        MenuItem closeLeft = new MenuItem("Close to the Left");
+        MenuItem closeLeft = new MenuItem("Close Tabs to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
