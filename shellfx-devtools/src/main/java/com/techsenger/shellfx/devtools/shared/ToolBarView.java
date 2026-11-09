@@ -56,7 +56,7 @@ public class ToolBarView<VM extends ToolBarViewModel<?>> extends AbstractFindVie
         getFindComboBox().getStyleClass().add(StyleClasses.SIZE_M);
         getFindRightBox().getStyleClass().add(StyleClasses.SIZE_M);
 
-        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.refreshButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
         this.toolBar.getItems().addAll(getFindComboBoxWrapper(), getMatchCaseButton(), refreshButton);

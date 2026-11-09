@@ -33,6 +33,7 @@ import com.techsenger.shellfx.layout.dockhost.DockHostPort;
 import com.techsenger.shellfx.layout.dockhost.DockUserPermission;
 import com.techsenger.shellfx.material.Anchors;
 import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.shellfx.material.style.StyleClasses;
 import java.util.EnumMap;
 import java.util.Map;
 import javafx.application.Platform;
@@ -235,6 +236,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
     }
 
     private void setupButton(Button button) {
+        button.getStyleClass().add(StyleClasses.SIZE_L);
         HBox.setHgrow(button, Priority.ALWAYS);
         button.setMaxWidth(Double.MAX_VALUE);
     }

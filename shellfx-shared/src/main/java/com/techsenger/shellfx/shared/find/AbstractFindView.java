@@ -92,7 +92,7 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         clearButton.setFocusTraversable(false);
 
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
-        this.matchCaseButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.matchCaseButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         this.matchCaseButton.setFocusTraversable(false);
     }
 

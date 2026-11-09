@@ -104,15 +104,15 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         this.wholeWordButton.setFocusTraversable(false);
 
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.regExpButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         this.regExpButton.setFocusTraversable(false);
 
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.highlightButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         this.highlightButton.setFocusTraversable(false);
 
         this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS,

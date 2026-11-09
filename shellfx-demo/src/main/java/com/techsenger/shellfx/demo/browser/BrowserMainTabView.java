@@ -119,9 +119,9 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
     protected void build() {
         super.build();
         var removeButton = new Button(null, new FontIconView(new PlainFontIcon(983924)));
-        removeButton.getStyleClass().add(StyleClasses.SIZE_L);
+        removeButton.getStyleClass().addAll(StyleClasses.SQUARE, StyleClasses.SIZE_L);
         var addButton = new Button(null, new FontIconView(new PlainFontIcon(984085)));
-        addButton.getStyleClass().add(StyleClasses.SIZE_L);
+        addButton.getStyleClass().addAll(StyleClasses.SQUARE, StyleClasses.SIZE_L);
         addButton.setOnAction((e) -> {
             removeButton.setVisible(!removeButton.isVisible());
         });

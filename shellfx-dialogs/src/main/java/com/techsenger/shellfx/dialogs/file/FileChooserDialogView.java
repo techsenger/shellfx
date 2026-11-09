@@ -328,11 +328,11 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         });
         locationComboBox.setButtonCell(new LocationCell<T>(true, this::decorateLocation));
         locationComboBox.getStyleClass().add("location");
-        levelUpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        levelUpButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
-        homeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        homeButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         homeButton.setTooltip(new Tooltip("Home"));
-        createButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        createButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         createButton.setTooltip(new Tooltip("Create New Folder"));
         //always one button selected
         toggleGroup.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
@@ -340,11 +340,11 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
                 oldToggle.setSelected(true);
             }
         });
-        listButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        listButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         listButton.setTooltip(new Tooltip("List"));
         listButton.setToggleGroup(toggleGroup);
         listButton.setSelected(true);
-        detailsButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        detailsButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         detailsButton.setTooltip(new Tooltip("Details"));
         detailsButton.setToggleGroup(toggleGroup);
         buttonBox.setSpacing(Spacing.getHorizontalHalf());
