@@ -82,7 +82,6 @@ public class SettingsDialogView<VM extends SettingsDialogViewModel<?>> extends A
         gridPane.addRow(gridPane.getRowCount(), themeLabel, themeComboBox);
 
         densityLabel.setMinWidth(Region.USE_PREF_SIZE);
-        densityComboBox.getItems().add(null);
         densityComboBox.getItems().addAll(Density.values());
         densityComboBox.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(densityComboBox, Priority.ALWAYS);

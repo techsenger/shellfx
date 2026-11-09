@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.settings;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
@@ -41,9 +40,9 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
 
     private final ObservableSource<Theme> selectedThemeSource = new SimpleObservableSource<>();
 
-    private final ReadOnlyObjectWrapper<@Nullable Density> selectedDensity = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Density> selectedDensity = new ReadOnlyObjectWrapper<>();
 
-    private final ObservableSource<@Nullable Density> selectedDensitySource = new SimpleObservableSource<>();
+    private final ObservableSource<Density> selectedDensitySource = new SimpleObservableSource<>();
 
     public SettingsDialogViewModel(SettingsDialogParams params) {
         super(params);
@@ -72,16 +71,16 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
         return selectedTheme.getReadOnlyProperty();
     }
 
-    public @Nullable Density getSelectedDensity() {
+    public Density getSelectedDensity() {
         return selectedDensity.get();
     }
 
     @RequestSetter
-    public void setSelectedDensity(@Nullable Density density) {
+    public void setSelectedDensity(Density density) {
         selectedDensitySource.next(density);
     }
 
-    public ReadOnlyObjectProperty<@Nullable Density> selectedDensityProperty() {
+    public ReadOnlyObjectProperty<Density> selectedDensityProperty() {
         return selectedDensity.getReadOnlyProperty();
     }
 
@@ -129,11 +128,11 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
      * intended exclusively for {@code SettingsDialogView}. Direct invocation by user code results in undefined
      * behavior.
      */
-    ReadOnlyObjectWrapper<@Nullable Density> selectedDensityWrapper() {
+    ReadOnlyObjectWrapper<Density> selectedDensityWrapper() {
         return selectedDensity;
     }
 
-    ObservableSource<@Nullable Density> selectedDensitySource() {
+    ObservableSource<Density> selectedDensitySource() {
         return selectedDensitySource;
     }
 }

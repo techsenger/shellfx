@@ -25,10 +25,12 @@ import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.tabpanepro.core.TabEvent;
+import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.SetChangeListener;
@@ -131,6 +133,16 @@ public class TabDockView<VM extends TabDockViewModel<?>> extends TabHostView<VM>
 
     protected TabDockView(VM viewModel) {
         super(viewModel);
+    }
+
+    /**
+     * Creates a tab dock with a custom tab pane.
+     *
+     * @param viewModel the view model of the dock
+     * @param tabPaneFactory creates the tab pane of the dock, for example to give it a different look
+     */
+    protected TabDockView(VM viewModel, Supplier<? extends TabPanePro> tabPaneFactory) {
+        super(viewModel, tabPaneFactory);
     }
 
     @Override

@@ -85,6 +85,10 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
     @Override
     protected void build() {
         super.build();
+        getFindComboBox().getStyleClass().add(StyleClasses.SIZE_S);
+        getMatchCaseButton().getStyleClass().add(StyleClasses.SIZE_S);
+        getFindPreviousButton().getStyleClass().add(StyleClasses.SIZE_S);
+        getFindNextButton().getStyleClass().add(StyleClasses.SIZE_S);
         var css = AbstractFindPanelView.class.getResource("find-panel.css").toExternalForm();
         this.gridPane.getStylesheets().add(css);
         this.gridPane.getStyleClass().add("find");
@@ -104,15 +108,15 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.wholeWordButton.setFocusTraversable(false);
 
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.regExpButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.regExpButton.setFocusTraversable(false);
 
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.highlightButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.highlightButton.setFocusTraversable(false);
 
         this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS,

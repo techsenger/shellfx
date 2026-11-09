@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.demo.page;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.layout.pagehost.AbstractPageHostView;
@@ -99,8 +100,9 @@ public class PageTabView<VM extends PageTabViewModel<?>> extends AbstractTabView
     protected void build() {
         super.build();
         var button = new Button("Test");
+        button.getStyleClass().addAll(StyleClasses.SIZE_L, Styles.FLAT);
         var toolBar = new ToolBar(button);
-        toolBar.getStyleClass().add(StyleClasses.BLEND);
+        toolBar.getStyleClass().addAll(StyleClasses.BLEND, StyleClasses.SIZE_L);
         getContentBox().getChildren().add(toolBar);
     }
 }

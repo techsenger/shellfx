@@ -35,6 +35,7 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -70,10 +71,6 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
     private static Tab getTab(ContextMenu menu) {
         WeakReference<Tab> ref = (WeakReference<Tab>) menu.getProperties().get(TAB_KEY);
         return ref.get();
-    }
-
-    private static Tab getTab(TabPaneProSkin.TabHeaderSkin skin) {
-        return (Tab) skin.getProperties().get(TAB_KEY);
     }
 
     public class Composer extends AbstractAreaView<VM>.Composer implements AreaView.Composer, TabContainerView.Composer,
@@ -231,7 +228,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostView.class);
 
-    private final TabPanePro tabPane = new TabPanePro();
+    private final TabPanePro tabPane;
 
     private final HBox tabHeaderFirstBox = new HBox();
 
@@ -240,7 +237,18 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
     private final EventHandler<Event> eventBlocker = event -> event.consume();
 
     public TabHostView(VM viewModel) {
+        this(viewModel, TabPanePro::new);
+    }
+
+    /**
+     * Creates a tab host with a custom tab pane.
+     *
+     * @param viewModel the view model of the host
+     * @param tabPaneFactory creates the tab pane of the host, for example to give it a different look
+     */
+    public TabHostView(VM viewModel, Supplier<? extends TabPanePro> tabPaneFactory) {
         super(viewModel);
+        this.tabPane = tabPaneFactory.get();
     }
 
     @Override
@@ -267,7 +275,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         if (headersRegion != null) {
             for (var child : headersRegion.getChildren()) {
                 if (child instanceof TabPaneProSkin.TabHeaderSkin skin) {
-                    var t = getTab(skin);
+                    var t = skin.getContext().getTab();
                     if (t == tab) {
                         var button = child.lookup(".tab-close-button");
                         if (button != null) {
@@ -311,11 +319,6 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         getTabHeaderArea().setTabDragCursor(Cursor.CLOSED_HAND);
         getTabHeaderArea().setTabDragScrollStep(10.0);
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
-        getTabHeaderArea().setTabHeaderFactory(c -> {
-            var header = new TabPaneProSkin.TabHeaderSkin(c);
-            header.getProperties().put(TAB_KEY, c.getTab());
-            return header;
-        });
     }
 
     @Override

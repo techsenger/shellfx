@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.settings.ShellSettings;
+import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.demo.shared.DockableTabParams;
 import com.techsenger.shellfx.demo.shared.DockableTabView;
 import com.techsenger.shellfx.demo.shared.DockableTabViewModel;
@@ -27,9 +27,10 @@ import com.techsenger.shellfx.layout.dockhost.DockHostView;
 import com.techsenger.shellfx.layout.dockhost.DockHostViewModel;
 import com.techsenger.shellfx.layout.dockhost.SideBarPolicy;
 import com.techsenger.shellfx.layout.dockhost.TabDockView;
-import com.techsenger.shellfx.layout.tabhost.ProminentTabHostParams;
-import com.techsenger.shellfx.layout.tabhost.ProminentTabHostView;
-import com.techsenger.shellfx.layout.tabhost.ProminentTabHostViewModel;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
+import com.techsenger.shellfx.layout.tabhost.TabHostViewModel;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.shellfx.material.tabpane.SlantedTabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 
 /**
@@ -38,16 +39,17 @@ import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
  */
 public final class HostFactory {
 
-    public static ProminentTabHostView<?> createProminentTabHost(ShellSettings settings) {
-        var params = new ProminentTabHostParams(null, settings);
-        var viewModel = new ProminentTabHostViewModel<>(params);
-        var view = new ProminentTabHostView<>(viewModel) {
+    public static TabHostView<?> createSlantedTabHost() {
+        var params = new AreaParams(null);
+        var viewModel = new TabHostViewModel<>(params);
+        var view = new TabHostView<>(viewModel, SlantedTabPanePro::new) {
             @Override
             protected void build() {
                 super.build();
                 getNode().setDragAndDropContext(new DragAndDropContext());
                 getNode().setTabDragEnabled(true);
                 getNode().setTabDropEnabled(true);
+                getNode().getStyleClass().add(StyleClasses.SIZE_L);
             }
         };
         viewModel.getComposer().tabCountProperty().addListener((ov, oldV, newV) ->

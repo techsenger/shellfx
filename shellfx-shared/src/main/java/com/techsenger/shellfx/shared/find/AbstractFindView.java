@@ -79,7 +79,7 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         getNode().getStylesheets().add(AbstractFindView.class.getResource("find-base.css").toExternalForm());
         this.findComboBox.setItems(getViewModel().getFindTexts());
         this.findComboBox.setEditable(true);
-        this.findComboBox.getStyleClass().addAll(StyleClasses.NO_SELECTED);
+        this.findComboBox.getStyleClass().add(StyleClasses.NO_SELECTED);
         this.matchesLabel.getStyleClass().add("matches");
         this.findRightBox.getStyleClass().add("find-right-box");
         StackPane.setMargin(this.findRightBox, new Insets(0, Spacing.getHorizontal() * 2, 0, 0));
@@ -92,7 +92,7 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         clearButton.setFocusTraversable(false);
 
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
-        this.matchCaseButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.matchCaseButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         this.matchCaseButton.setFocusTraversable(false);
     }
 

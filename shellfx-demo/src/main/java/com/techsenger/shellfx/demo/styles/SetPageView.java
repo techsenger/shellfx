@@ -18,12 +18,14 @@ package com.techsenger.shellfx.demo.styles;
 
 import com.techsenger.shellfx.core.page.AbstractPageView;
 import static com.techsenger.shellfx.demo.styles.StylePageData.PERSONS;
+import com.techsenger.shellfx.material.button.DefaultResultButtonName;
+import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import java.util.List;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -41,8 +43,9 @@ import javafx.scene.layout.VBox;
 public class SetPageView<VM extends SetPageViewModel<?>> extends AbstractPageView<VM> {
 
     private static VBox createLeftBox(String styleClass) {
-        var prominentToolBar = NodeFactory.createToolBar(StyleClasses.PROMINENT, StyleClasses.SIZE_L);
-        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_M);
+        var largeToolBar = NodeFactory.createToolBar(StyleClasses.SIZE_L);
+        var mediumToolBar = NodeFactory.createToolBar(StyleClasses.SIZE_M);
+        var smallToolBar = NodeFactory.createToolBar(StyleClasses.SIZE_S);
         GridPane grid = new GridPane();
         grid.setHgap(Spacing.getHorizontal());
         grid.setVgap(Spacing.getVertical());
@@ -86,37 +89,40 @@ public class SetPageView<VM extends SetPageViewModel<?>> extends AbstractPageVie
         GridPane.setHgrow(bio, Priority.ALWAYS);
         grid.addRow(grid.getRowCount(), NodeFactory.createLabel("Biography:", styleClass), bio);
 
-        var listView = NodeFactory.createListView(PERSONS);
-        VBox.setVgrow(listView, Priority.ALWAYS);
-        var treeView = NodeFactory.createTreeView(PERSONS);
-        VBox.setVgrow(treeView, Priority.ALWAYS);
-
-        // Buttons
-        Button btnCancel = new Button("Cancel");
-        Button btnApply  = new Button("Apply");
-        Button btnOk     = new Button("OK");
-
-        btnOk.setDefaultButton(true);
-        btnCancel.setCancelButton(true);
-
-        HBox buttonBar = new HBox(8, btnCancel, btnApply, btnOk);
-        HBox spacer = new HBox();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        buttonBar.getChildren().add(0, spacer);
+        // Dialog buttons: one row split into three equal parts, two buttons of the sizes L, M and S in each
+        var dialogButtons = new GridPane();
+        dialogButtons.setHgap(Spacing.getHorizontal());
+        var sizeClasses = List.of(StyleClasses.SIZE_L, StyleClasses.SIZE_M, StyleClasses.SIZE_S);
+        for (int i = 0; i < sizeClasses.size(); i++) {
+            var column = new ColumnConstraints();
+            column.setPercentWidth(100.0 / sizeClasses.size());
+            dialogButtons.getColumnConstraints().add(column);
+            var cancelButton = new ResultButton(new DefaultResultButtonName(), "Cancel");
+            var okButton = new ResultButton(new DefaultResultButtonName(), "OK");
+            cancelButton.getStyleClass().add(sizeClasses.get(i));
+            okButton.getStyleClass().add(sizeClasses.get(i));
+            var cell = new HBox(Spacing.getHorizontal(), cancelButton, okButton);
+            cell.setAlignment(Pos.CENTER_RIGHT);
+            dialogButtons.add(cell, i, 0);
+        }
 
         // Root
-        var root = new VBox(prominentToolBar, defToolBar, grid, listView, treeView, buttonBar);
-        VBox.setVgrow(grid, Priority.ALWAYS);
+        var root = new VBox(largeToolBar, mediumToolBar, smallToolBar, grid, dialogButtons,
+                NodeFactory.createTabPaneRow(true), NodeFactory.createTabPaneRow(false));
         root.setSpacing(Spacing.getVertical());
         return root;
     }
 
     private static VBox createRightBox(String styleClass) {
+        var listView = NodeFactory.createListView(PERSONS);
+        VBox.setVgrow(listView, Priority.ALWAYS);
+        var treeView = NodeFactory.createTreeView(PERSONS);
+        VBox.setVgrow(treeView, Priority.ALWAYS);
         var table = NodeFactory.createTable(PERSONS);
         VBox.setVgrow(table, Priority.ALWAYS);
         var treeTable = NodeFactory.createTreeTable(PERSONS);
         VBox.setVgrow(treeTable, Priority.ALWAYS);
-        var rightBox = new VBox(table, treeTable);
+        var rightBox = new VBox(listView, treeView, table, treeTable);
         rightBox.setSpacing(Spacing.getVertical());
         return rightBox;
     }

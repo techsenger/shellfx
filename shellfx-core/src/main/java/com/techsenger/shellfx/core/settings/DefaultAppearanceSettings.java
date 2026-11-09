@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core.settings;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
 import javafx.scene.text.Font;
@@ -27,7 +26,7 @@ import javafx.scene.text.Font;
  */
 public class DefaultAppearanceSettings implements AppearanceSettings {
 
-    private @Nullable Density density;
+    private Density density = Density.DEFAULT;
 
     private Theme theme;
 
@@ -39,18 +38,24 @@ public class DefaultAppearanceSettings implements AppearanceSettings {
 
     }
 
-    public DefaultAppearanceSettings(@Nullable Density density, Font regularFont, Font monospaceFont) {
+    public DefaultAppearanceSettings(Font regularFont, Font monospaceFont) {
+        setRegularFont(regularFont);
+        setMonospaceFont(monospaceFont);
+    }
+
+    public DefaultAppearanceSettings(Density density, Font regularFont, Font monospaceFont) {
+        setDensity(density);
         setRegularFont(regularFont);
         setMonospaceFont(monospaceFont);
     }
 
     @Override
-    public @Nullable Density getDensity() {
+    public Density getDensity() {
         return this.density;
     }
 
     @Override
-    public void setDensity(@Nullable Density density) {
+    public void setDensity(Density density) {
         this.density = density;
     }
 

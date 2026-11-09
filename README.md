@@ -42,7 +42,6 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Area](#core-area)
 * [Layout Components](#layout)
     * [TabHost](#layout-tab-host)
-    * [ProminentTabHost](#layout-prominent-tab-host)
     * [DockHost](#layout-dock-host)
     * [PageHost](#layout-page-host)
     * [TreePageHost](#layout-tree-page-host)
@@ -380,8 +379,8 @@ and pay attention to log messages at the debug level.
 The second key part of ShellFX is the workspace, which represents one of the available layouts. ShellFX supports
 different types of workspace:
 
-1. Browser-like. This workspace is created using the `ProminentTabHost` component. Additionally, the tabs added to
-this `ProminentTabHost` can contain a docking layout created with the `DockHost` component.
+1. Browser-like. This workspace is a `TabHost` with slanted tabs (see `TabHost`). Additionally, the tabs added to
+this `TabHost` can contain a docking layout created with the `DockHost` component.
 2. IDE-like. This workspace is a straightforward docking layout created with the `DockHost` component.
 
 ### Window <a name="core-window"></a>
@@ -538,12 +537,14 @@ Layout components are responsible for arranging `Tab`, `Page`, and, in some case
 This component provides all the necessary APIs for working with tabs — adding, selecting, removing, transferring
 tab ports, and more.
 
-### ProminentTabHost <a name="layout-prominent-tab-host"></a>
-
-`ProminentTabHost` extends `TabHost` and is the primary `TabHost` used for building browser-like applications,
-where the application shell consists of a main menu and this single component as its workspace. It is named after
-the `prominent` style class (see `StyleClasses#PROMINENT`) and visually stands out from a regular `TabHost` through
-larger tabs and a more prominent, saturated tab header.
+The tab pane of the host is created by a factory passed to the second constructor, so the look of the tabs is chosen
+by the caller. `new TabHostView<>(viewModel, SlantedTabPanePro::new)` gives the host slanted tabs with a more
+saturated tab header; this is the workspace of browser-like applications, where the application shell consists of a
+main menu and this single component. `SlantedTabPanePro` is a `TabPanePro` of the `material` module; its shape is set
+only by CSS (`slanted-tab-pane-pro.css`): the `-sfx-slant-left`, `-sfx-slant-right`, `-sfx-top-offset`, `-sfx-padding`
+and `-sfx-tab-gap` properties. The size of a tab is the same as of a regular one: it is chosen with the style classes
+`size-l`, `size-m` (the default) and `size-s` of the tab pane, and all the values are in `em`, so they follow the
+font size.
 
 ### DockHost <a name="layout-dock-host"></a>
 

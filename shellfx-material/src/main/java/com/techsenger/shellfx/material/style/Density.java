@@ -16,21 +16,30 @@
 
 package com.techsenger.shellfx.material.style;
 
+import com.techsenger.annotations.Nullable;
+
 /**
+ * The density of the UI. {@link #DEFAULT} is the plain sizing of the theme, which has no style class; {@link #S} and
+ * {@link #XS} are more compact.
  *
  * @author Pavel Castornii
  */
 public enum Density {
 
-    M(StyleClasses.DENSITY_M), S(StyleClasses.DENSITY_S), XS(StyleClasses.DENSITY_XS);
+    DEFAULT(null), S(StyleClasses.DENSITY_S), XS(StyleClasses.DENSITY_XS);
 
-    private final String styleClass;
+    private final @Nullable String styleClass;
 
-    Density(String styleClass) {
+    Density(@Nullable String styleClass) {
         this.styleClass = styleClass;
     }
 
-    public String getStyleClass() {
+    /**
+     * Returns the style class of the density.
+     *
+     * @return the style class, or {@code null} for {@link #DEFAULT}, which has none
+     */
+    public @Nullable String getStyleClass() {
         return styleClass;
     }
 }

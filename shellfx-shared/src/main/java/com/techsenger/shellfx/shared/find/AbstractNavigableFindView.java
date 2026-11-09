@@ -42,11 +42,11 @@ public abstract class AbstractNavigableFindView<VM extends AbstractNavigableFind
     protected void build() {
         super.build();
         this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.findNextButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         this.findNextButton.setFocusTraversable(false);
 
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.findPreviousButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         this.findPreviousButton.setFocusTraversable(false);
     }
 

@@ -56,14 +56,6 @@
     -fx-padding: 1px 4px 1px 4px;
 }
 
-.density-m .column-list-view .column > .cell {
-    -fx-cell-size: 2em;
-    -fx-pref-height: 2em;
-    -fx-max-height: 2em;
-    -fx-min-height: 2em;
-    -fx-padding: 0.4em 0.85em 0.3em 0.85em;
-}
-
 .density-s .column-list-view .column > .cell {
     -fx-cell-size: 1.8em;
     -fx-pref-height: 1.8em;

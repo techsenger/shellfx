@@ -33,7 +33,7 @@ public final class DemoSettings {
     public static ShellSettings createSettings() {
         var regularFont = Font.font("System", 14);
         var monospaceFont = Font.font("Monospace", 14);
-        var appearance = new DefaultAppearanceSettings(null, regularFont, monospaceFont);
+        var appearance = new DefaultAppearanceSettings(regularFont, monospaceFont);
         appearance.setTheme(AtlantaFxTheme.CUPERTINO_DARK);
         appearance.setDensity(Density.XS);
         var settings = new AbstractShellSettings() {

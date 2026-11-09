@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.material.button;
 
 import com.techsenger.shellfx.material.Named;
-import com.techsenger.shellfx.material.style.StyleClasses;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
@@ -40,7 +39,6 @@ public class ResultButton extends Button implements Named {
     public ResultButton(ResultButtonName name, String string, Node node) {
         super(string, node);
         this.name = name;
-        getStyleClass().add(StyleClasses.SIZE_L);
     }
 
     @Override

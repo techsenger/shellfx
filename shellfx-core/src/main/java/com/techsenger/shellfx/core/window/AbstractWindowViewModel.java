@@ -95,7 +95,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
 
-    private final ReadOnlyObjectWrapper<Density> density = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Density> density = new ReadOnlyObjectWrapper<>(Density.DEFAULT);
 
     private final ReadOnlyObjectWrapper<Theme> theme = new ReadOnlyObjectWrapper<>();
 
@@ -589,11 +589,11 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         return settings;
     }
 
-    protected @Nullable Density getDensity() {
+    protected Density getDensity() {
         return this.density.get();
     }
 
-    protected void setDensity(@Nullable Density density) {
+    protected void setDensity(Density density) {
         this.density.set(density);
     }
 

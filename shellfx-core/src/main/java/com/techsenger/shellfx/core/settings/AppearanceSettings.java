@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.core.settings;
 
 import com.techsenger.shellfx.material.style.Density;
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.Theme;
 import javafx.scene.text.Font;
 
@@ -35,14 +34,14 @@ public interface AppearanceSettings {
      *
      * @return the current density value
      */
-    @Nullable Density getDensity();
+    Density getDensity();
 
     /**
      * Sets the density of the application UI.
      *
      * @param density the density value to apply
      */
-    void setDensity(@Nullable Density density);
+    void setDensity(Density density);
 
     /**
      * Returns the current application theme.

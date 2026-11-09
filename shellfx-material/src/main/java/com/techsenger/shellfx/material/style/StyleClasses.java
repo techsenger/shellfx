@@ -70,14 +70,8 @@ public interface StyleClasses {
     String MONOSPACE = "monospace";
 
     /**
-     * Represents a medium density spacing mode. This is the default spacing level and provides balanced padding and
-     * layout density.
-     */
-    String DENSITY_M = "density-m";
-
-    /**
-     * Represents a slightly more compact spacing mode than {@code DENSITY_M}, reducing padding and spacing for denser
-     * layouts.
+     * Represents a compact spacing mode, more compact than the default one (no density class), reducing padding and
+     * spacing for denser layouts.
      */
     String DENSITY_S = "density-s";
 
@@ -86,24 +80,6 @@ public interface StyleClasses {
      * UIs.
      */
     String DENSITY_XS = "density-xs";
-
-    /**
-     * Represents the extra-extra-large size variant for UI controls.
-     *
-     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
-     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
-     * {@code size} value.
-     */
-    String SIZE_XXL = "size-xxl";
-
-    /**
-     * Represents the extra-large size variant for UI controls.
-     *
-     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
-     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
-     * {@code size} value.
-     */
-    String SIZE_XL = "size-xl";
 
     /**
      * Represents the large size variant for UI controls.
@@ -115,7 +91,8 @@ public interface StyleClasses {
     String SIZE_L = "size-l";
 
     /**
-     * Represents the medium (default) size variant for UI controls.
+     * Represents the medium (default) size variant for UI controls. A control without a size class is medium, so
+     * this class is not written explicitly.
      *
      * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
      * determined by both the global {@code density} setting applied to the scene/root and this component-specific
@@ -206,12 +183,4 @@ public interface StyleClasses {
      * to persistent-selection data lists such as file or directory listings.
      */
     String ACCENT_LIST_VIEW = "accent-list-view";
-
-    /**
-     * Style class for a {@code ToolBar} that should stand out as larger than a regular one (e.g. a top-level
-     * action bar, as opposed to a tool's own inline toolbar) &mdash; a fixed, non-standard variant, unlike
-     * {@code SIZE_L}/{@code SIZE_XL}, which grade a single control along the regular size scale. Its buttons,
-     * text fields and combo boxes are sized to match {@code SIZE_L} buttons.
-     */
-    String PROMINENT = "prominent";
 }

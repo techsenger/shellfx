@@ -20,6 +20,7 @@ module com.techsenger.shellfx.material {
     requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.tabpanepro.core;
     requires org.slf4j;
     requires javafx.base;
     requires javafx.graphics;
@@ -38,6 +39,7 @@ module com.techsenger.shellfx.material {
     exports com.techsenger.shellfx.material.slot;
     exports com.techsenger.shellfx.material.style;
     exports com.techsenger.shellfx.material.table;
+    exports com.techsenger.shellfx.material.tabpane;
     exports com.techsenger.shellfx.material.textarea;
     exports com.techsenger.shellfx.material.textfield;
     exports com.techsenger.shellfx.material.theme;

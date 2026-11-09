@@ -73,7 +73,6 @@ public class StylesTabView<VM extends StylesTabViewModel<?>> extends AbstractTab
         private final List<PageDescriptor> pages = List.of(
                 new DefaultPageDescriptor("Density Variants", new VariantPageFactory()),
                 new DefaultPageDescriptor("Default Set", new SetPageFactory(null)),
-                new DefaultPageDescriptor("Medium Set", new SetPageFactory(StyleClasses.DENSITY_M)),
                 new DefaultPageDescriptor("Small Set", new SetPageFactory(StyleClasses.DENSITY_S)),
                 new DefaultPageDescriptor("Extra Small Set", new SetPageFactory(StyleClasses.DENSITY_XS)));
 

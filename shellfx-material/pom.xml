@@ -39,6 +39,10 @@
             <artifactId>toolkit-fx</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.tabpanepro</groupId>
+            <artifactId>tabpanepro-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
         </dependency>

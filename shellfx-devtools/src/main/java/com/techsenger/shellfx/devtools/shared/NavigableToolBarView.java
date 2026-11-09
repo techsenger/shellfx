@@ -51,13 +51,15 @@ public class NavigableToolBarView<VM extends NavigableToolBarViewModel<?>> exten
     @Override
     protected void build() {
         super.build();
+        getFindComboBox().getStyleClass().add(StyleClasses.SIZE_S);
+        getMatchCaseButton().getStyleClass().add(StyleClasses.SIZE_S);
+        getFindPreviousButton().getStyleClass().add(StyleClasses.SIZE_S);
+        getFindNextButton().getStyleClass().add(StyleClasses.SIZE_S);
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBoxWrapper().setPadding(Insets.EMPTY);
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
-        getFindComboBox().getStyleClass().add(StyleClasses.SIZE_M);
-        getFindRightBox().getStyleClass().add(StyleClasses.SIZE_M);
 
-        this.refreshButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.refreshButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
         this.toolBar.getItems().addAll(getFindComboBoxWrapper(), getFindPreviousButton(), getFindNextButton(),

@@ -259,7 +259,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private @Nullable FontApplier fontApplier;
 
-    private @Nullable Density density;
+    private Density density = Density.DEFAULT;
 
     /**
      * While dragging we need the difference. So, we keep in this variable previous value.
@@ -827,14 +827,15 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
     }
 
-    private void updateDensity(@Nullable Density density) {
+    private void updateDensity(Density density) {
         checkIfTopLevel();
-        if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().remove(this.density.getStyleClass());
+        var styleClasses = this.stage.getScene().getRoot().getStyleClass();
+        if (this.density.getStyleClass() != null) {
+            styleClasses.remove(this.density.getStyleClass());
         }
         this.density = density;
-        if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().add(this.density.getStyleClass());
+        if (this.density.getStyleClass() != null) {
+            styleClasses.add(this.density.getStyleClass());
         }
     }
 

@@ -21,14 +21,18 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
+import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.shellfx.material.tabpane.SlantedTabPanePro;
 import com.techsenger.shellfx.shared.style.SharedIcons;
 import com.techsenger.shellfx.storage.style.StorageIcons;
+import com.techsenger.tabpanepro.core.TabPanePro;
 import java.util.List;
 import java.util.stream.IntStream;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -37,6 +41,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -49,6 +55,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 /**
@@ -57,7 +64,7 @@ import javafx.scene.layout.Priority;
  */
 final class NodeFactory {
 
-    private static final double DATA_NODE_MAX_HEIGHT = 300;
+    private static final double DATA_NODE_MAX_HEIGHT = 250;
 
     static Label createSection(String title) {
         var label = NodeFactory.createLabel(title, null);
@@ -74,11 +81,17 @@ final class NodeFactory {
         return b;
     }
 
-    static ToolBar createToolBar(String toolBarStyleClass, String buttonStyleClass) {
-        var toolbar = new ToolBar();
-        if (toolBarStyleClass != null) {
-            toolbar.getStyleClass().add(toolBarStyleClass);
+    static Button createTextButton(String text, String styleClass) {
+        var b = new Button(text);
+        if (styleClass != null) {
+            b.getStyleClass().add(styleClass);
         }
+        return b;
+    }
+
+    static ToolBar createToolBar(String buttonStyleClass) {
+        var toolbar = new ToolBar();
+        toolbar.getStyleClass().add(buttonStyleClass);
         toolbar.getItems().addAll(
                 createButton(SharedIcons.HIGHLIGHT, buttonStyleClass),
                 new Separator(Orientation.VERTICAL),
@@ -87,10 +100,36 @@ final class NodeFactory {
                 createToggleButton(DevToolsIcons.TOOLS, buttonStyleClass),
                 createMenuButton(DevToolsIcons.VIEW, buttonStyleClass),
                 new Separator(Orientation.VERTICAL),
-                createTextField("Search"),
-                createComboBox(List.of("One", "Two", "Three")));
+                sized(createTextField("Search"), buttonStyleClass),
+                sized(createComboBox(List.of("One", "Two", "Three")), buttonStyleClass));
 
         return toolbar;
+    }
+
+    /**
+     * Creates a row of three tab panes in the sizes L, M and S, each with a tab with an icon and a text, a tab with
+     * only a text and a tab with only an icon.
+     */
+    static HBox createTabPaneRow(boolean slanted) {
+        var row = new HBox(Spacing.getHorizontal());
+        for (var sizeClass : List.of(StyleClasses.SIZE_L, StyleClasses.SIZE_M, StyleClasses.SIZE_S)) {
+            var tabPane = slanted ? new SlantedTabPanePro() : new TabPanePro();
+            tabPane.getStyleClass().addAll(sizeClass, Styles.BORDERED);
+            // the medium panes show the close button on every tab
+            tabPane.setTabClosingPolicy(sizeClass.equals(StyleClasses.SIZE_M)
+                    ? TabPane.TabClosingPolicy.ALL_TABS : TabPane.TabClosingPolicy.UNAVAILABLE);
+            var iconAndTextTab = new Tab("Files", new Label("Icon and text"));
+            iconAndTextTab.setGraphic(new FontIconView(StorageIcons.DIRECTORY));
+            var iconTab = new Tab();
+            iconTab.setContent(new Label("Icon"));
+            iconTab.setGraphic(new FontIconView(DevToolsIcons.TOOLS));
+            tabPane.getTabs().addAll(iconAndTextTab, new Tab("Text", new Label("Text")), iconTab);
+            HBox.setHgrow(tabPane, Priority.ALWAYS);
+            tabPane.setMaxWidth(Double.MAX_VALUE);
+            tabPane.setMinHeight(DATA_NODE_MAX_HEIGHT);
+            row.getChildren().add(tabPane);
+        }
+        return row;
     }
 
     static Label createLabel(String text, String styleClass) {
@@ -230,9 +269,16 @@ final class NodeFactory {
         return root;
     }
 
+    private static <T extends Node> T sized(T node, @Nullable String sizeStyleClass) {
+        if (sizeStyleClass != null) {
+            node.getStyleClass().add(sizeStyleClass);
+        }
+        return node;
+    }
+
     private static Button createButton(StyleFontIcon icon, String styleClass) {
         var button = new Button(null, new FontIconView(icon));
-        button.getStyleClass().add(Styles.FLAT);
+        button.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }
@@ -250,7 +296,7 @@ final class NodeFactory {
 
     private static ToggleButton createToggleButton(StyleFontIcon icon, String styleClass) {
         var button = new ToggleButton(null, new FontIconView(icon));
-        button.getStyleClass().add(Styles.FLAT);
+        button.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }

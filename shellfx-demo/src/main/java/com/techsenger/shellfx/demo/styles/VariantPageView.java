@@ -23,14 +23,19 @@ import static com.techsenger.shellfx.demo.styles.StylePageData.TEXT;
 import static com.techsenger.shellfx.demo.styles.StylePageData.TEXTS;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import java.util.List;
+import java.util.function.Function;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -39,6 +44,9 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public class VariantPageView<VM extends VariantPageViewModel<?>> extends AbstractPageView<VM> {
+
+    private static final List<String> SIZES = List.of(StyleClasses.SIZE_L, StyleClasses.SIZE_M, StyleClasses.SIZE_S,
+            StyleClasses.SIZE_XS);
 
     private static VBox wrapWithName(Node node, String styleClass) {
         return wrapWithName(node, styleClass, null);
@@ -59,32 +67,67 @@ public class VariantPageView<VM extends VariantPageViewModel<?>> extends Abstrac
         return box;
     }
 
-    private static VBox createIconedButtons() {
-        var w0 = wrapWithName(createIconedButtons(DEFAULT_STYLE_NAME), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_M), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_S), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_XS), StyleClasses.DENSITY_XS);
-        var vbox = new VBox(Spacing.getVertical());
-        var h0 = createSpacedHBox(w0, w1);
-        VBox.setVgrow(h0, Priority.ALWAYS);
-        var h1 = createSpacedHBox(w2, w3);
-        VBox.setVgrow(h1, Priority.ALWAYS);
-        vbox.getChildren().addAll(h0, h1);
-        return vbox;
+    private static VBox wrapWithDensityName(Node node, String densityStyleClass) {
+        var box = wrapWithName(node, densityStyleClass);
+        box.getChildren().get(1).getStyleClass().add("density-name");
+        return box;
+    }
+
+    private static GridPane createIconedButtons() {
+        return createDensityGrid(VariantPageView::createIconedButtons);
+    }
+
+    private static GridPane createTextButtons() {
+        return createDensityGrid(VariantPageView::createTextButtons);
+    }
+
+    private static GridPane createDensityGrid(Function<String, Node> nodeFactory) {
+        var w0 = wrapWithDensityName(nodeFactory.apply(DEFAULT_STYLE_NAME), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(nodeFactory.apply(StyleClasses.DENSITY_S), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(nodeFactory.apply(StyleClasses.DENSITY_XS), StyleClasses.DENSITY_XS);
+        return createDensityGrid(w0, w1, w2);
+    }
+
+    /**
+     * Puts the variants into a grid of two equal columns: two in the first row, one in the second.
+     */
+    private static GridPane createDensityGrid(Node first, Node second, Node third) {
+        var grid = new GridPane();
+        grid.setHgap(Spacing.getHorizontal());
+        grid.setVgap(Spacing.getVertical());
+        for (int i = 0; i < 2; i++) {
+            var column = new ColumnConstraints();
+            column.setPercentWidth(50);
+            grid.getColumnConstraints().add(column);
+            var row = new RowConstraints();
+            row.setVgrow(Priority.ALWAYS);
+            grid.getRowConstraints().add(row);
+        }
+        grid.add(first, 0, 0);
+        grid.add(second, 1, 0);
+        grid.add(third, 0, 1);
+        return grid;
     }
 
     private static HBox createIconedButtons(String densityStyleClass) {
-        var w0 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XXL), StyleClasses.SIZE_XXL, "5em");
-        var w1 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XL), StyleClasses.SIZE_XL, "5em");
-        var w2 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_L), StyleClasses.SIZE_L, "5em");
-        var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_M), StyleClasses.SIZE_M, "5em");
-        var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_S), StyleClasses.SIZE_S, "5em");
-        var w5 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XS), StyleClasses.SIZE_XS, "5em");
+        var box = new HBox();
+        for (var size : SIZES) {
+            box.getChildren().add(wrapWithName(NodeFactory.createIconButton(size), size, "5em"));
+        }
         var crossButton = NodeFactory.createIconButton(StyleClasses.SIZE_XXS);
         crossButton.setGraphic(null);
         crossButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
-        var w6 = wrapWithName(crossButton, StyleClasses.SIZE_XXS, "5em");
-        var box = new HBox(w0, w1, w2, w3, w4, w5, w6);
+        box.getChildren().add(wrapWithName(crossButton, StyleClasses.SIZE_XXS, "5em"));
+        box.setMaxWidth(Region.USE_PREF_SIZE);
+        box.getStyleClass().add(densityStyleClass);
+        return box;
+    }
+
+    private static HBox createTextButtons(String densityStyleClass) {
+        var box = new HBox();
+        for (var size : SIZES) {
+            box.getChildren().add(wrapWithName(NodeFactory.createTextButton("JjWw", size), size, "5em"));
+        }
         box.setMaxWidth(Region.USE_PREF_SIZE);
         box.getStyleClass().add(densityStyleClass);
         return box;
@@ -92,94 +135,67 @@ public class VariantPageView<VM extends VariantPageViewModel<?>> extends Abstrac
 
     private static VBox createToolBars() {
         var w0 = createToolBars(DEFAULT_STYLE_NAME);
-        var w1 = createToolBars(StyleClasses.DENSITY_M);
-        var w2 = createToolBars(StyleClasses.DENSITY_S);
-        var w3 = createToolBars(StyleClasses.DENSITY_XS);
-        return new VBox(Spacing.getVertical(), w0, w1, w2, w3);
+        var w1 = createToolBars(StyleClasses.DENSITY_S);
+        var w2 = createToolBars(StyleClasses.DENSITY_XS);
+        return new VBox(Spacing.getVertical(), w0, w1, w2);
     }
 
     private static VBox createToolBars(String densityStyleClass) {
-        var prominent = wrapWithName(NodeFactory.createToolBar(StyleClasses.PROMINENT, StyleClasses.SIZE_L),
-                StyleClasses.PROMINENT);
-        var standard = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_M), DEFAULT_STYLE_NAME);
-        var box = createSpacedHBox(prominent, standard);
-        return wrapWithName(box, densityStyleClass);
+        var large = wrapWithName(NodeFactory.createToolBar(StyleClasses.SIZE_L), StyleClasses.SIZE_L);
+        var medium = wrapWithName(NodeFactory.createToolBar(StyleClasses.SIZE_M), StyleClasses.SIZE_M);
+        var small = wrapWithName(NodeFactory.createToolBar(StyleClasses.SIZE_S), StyleClasses.SIZE_S);
+        var box = createSpacedHBox(large, medium, small);
+        return wrapWithDensityName(box, densityStyleClass);
     }
 
     private static HBox createTextFields() {
-        var w0 = wrapWithName(NodeFactory.createTextField(TEXT), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_XS);
-        return createSpacedHBox(w0, w1, w2, w3);
+        var w0 = wrapWithDensityName(NodeFactory.createTextField(TEXT), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_XS);
+        return createSpacedHBox(w0, w1, w2);
     }
 
     private static HBox createComboBoxes() {
-        var w0 = wrapWithName(NodeFactory.createComboBox(TEXTS), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_XS);
-        return createSpacedHBox(w0, w1, w2, w3);
+        var w0 = wrapWithDensityName(NodeFactory.createComboBox(TEXTS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_XS);
+        return createSpacedHBox(w0, w1, w2);
     }
 
-    private static VBox createTableViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTable(PERSONS), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_XS);
-
-        var h0 = createSpacedHBox(w0, w1);
-        VBox.setVgrow(h0, Priority.ALWAYS);
-        var h1 = createSpacedHBox(w2, w3);
-        VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.getVertical(), h0, h1);
-        box.setMaxHeight(450);
-        return box;
+    private static GridPane createTableViewPane() {
+        var w0 = wrapWithDensityName(NodeFactory.createTable(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_XS);
+        var grid = createDensityGrid(w0, w1, w2);
+        grid.setMaxHeight(450);
+        return grid;
     }
 
-    private static VBox createTreeTableViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTreeTable(PERSONS), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_XS);
-
-        var h0 = createSpacedHBox(w0, w1);
-        VBox.setVgrow(h0, Priority.ALWAYS);
-        var h1 = createSpacedHBox(w2, w3);
-        VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.getVertical(), h0, h1);
-        box.setMaxHeight(450);
-        return box;
+    private static GridPane createTreeTableViewPane() {
+        var w0 = wrapWithDensityName(NodeFactory.createTreeTable(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_XS);
+        var grid = createDensityGrid(w0, w1, w2);
+        grid.setMaxHeight(450);
+        return grid;
     }
 
-    private static VBox createListViewBox() {
-        var w0 = wrapWithName(NodeFactory.createListView(PERSONS), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_XS);
-
-        var h0 = createSpacedHBox(w0, w1);
-        VBox.setVgrow(h0, Priority.ALWAYS);
-        var h1 = createSpacedHBox(w2, w3);
-        VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.getVertical(), h0, h1);
-        box.setMaxHeight(450);
-        return box;
+    private static GridPane createListViewPane() {
+        var w0 = wrapWithDensityName(NodeFactory.createListView(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_XS);
+        var grid = createDensityGrid(w0, w1, w2);
+        grid.setMaxHeight(450);
+        return grid;
     }
 
-    private static VBox createTreeViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTreeView(PERSONS), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_M);
-        var w2 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_S);
-        var w3 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_XS);
-
-        var h0 = createSpacedHBox(w0, w1);
-        VBox.setVgrow(h0, Priority.ALWAYS);
-        var h1 = createSpacedHBox(w2, w3);
-        VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.getVertical(), h0, h1);
-        box.setMaxHeight(450);
-        return box;
+    private static GridPane createTreeViewPane() {
+        var w0 = wrapWithDensityName(NodeFactory.createTreeView(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithDensityName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_S);
+        var w2 = wrapWithDensityName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_XS);
+        var grid = createDensityGrid(w0, w1, w2);
+        grid.setMaxHeight(450);
+        return grid;
     }
 
     private static HBox createSpacedHBox(Node... nodes) {
@@ -223,13 +239,14 @@ public class VariantPageView<VM extends VariantPageViewModel<?>> extends Abstrac
         mainBox.setSpacing(Spacing.getVertical());
 
         addToBox(NodeFactory.createSection("Icon Button"), createIconedButtons());
+        addToBox(NodeFactory.createSection("Text Button"), createTextButtons());
         addToBox(NodeFactory.createSection("ToolBar"), createToolBars());
         addToBox(NodeFactory.createSection("TextField"), createTextFields());
         addToBox(NodeFactory.createSection("ComboBox"), createComboBoxes());
-        addToBox(NodeFactory.createSection("ListView"), createListViewBox());
-        addToBox(NodeFactory.createSection("TreeView"), createTreeViewBox());
-        addToBox(NodeFactory.createSection("TableView"), createTableViewBox());
-        addToBox(NodeFactory.createSection("TreeTableView"), createTreeTableViewBox());
+        addToBox(NodeFactory.createSection("ListView"), createListViewPane());
+        addToBox(NodeFactory.createSection("TreeView"), createTreeViewPane());
+        addToBox(NodeFactory.createSection("TableView"), createTableViewPane());
+        addToBox(NodeFactory.createSection("TreeTableView"), createTreeTableViewPane());
     }
 
     private void addToBox(Node... nodes) {

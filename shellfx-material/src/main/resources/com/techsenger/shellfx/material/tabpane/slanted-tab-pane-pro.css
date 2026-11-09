@@ -1,0 +1,247 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author: Pavel Castornii
+*/
+
+/* 15em is 210 pixels at the font size 14 */
+.tab-pane-pro.slanted {
+    -fx-tab-max-width: 15em;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .tab-header-background {
+  -fx-background-insets: 0 0 0 0, 0 0 1px 0;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.46em;
+    -fx-padding: 0;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.46em;
+    -fx-fit-height: 1.46em;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-width: -1;
+    -fx-pref-height: 2.31em;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0.4em;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+    -fx-background-color: transparent, ladder(-color-bg-default, derive(-color-bg-inset, 20%) 49%, -color-base-1 50%);
+    -fx-background-insets: 0 0 0 0, 0 0 1px 0;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab:hover {
+  -fx-background-color: -color-border-default, -color-bg-subtle;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab:selected {
+  -fx-background-color: -color-border-default, -color-tab-bg-selected;
+  -fx-background-insets: 0 0 0 0, 0 0 0 0;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab > .border-path {
+    -fx-stroke: -color-border-default;
+    -fx-stroke-width: 2px;
+}
+
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab > .selected-path {
+    -fx-stroke: -color-accent-5;
+    -fx-stroke-width: 2px;
+}
+
+/*
+    The shape of a slanted tab header. The properties are read by SlantedTabHeaderSkin; the values are in em, so the
+    shape follows the font size (the values are for the size m). The tab gap is the distance
+    between two tabs, it is applied to the whole tab header area by SlantedTabPanePro.
+*/
+.tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab {
+    -sfx-slant-left: 0.9em;
+    -sfx-slant-right: 0.9em;
+    -sfx-top-offset: 0.36em;
+    -sfx-padding: 0.14em 0.58em 0 0.58em;
+    -sfx-tab-gap: -0.64em;
+}
+
+/*
+    Sizes: the visible height and the icons are the same as of the regular tabs of the same size (see material.css),
+    the label is taller by the part that is clipped above the tab (-sfx-top-offset, 0.36em), and the shape depends
+    on the size. Size m is the base.
+*/
+.tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab {
+    -sfx-slant-left: 1em;
+    -sfx-slant-right: 1em;
+    -sfx-tab-gap: -0.71em;
+}
+
+.tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab {
+    -sfx-slant-left: 0.8em;
+    -sfx-slant-right: 0.8em;
+    -sfx-tab-gap: -0.57em;
+}
+
+/***** density-xs - size-l *****/
+.density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.56em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.65em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.65em;
+    -fx-fit-height: 1.65em;
+}
+
+/***** density-xs - size-m *****/
+.density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab,
+.density-xs .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label,
+.density-xs .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.31em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view,
+.density-xs .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.46em;
+}
+
+.density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .image-icon-view,
+.density-xs .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.46em;
+    -fx-fit-height: 1.46em;
+}
+
+/***** density-xs - size-s *****/
+.density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.06em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.28em;
+}
+
+.density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.28em;
+    -fx-fit-height: 1.28em;
+}
+
+/***** density-s - size-l *****/
+.density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.66em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.73em;
+}
+
+.density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.73em;
+    -fx-fit-height: 1.73em;
+}
+
+/***** density-s - size-m *****/
+.density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab,
+.density-s .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label,
+.density-s .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.41em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view,
+.density-s .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.54em;
+}
+
+.density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .image-icon-view,
+.density-s .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.54em;
+    -fx-fit-height: 1.54em;
+}
+
+/***** density-s - size-s *****/
+.density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab {
+    -fx-padding: 0 0.3em;
+}
+
+.density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-height: 2.16em;
+    -fx-padding: 0 0.4em;
+}
+
+.density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .font-icon-view {
+    -fx-icon-size: 1.35em;
+}
+
+.density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .image-icon-view {
+    -fx-fit-width: 1.35em;
+    -fx-fit-height: 1.35em;
+}
+
+/* the preview of a dragged tab is not a child of the tab pane; the bottom line closes the gap under it */
+.tab-drag-content {
+    -fx-border-color: transparent transparent -color-border-default transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/*
+    The tabs of a slanted pane have their own outlines, so the frame that bordered panes have around the tab headers
+    (and the padding that keeps the tabs inside it) is not needed. The rules repeat the sides of the rules of the
+    frame to be more specific than they are.
+*/
+.tab-pane-pro.slanted.bordered:top > .tab-header-area > .tab-header-background,
+.tab-pane-pro.slanted.bordered:bottom > .tab-header-area > .tab-header-background,
+.tab-pane-pro.slanted.bordered:left > .tab-header-area > .tab-header-background,
+.tab-pane-pro.slanted.bordered:right > .tab-header-area > .tab-header-background {
+    -fx-border-width: 0;
+}
+
+.tab-pane-pro.slanted.bordered:top > .tab-header-area,
+.tab-pane-pro.slanted.bordered:bottom > .tab-header-area,
+.tab-pane-pro.slanted.bordered:left > .tab-header-area,
+.tab-pane-pro.slanted.bordered:right > .tab-header-area {
+    -fx-padding: 0;
+}

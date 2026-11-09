@@ -63,13 +63,13 @@ public final class StyleUtils {
      * since density is only ever set on top-level windows. Owner lookup differs by window type: {@link Stage}
      * exposes it via {@link Stage#getOwner()}, while {@link PopupWindow} (e.g. {@link javafx.stage.Popup})
      * exposes it via {@link PopupWindow#getOwnerWindow()} — {@link Window} itself declares neither. Returns
-     * {@code null} if no window in the chain has a density style class, has no {@link Scene} yet, or if the
-     * chain ends in a window type that exposes no owner (e.g. an unowned {@code Stage}).
+     * {@link Density#DEFAULT} if no window in the chain has a density style class, has no {@link Scene} yet, or if
+     * the chain ends in a window type that exposes no owner (e.g. an unowned {@code Stage}).
      *
      * @param window the window to inspect
-     * @return the active density, or {@code null} if none was found in the owner-window chain
+     * @return the active density, or {@link Density#DEFAULT} if none was found in the owner-window chain
      */
-    public static @Nullable Density getDensity(Window window) {
+    public static Density getDensity(Window window) {
         Objects.requireNonNull(window, "window");
         var current = window;
         while (current != null) {
@@ -77,14 +77,14 @@ public final class StyleUtils {
             if (scene != null) {
                 var styleClasses = scene.getRoot().getStyleClass();
                 for (var density : Density.values()) {
-                    if (styleClasses.contains(density.getStyleClass())) {
+                    if (density.getStyleClass() != null && styleClasses.contains(density.getStyleClass())) {
                         return density;
                     }
                 }
             }
             current = getOwner(current);
         }
-        return null;
+        return Density.DEFAULT;
     }
 
     private static @Nullable Window getOwner(Window window) {

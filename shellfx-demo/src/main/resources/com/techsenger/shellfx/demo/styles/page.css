@@ -19,6 +19,10 @@
 */
 
 .label.section {
-    -fx-text-fill: ladder(-color-bg-default, -color-accent-2 49%, -color-accent-7 50%);;
+    -fx-text-fill: ladder(-color-bg-default, -color-accent-2 49%, -color-accent-7 50%);
+}
+
+.label.density-name {
+    -fx-text-fill: -color-fg-subtle;
 }
 

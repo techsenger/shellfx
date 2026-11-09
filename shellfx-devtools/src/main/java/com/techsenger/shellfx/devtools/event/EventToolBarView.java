@@ -65,16 +65,16 @@ public class EventToolBarView<VM extends EventToolBarViewModel<?>> extends ToolB
     @Override
     protected void build() {
         super.build();
-        this.recordButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.recordButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.recordButton.setTooltip(new Tooltip("Start/Stop"));
-        this.clearButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.clearButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.clearButton.setTooltip(new Tooltip("Clear"));
-        this.filterButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.filterButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
-        this.selectedOnlyButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
+        this.selectedOnlyButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
 
-        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_S);
         List<MenuItem> items = new ArrayList<>();
         getViewModel().getSelectionsByEventType().entrySet().forEach(e -> {
             var menuItem = new CheckMenuItem(e.getKey().getSimpleName());

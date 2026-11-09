@@ -35,7 +35,7 @@
  * overwrites that Java-set value on the very next pass, no matter the rule's specificity - see
  * column-list-view.css for the identical note on .column/.cell. Cell height, unlike row height, is NOT
  * Java-owned - only the row as a whole has a fixed height - so it is set as plain CSS below, in the
- * density-m/s/xs blocks.
+ * density-s/xs blocks.
  */
 .column-tile-view .row {
 
@@ -43,14 +43,6 @@
 
 .column-tile-view .row > .cell {
     -fx-text-fill: -color-fg-default;
-}
-
-.density-m .column-tile-view .row > .cell {
-    -fx-cell-size: 2em;
-    -fx-pref-height: 2em;
-    -fx-max-height: 2em;
-    -fx-min-height: 2em;
-    -fx-padding: 0.4em 0.85em 0.3em 0.85em;
 }
 
 .density-s .column-tile-view .row > .cell {

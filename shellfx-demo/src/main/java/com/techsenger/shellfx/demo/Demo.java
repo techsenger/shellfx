@@ -44,6 +44,7 @@ import com.techsenger.shellfx.layout.dockhost.DockHostConfig;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import java.util.List;
@@ -124,7 +125,7 @@ public class Demo extends Application {
         // creating shell component
         if (appType == ApplicationType.STYLES_ONLY) {
             // Important: To support different density styles, the window density must not be specified.
-            context.getSettings().getAppearance().setDensity(null);
+            context.getSettings().getAppearance().setDensity(Density.DEFAULT);
         }
         var shellConfig = context.getConfigManager().getOrCreateConfig(ShellConfig.class, ShellConfig::new);
         var shellParams = new DefaultShellParams(shellConfig, context);
@@ -163,7 +164,7 @@ public class Demo extends Application {
         var context = shellView.getContext();
         switch (appType) {
             case BROWSER -> {
-                workspace = HostFactory.createProminentTabHost(context.getSettings());
+                workspace = HostFactory.createSlantedTabHost();
             }
             case IDE -> {
                 var dockHostConfig = context.getConfigManager()
@@ -183,7 +184,7 @@ public class Demo extends Application {
                 workspace = null;
             }
             case STYLES_ONLY -> {
-                workspace = HostFactory.createProminentTabHost(context.getSettings());
+                workspace = HostFactory.createSlantedTabHost();
             }
             default -> throw new AssertionError();
         }
