@@ -28,7 +28,7 @@
 }
 
 .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.46em;
+    -sfx-icon-size: 1.46em;
     -fx-padding: 0;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.65em;
+    -sfx-icon-size: 1.65em;
 }
 
 .density-xs .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .image-icon-view {
@@ -132,7 +132,7 @@
 
 .density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view,
 .density-xs .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.46em;
+    -sfx-icon-size: 1.46em;
 }
 
 .density-xs .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .image-icon-view,
@@ -152,7 +152,7 @@
 }
 
 .density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.28em;
+    -sfx-icon-size: 1.28em;
 }
 
 .density-xs .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .image-icon-view {
@@ -171,7 +171,7 @@
 }
 
 .density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.73em;
+    -sfx-icon-size: 1.73em;
 }
 
 .density-s .tab-pane-pro.slanted.size-l > .tab-header-area > .headers-region > .tab .image-icon-view {
@@ -193,7 +193,7 @@
 
 .density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .font-icon-view,
 .density-s .tab-pane-pro.slanted.size-m > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.54em;
+    -sfx-icon-size: 1.54em;
 }
 
 .density-s .tab-pane-pro.slanted > .tab-header-area > .headers-region > .tab .image-icon-view,
@@ -213,7 +213,7 @@
 }
 
 .density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-icon-size: 1.35em;
+    -sfx-icon-size: 1.35em;
 }
 
 .density-s .tab-pane-pro.slanted.size-s > .tab-header-area > .headers-region > .tab .image-icon-view {

@@ -19,17 +19,17 @@
 */
 
 .font-icon-view.copy-icon {
-    -fx-icon-code: 983439; /* content-copy */
+    -sfx-icon-code: 983439; /* content-copy */
 }
 
 .font-icon-view.copied-icon {
-    -fx-icon-code: 983340; /* check */
+    -sfx-icon-code: 983340; /* check */
 }
 
 .font-icon-view.chevron-up-icon {
-    -fx-icon-code: 983363; /* chevron-up */
+    -sfx-icon-code: 983363; /* chevron-up */
 }
 
 .font-icon-view.chevron-down-icon {
-    -fx-icon-code: 983360; /* chevron-down */
+    -sfx-icon-code: 983360; /* chevron-down */
 }

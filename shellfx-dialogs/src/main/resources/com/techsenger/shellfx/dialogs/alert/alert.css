@@ -23,7 +23,7 @@
 }
 
 .message-box > .icon-view-box > .font-icon-view {
-    -fx-icon-size: 3em;
+    -sfx-icon-size: 3em;
 }
 
 .message-box > .message-label {

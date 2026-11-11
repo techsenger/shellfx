@@ -19,54 +19,54 @@
 */
 
 .font-icon-view.select-icon {
-    -fx-icon-code: 986366; /* cursor-default-click-outline */
+    -sfx-icon-code: 986366; /* cursor-default-click-outline */
 }
 
 .font-icon-view.selection-icon {
-    -fx-icon-code: 984197; /* select */
+    -sfx-icon-code: 984197; /* select */
 }
 
 .font-icon-view.record-start-icon {
-    -fx-icon-code: 986819; /* record-circle-outline */
+    -sfx-icon-code: 986819; /* record-circle-outline */
 }
 
 .font-icon-view.record-stop-icon {
-    -fx-icon-code: 984679; /* stop-circle-outline */
+    -sfx-icon-code: 984679; /* stop-circle-outline */
 }
 
 .font-icon-view.filter-icon {
-    -fx-icon-code: 983603; /* filter-outline */
+    -sfx-icon-code: 983603; /* filter-outline */
 }
 
 .font-icon-view.selected-only-icon {
-    -fx-icon-code: 984198; /* select-all */
+    -sfx-icon-code: 984198; /* select-all */
 }
 
 .font-icon-view.open-in-new-icon {
-    -fx-icon-code: 984012; /* open-in-new */
+    -sfx-icon-code: 984012; /* open-in-new */
 }
 
 .font-icon-view.dots-vertical-icon {
-    -fx-icon-code: 983513; /* dots-vertical */
+    -sfx-icon-code: 983513; /* dots-vertical */
 }
 
 .font-icon-view.clear-icon {
-    -fx-icon-code: 983266; /* broom */
+    -sfx-icon-code: 983266; /* broom */
 }
 
 .font-icon-view.refresh-icon {
-    -fx-icon-code: 984144; /* refresh */
+    -sfx-icon-code: 984144; /* refresh */
 }
 
 .font-icon-view.tools-icon {
-    -fx-icon-code: 987236; /* tools */
+    -sfx-icon-code: 987236; /* tools */
 }
 
 .font-icon-view.edit-icon {
-    -fx-icon-code: 986294; /* pencil-outline */
+    -sfx-icon-code: 986294; /* pencil-outline */
 }
 
 .font-icon-view.view-icon {
-    -fx-icon-code: 985976; /* card-text-outline */
+    -sfx-icon-code: 985976; /* card-text-outline */
 }
 

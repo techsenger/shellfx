@@ -19,25 +19,25 @@
 */
 
 .font-icon-view.chevron-up-icon {
-    -fx-icon-code: 983363; /* chevron-up */
+    -sfx-icon-code: 983363; /* chevron-up */
 }
 
 .font-icon-view.chevron-down-icon {
-    -fx-icon-code: 983360; /* chevron-down */
+    -sfx-icon-code: 983360; /* chevron-down */
 }
 
 .font-icon-view.match-case-icon {
-    -fx-icon-code: 985908; /* format-letter-case */
+    -sfx-icon-code: 985908; /* format-letter-case */
 }
 
 .font-icon-view.whole-word-icon {
-    -fx-icon-code: 987065; /* format-letter-matches */
+    -sfx-icon-code: 987065; /* format-letter-matches */
 }
 
 .font-icon-view.reg-exp-icon {
-    -fx-icon-code: 984145; /* regex */
+    -sfx-icon-code: 984145; /* regex */
 }
 
 .font-icon-view.highlight-icon {
-    -fx-icon-code: 984658; /* marker */
+    -sfx-icon-code: 984658; /* marker */
 }

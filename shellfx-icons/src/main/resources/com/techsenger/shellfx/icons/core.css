@@ -19,19 +19,19 @@
 */
 
 .font-icon-view.window-minimize-icon {
-    -fx-icon-code: 984496; /* window-minimize */
+    -sfx-icon-code: 984496; /* window-minimize */
 }
 
 .font-icon-view.window-maximize-icon {
-    -fx-icon-code: 984495; /* window-maximize */
+    -sfx-icon-code: 984495; /* window-maximize */
 }
 
 .font-icon-view.window-restore-icon {
-    -fx-icon-code: 984498; /* window-restore */
+    -sfx-icon-code: 984498; /* window-restore */
 }
 
 .font-icon-view.window-close-icon {
-    -fx-icon-code: 984493; /* window-close */
+    -sfx-icon-code: 984493; /* window-close */
 }
 
 

@@ -99,7 +99,7 @@ public final class IconStylesheetFactory {
      * @param font the font of the icons used by default, never {@code null}
      */
     public static Stylesheet forDefaultFont(Font font) {
-        var css = ".font-icon-view { -fx-icon-family: '" + font.getFamily() + "'; }";
+        var css = ".font-icon-view { -sfx-icon-family: '" + font.getFamily() + "'; }";
         return new Stylesheet("data:text/css;base64,"
                 + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.UTF_8)));
     }

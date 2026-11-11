@@ -43,17 +43,17 @@ import org.slf4j.LoggerFactory;
  * A {@link Text} node that renders a single font-based icon, described by a {@link FontIcon}.
  *
  * <p>The icon's code point, font family and size are exposed as independent CSS-styleable properties
- * ({@code -fx-icon-code}, {@code -fx-icon-family}, {@code -fx-icon-size}) rather than through the inherited
+ * ({@code -sfx-icon-code}, {@code -sfx-icon-family}, {@code -sfx-icon-size}) rather than through the inherited
  * {@code fontProperty()}. This avoids conflicts between manually assigned font families and CSS-driven font
  * sizes, since {@code -fx-font-*} sub-properties and this view's icon properties are resolved independently
  * by the CSS engine. Any stylesheet rule that still targets {@code -fx-font-size} on this view (or on the
  * inherited {@code icon-view} style class) will bypass this mechanism entirely and should be migrated to
- * {@code -fx-icon-size}.
+ * {@code -sfx-icon-size}.
  *
  * <p>Note that the CSS parser checks the names of properties with {@code endsWith()}, ignoring the letter case, and
  * parses the value of a property whose name ends with {@code font-size}, {@code font-style}, {@code font-weight} or
  * {@code font} by the grammar of the matching {@code -fx-font*} property instead of its registered type
- * (JDK-8389094). So a String property such as {@code -fx-icon-font} fails to parse. A name ending with
+ * (JDK-8389094). So a String property such as {@code -sfx-icon-font} fails to parse. A name ending with
  * {@code font-family} still gives a String, but only for a single identifier or quoted string.
  *
  * <p>Two kinds of {@link FontIcon} are supported:
@@ -71,11 +71,11 @@ import org.slf4j.LoggerFactory;
  * <p>If no font family is resolved for an icon (neither from a {@link PlainFontIcon} nor from CSS), the
  * static {@link #getDefaultIconFamily() default icon family} is used instead.
  *
- * <p>A {@link StyleFontIcon} whose stylesheet rule has no {@code -fx-icon-family} would keep the family of the
+ * <p>A {@link StyleFontIcon} whose stylesheet rule has no {@code -sfx-icon-family} would keep the family of the
  * previous icon when the view is reused: JavaFX may not return the property to its initial value, because it loses
  * track of the properties applied after the inline style of the view is changed in the middle of a CSS pass (see
  * the inline style below). So the application should also register a stylesheet with the rule
- * {@code .font-icon-view { -fx-icon-family: '...'; }}, which gives every icon a family; the rules of the icons
+ * {@code .font-icon-view { -sfx-icon-family: '...'; }}, which gives every icon a family; the rules of the icons
  * with another font are more specific and override it.
  *
  * <p>The inline style of this view is managed by the view itself, because it keeps the frozen icon size there. To
@@ -93,9 +93,9 @@ public class FontIconView extends Text {
         private static final List<CssMetaData<?, ?>> META_DATA;
         static {
             var factory = new StyleablePropertyFactory<FontIconView>(Text.getClassCssMetaData());
-            ICON_SIZE = factory.createSizeCssMetaData("-fx-icon-size", s -> s.iconSize, 14.0);
-            ICON_FAMILY = factory.createStringCssMetaData("-fx-icon-family", s -> s.iconFamily, null);
-            ICON_CODE = factory.createSizeCssMetaData("-fx-icon-code", s -> s.iconCode, 0);
+            ICON_SIZE = factory.createSizeCssMetaData("-sfx-icon-size", s -> s.iconSize, 14.0);
+            ICON_FAMILY = factory.createStringCssMetaData("-sfx-icon-family", s -> s.iconFamily, null);
+            ICON_CODE = factory.createSizeCssMetaData("-sfx-icon-code", s -> s.iconCode, 0);
             META_DATA = List.copyOf(factory.getCssMetaData());
         }
     }
@@ -104,7 +104,7 @@ public class FontIconView extends Text {
 
     /**
      * The application-wide default font family used when an icon does not specify its own font, either via
-     * {@link PlainFontIcon#getFont()} or via the {@code -fx-icon-family} CSS property.
+     * {@link PlainFontIcon#getFont()} or via the {@code -sfx-icon-family} CSS property.
      */
     private static @Nullable String defaultIconFamily;
 
@@ -132,7 +132,7 @@ public class FontIconView extends Text {
 
     /**
      * Returns the CSS metadata for this class, including the inherited {@link Text} metadata and the
-     * {@code -fx-icon-size}, {@code -fx-icon-family} and {@code -fx-icon-code} properties.
+     * {@code -sfx-icon-size}, {@code -sfx-icon-family} and {@code -sfx-icon-code} properties.
      *
      * @return the list of CSS metadata for this class
      */
@@ -237,7 +237,7 @@ public class FontIconView extends Text {
     }
 
     /**
-     * Returns the styleable property holding the icon's font size, backed by the {@code -fx-icon-size}
+     * Returns the styleable property holding the icon's font size, backed by the {@code -sfx-icon-size}
      * CSS property.
      *
      * @return the icon size property
@@ -265,7 +265,7 @@ public class FontIconView extends Text {
     }
 
     /**
-     * Returns the styleable property holding the icon's font family, backed by the {@code -fx-icon-family}
+     * Returns the styleable property holding the icon's font family, backed by the {@code -sfx-icon-family}
      * CSS property. A {@code null} value means the {@link #getDefaultIconFamily() default icon family}
      * is used instead. Only used for a {@link StyleFontIcon}; a {@link PlainFontIcon}'s font is read
      * directly from the icon instance instead.
@@ -296,7 +296,7 @@ public class FontIconView extends Text {
 
     /**
      * Returns the styleable property holding the icon's Unicode code point, backed by the
-     * {@code -fx-icon-code} CSS property. Only used for a {@link StyleFontIcon}; a {@link PlainFontIcon}'s
+     * {@code -sfx-icon-code} CSS property. Only used for a {@link StyleFontIcon}; a {@link PlainFontIcon}'s
      * code point is read directly from the icon instance instead.
      *
      * @return the icon code property
@@ -371,15 +371,15 @@ public class FontIconView extends Text {
 
     /**
      * Freezes the CSS-resolved icon size as an absolute-unit inline override, preventing the
-     * {@code em}-relative {@code -fx-icon-size} declaration from recomputing against this view's own,
+     * {@code em}-relative {@code -sfx-icon-size} declaration from recomputing against this view's own,
      * just-updated font on the next CSS pass (which would otherwise spiral).
      *
-     * @param resolvedSize the size, in pixels, that CSS just resolved for {@code -fx-icon-size}
+     * @param resolvedSize the size, in pixels, that CSS just resolved for {@code -sfx-icon-size}
      */
     private void freezeResolvedSize(double resolvedSize) {
         var currentUnits = units.get();
         String resolvedUnits = currentUnits == null || currentUnits.isBlank() ? "px" : currentUnits;
-        internalStyle = "-fx-icon-size: " + resolvedSize + resolvedUnits + ";";
+        internalStyle = "-sfx-icon-size: " + resolvedSize + resolvedUnits + ";";
         updateStyle();
     }
 
@@ -431,14 +431,14 @@ public class FontIconView extends Text {
 
     /**
      * Detects CSS rules that target the inherited {@code -fx-font-*} properties on this view instead of the
-     * dedicated {@code -fx-icon-family}/{@code -fx-icon-size} properties, and logs a warning. Such rules
+     * dedicated {@code -sfx-icon-family}/{@code -sfx-icon-size} properties, and logs a warning. Such rules
      * silently fight with {@link #updateFont()} on every CSS pass (e.g. on pseudo-class changes like
      * {@code :hover} or {@code :focused}), causing the icon's font family or size to jump unexpectedly.
      */
     private void checkFontOriginConflict() {
         var fontProp = (StyleableObjectProperty<Font>) fontProperty();
         if (fontProp.getStyleOrigin() == StyleOrigin.AUTHOR) {
-            logger.warn("FontIconView '{}' (classes: {}): -fx-font-* rules are used instead of -fx-icon-*",
+            logger.warn("FontIconView '{}' (classes: {}): -fx-font-* rules are used instead of -sfx-icon-*",
                     this, getStyleClass());
         }
     }

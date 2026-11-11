@@ -19,29 +19,29 @@
 */
 
 .font-icon-view.drag-vertical-icon {
-    -fx-icon-code: 983517; /* drag-vertical */
+    -sfx-icon-code: 983517; /* drag-vertical */
 }
 
 .font-icon-view.restore-window-icon {
-    -fx-icon-code: 984498; /* window-restore */
+    -sfx-icon-code: 984498; /* window-restore */
 }
 
 .font-icon-view.chevron-double-right-icon {
-    -fx-icon-code: 983358; /* chevron-double-right */
+    -sfx-icon-code: 983358; /* chevron-double-right */
 }
 
 .font-icon-view.remove-icon {
-    -fx-icon-code: 983924; /* minus */
+    -sfx-icon-code: 983924; /* minus */
 }
 
 .font-icon-view.chevron-right-icon {
-    -fx-icon-code: 983362; /* chevron-right */
+    -sfx-icon-code: 983362; /* chevron-right */
 }
 
 .font-icon-view.chevron-left-icon {
-    -fx-icon-code: 983361; /* chevron-left */
+    -sfx-icon-code: 983361; /* chevron-left */
 }
 
 .font-icon-view.close-icon {
-    -fx-icon-code: 983382; /* close */
+    -sfx-icon-code: 983382; /* close */
 }

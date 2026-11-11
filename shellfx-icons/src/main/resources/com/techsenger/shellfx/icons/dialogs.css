@@ -19,45 +19,45 @@
 */
 
 .font-icon-view.info-icon {
-    -fx-icon-code: 983805; /* information-outline */
+    -sfx-icon-code: 983805; /* information-outline */
 }
 
 .font-icon-view.error-icon {
-    -fx-icon-code: 986342; /* alert-octagon-outline */
+    -sfx-icon-code: 986342; /* alert-octagon-outline */
 }
 
 .font-icon-view.warning-icon {
-    -fx-icon-code: 983082; /* alert-outline */
+    -sfx-icon-code: 983082; /* alert-outline */
 }
 
 .font-icon-view.question-icon {
-    -fx-icon-code: 986022; /* help-rhombus-outline */
+    -sfx-icon-code: 986022; /* help-rhombus-outline */
 }
 
 .font-icon-view.directory-up-icon {
-    -fx-icon-code: 989683; /* folder-arrow-up-outline */
+    -sfx-icon-code: 989683; /* folder-arrow-up-outline */
 }
 
 .font-icon-view.home-icon {
-    -fx-icon-code: 984737; /* home-outline */
+    -sfx-icon-code: 984737; /* home-outline */
 }
 
 .font-icon-view.add-directory-icon {
-    -fx-icon-code: 986013; /* folder-plus-outline */
+    -sfx-icon-code: 986013; /* folder-plus-outline */
 }
 
 .font-icon-view.list-view-icon {
-    -fx-icon-code: 988299; /* view-list-outline */
+    -sfx-icon-code: 988299; /* view-list-outline */
 }
 
 .font-icon-view.grid-view-icon {
-    -fx-icon-code: 987609; /* view-grid-outline */
+    -sfx-icon-code: 987609; /* view-grid-outline */
 }
 
 .font-icon-view.open-icon {
-    -fx-icon-code: 986575; /* folder-open-outline */
+    -sfx-icon-code: 986575; /* folder-open-outline */
 }
 
 .font-icon-view.save-as-icon {
-    -fx-icon-code: 986364; /* content-save-edit-outline */
+    -sfx-icon-code: 986364; /* content-save-edit-outline */
 }
