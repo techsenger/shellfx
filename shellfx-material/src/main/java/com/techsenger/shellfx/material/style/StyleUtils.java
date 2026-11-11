@@ -16,15 +16,9 @@
 
 package com.techsenger.shellfx.material.style;
 
-import com.techsenger.annotations.Nullable;
-import java.util.Objects;
 import javafx.geometry.Dimension2D;
-import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.PopupWindow;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 
 /**
  *
@@ -55,46 +49,6 @@ public final class StyleUtils {
         text.setFont(font);
         var bounds = text.getBoundsInLocal();
         return new Dimension2D(bounds.getWidth(), bounds.getHeight());
-    }
-
-    /**
-     * Looks up the currently active {@link Density} for the given window, walking up the owner-window chain
-     * if the window itself has no density style class set — which is the case for any non-top-level window,
-     * since density is only ever set on top-level windows. Owner lookup differs by window type: {@link Stage}
-     * exposes it via {@link Stage#getOwner()}, while {@link PopupWindow} (e.g. {@link javafx.stage.Popup})
-     * exposes it via {@link PopupWindow#getOwnerWindow()} — {@link Window} itself declares neither. Returns
-     * {@link Density#DEFAULT} if no window in the chain has a density style class, has no {@link Scene} yet, or if
-     * the chain ends in a window type that exposes no owner (e.g. an unowned {@code Stage}).
-     *
-     * @param window the window to inspect
-     * @return the active density, or {@link Density#DEFAULT} if none was found in the owner-window chain
-     */
-    public static Density getDensity(Window window) {
-        Objects.requireNonNull(window, "window");
-        var current = window;
-        while (current != null) {
-            var scene = current.getScene();
-            if (scene != null) {
-                var styleClasses = scene.getRoot().getStyleClass();
-                for (var density : Density.values()) {
-                    if (density.getStyleClass() != null && styleClasses.contains(density.getStyleClass())) {
-                        return density;
-                    }
-                }
-            }
-            current = getOwner(current);
-        }
-        return Density.DEFAULT;
-    }
-
-    private static @Nullable Window getOwner(Window window) {
-        if (window instanceof Stage stage) {
-            return stage.getOwner();
-        } else if (window instanceof PopupWindow popupWindow) {
-            return popupWindow.getOwnerWindow();
-        } else {
-            return null;
-        }
     }
 
     private StyleUtils() {
