@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.FrameWindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellParams extends WindowParams {
+public class DefaultShellParams extends FrameWindowParams {
 
     private final ShellContextAccess contextAccess;
 

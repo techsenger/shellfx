@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.registrars;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.window.WindowArrangement;
-import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.FrameWindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.mdi.DemoWindowView;
 import com.techsenger.shellfx.demo.mdi.DemoWindowViewModel;
@@ -40,7 +40,7 @@ public class WindowsItemHandler extends AbstractItemHandler {
         DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
             var settings = getComponent().getContext().getSettings();
-            var params = new WindowParams(null, WindowType.NESTED, false, settings);
+            var params = new FrameWindowParams(null, WindowType.NESTED, false, settings);
             var viewModel = new DemoWindowViewModel<>(params, i);
             view = new DemoWindowView<>(viewModel, getComponent().getContext().getStylesheetRegistry());
             view.initialize();

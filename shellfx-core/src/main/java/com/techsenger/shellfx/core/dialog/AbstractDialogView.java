@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.material.button.ButtonWidthGroup;
 import com.techsenger.shellfx.material.button.ResultButton;
@@ -47,7 +47,7 @@ import javafx.stage.WindowEvent;
  * @author Pavel Castornii
  */
 public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
-        extends AbstractWindowView<VM> implements DialogView<VM> {
+        extends AbstractFrameWindowView<VM> implements DialogView<VM> {
 
     private final HBox leftBottomBox = new HBox();
 

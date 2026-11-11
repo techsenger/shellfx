@@ -22,7 +22,7 @@ import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.dialog.DialogView;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.demo.page.PageDialogView;
@@ -74,7 +74,7 @@ import javafx.scene.layout.VBox;
  */
 public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer implements DialogsDialogComposer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer implements DialogsDialogComposer {
 
         @Override
         public AlertDialogPort openAlertDialog(AlertDialogParams params) {

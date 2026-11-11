@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.layout.pagehost.AbstractPageHostView;
 import com.techsenger.shellfx.layout.pagehost.PageHostParams;
 import com.techsenger.shellfx.layout.pagehost.PageHostView;
@@ -37,7 +37,7 @@ import javafx.scene.layout.VBox;
  */
 public class PageDialogView<VM extends PageDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer {
 
         private AbstractPageHostView<?> pageHost;
 

@@ -18,14 +18,14 @@ package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.settings.ShellSettings;
-import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.FrameWindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogParams extends WindowParams {
+public class DialogParams extends FrameWindowParams {
 
     public DialogParams(@Nullable DialogConfig config, WindowType type, ShellSettings settings) {
         super(config, type, true, settings);

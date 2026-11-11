@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.mdi;
 
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -41,7 +41,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DemoWindowView<VM extends DemoWindowViewModel<?>> extends AbstractWindowView<VM> {
+public class DemoWindowView<VM extends DemoWindowViewModel<?>> extends AbstractFrameWindowView<VM> {
 
     private static Chart buildPieChart() {
         var data = FXCollections.observableArrayList(

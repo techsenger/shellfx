@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.settings.ShellSettings;
-import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.FrameWindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class DevToolsWindowParams extends WindowParams {
+public class DevToolsWindowParams extends FrameWindowParams {
 
     private final ConfigManager configManager;
 

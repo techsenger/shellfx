@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
@@ -40,7 +40,7 @@ import javafx.scene.layout.VBox;
 public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogViewModel<?>>
         extends AbstractDialogView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer implements EditorDialogComposer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer implements EditorDialogComposer {
 
         @Override
         public AlertDialogPort openAlertDialog(AlertDialogParams params) {

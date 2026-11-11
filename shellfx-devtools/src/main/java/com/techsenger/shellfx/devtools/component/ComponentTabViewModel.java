@@ -26,7 +26,7 @@ import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
-import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
@@ -70,7 +70,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
     private static final Logger logger = LoggerFactory.getLogger(ComponentTabViewModel.class);
 
     private static final List<Class<?>> CONFIG_OWNER_CLASSES = List.of(AbstractAreaViewModel.class,
-            AbstractTabViewModel.class, AbstractWindowViewModel.class);
+            AbstractTabViewModel.class, AbstractFrameWindowViewModel.class);
 
     /**
      * Traverses the tree and finds all items whose text matches the given matcher.

@@ -20,10 +20,10 @@ package com.techsenger.shellfx.core.window;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractHostWindowViewModel<C extends HostWindowComposer> extends AbstractWindowViewModel<C>
+public abstract class AbstractHostWindowViewModel<C extends HostWindowComposer> extends AbstractFrameWindowViewModel<C>
         implements HostWindowViewModel<C> {
 
-    public AbstractHostWindowViewModel(WindowParams params) {
+    public AbstractHostWindowViewModel(FrameWindowParams params) {
         super(params);
     }
 

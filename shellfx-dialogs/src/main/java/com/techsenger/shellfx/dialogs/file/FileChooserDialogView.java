@@ -21,7 +21,7 @@ import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogView;
@@ -118,7 +118,7 @@ import javafx.util.StringConverter;
 public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, T extends StorageFile>
         extends AbstractDialogView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer implements FileChooserDialogComposer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer implements FileChooserDialogComposer {
 
         @Override
         public DialogPort addAlertDialog(AlertDialogParams params, String message) {

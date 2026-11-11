@@ -23,7 +23,7 @@ import com.techsenger.shellfx.core.settings.ShellSettings;
  *
  * @author Pavel Castornii
  */
-public class HostWindowParams extends WindowParams {
+public class HostWindowParams extends FrameWindowParams {
 
     public HostWindowParams(@Nullable HostWindowConfig config, boolean modal, ShellSettings setting) {
         super(config, WindowType.TOP_LEVEL, modal, setting);

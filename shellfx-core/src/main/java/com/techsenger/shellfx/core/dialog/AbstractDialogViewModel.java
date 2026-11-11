@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.material.button.ResultButtonName;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import javafx.collections.ObservableMap;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogViewModel<C extends WindowComposer> extends AbstractWindowViewModel<C>
+public abstract class AbstractDialogViewModel<C extends WindowComposer> extends AbstractFrameWindowViewModel<C>
         implements DialogViewModel<C> {
 
     private final ObservableList<ResultButtonName> modifiableLeftButtons = FXCollections.observableArrayList();

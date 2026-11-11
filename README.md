@@ -238,7 +238,7 @@ class TreePageHost
 class TabHost
 class TabDock
 
-class AbstractWindow
+class AbstractFrameWindow
 class AbstractDialog
 class AbstractHostWindow
 class DefaultShell
@@ -260,7 +260,7 @@ Parent <|.. AbstractParent
 AbstractParent <|-- AbstractChild
 
 AbstractChild <|-- AbstractArea
-AbstractChild <|-- AbstractWindow
+AbstractChild <|-- AbstractFrameWindow
 AbstractChild <|-- AbstractTab
 
 AbstractArea <|-- AbstractPage
@@ -273,8 +273,8 @@ AbstractPageHost <|-- TreePageHost
 
 TabHost <|-- TabDock
 
-AbstractWindow <|-- AbstractDialog
-AbstractWindow <|-- AbstractHostWindow
+AbstractFrameWindow <|-- AbstractDialog
+AbstractFrameWindow <|-- AbstractHostWindow
 
 AbstractHostWindow <|-- DefaultShell
 
@@ -800,7 +800,7 @@ Every component has a port. A port is a safe interface for working with a compon
 code interact with the component only through it and never get its `ViewModel` directly (see
 [PatternFX](https://github.com/techsenger/patternfx#templates-component-port)).
 
-The default port of a component (`AlertDialogPort`, `TabPort`, `WindowPort`, etc.) gives full access to the
+The default port of a component (`AlertDialogPort`, `TabPort`, `FrameWindowPort`, etc.) gives full access to the
 component, both for reading and for writing. Properties that are decided by the `View` or by the platform, such as the
 size of a window or the selected state of a tab, are exposed as read-only properties with a request setter where
 changing them makes sense. A few operations that only a container should perform, such as selecting a tab within its

@@ -34,7 +34,7 @@ public interface WindowContainerPort extends PopupContainerPort {
          *
          * @return
          */
-        @Unmodifiable List<? extends WindowPort> getWindowPorts();
+        @Unmodifiable List<? extends FrameWindowPort> getWindowPorts();
     }
 
     @Override

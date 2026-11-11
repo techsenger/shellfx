@@ -86,10 +86,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> extends AbstractChildView<VM>
+public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowViewModel<?>> extends AbstractChildView<VM>
         implements WindowView<VM> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowView.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractFrameWindowView.class);
 
     /**
      * Creates the stylesheets that windows need to look right: the platform styles. The application registers them
@@ -113,7 +113,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
         private final ReadOnlyObjectWrapper<ParentView<?>> focused = new ReadOnlyObjectWrapper<>();
 
-        private final AbstractWindowView<VM> view = AbstractWindowView.this;
+        private final AbstractFrameWindowView<VM> view = AbstractFrameWindowView.this;
 
         /**
          * PauseTransition used to implement debounce on the JavaFX thread with duration.
@@ -297,7 +297,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
     };
 
-    public AbstractWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+    public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
         this(viewModel, stylesheetRegistry, null);
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(), () -> {
             if (viewModel.getWindowType() == WindowType.NESTED) {
@@ -317,7 +317,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
      * @param stylesheetRegistry the registry of the stylesheets that every window applies
      * @param stage the stage that backs this window
      */
-    public AbstractWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
+    public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
         super(viewModel);
         this.stage = stage;
         this.stylesheetRegistry = stylesheetRegistry;
@@ -357,7 +357,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     @Override
     protected Composer createComposer() {
-        return new AbstractWindowView<VM>.Composer();
+        return new AbstractFrameWindowView<VM>.Composer();
     }
 
     @Override

@@ -21,9 +21,9 @@ package com.techsenger.shellfx.core.window;
  *
  * @author Pavel Castornii
  */
-public interface HostWindowPort extends WindowPort, WindowContainerPort {
+public interface HostWindowPort extends FrameWindowPort, WindowContainerPort {
 
-    interface ComposerAccess extends WindowPort.ComposerAccess, WindowContainerPort.ComposerAccess {
+    interface ComposerAccess extends FrameWindowPort.ComposerAccess, WindowContainerPort.ComposerAccess {
 
     }
 

@@ -34,7 +34,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  *
  * @author Pavel Castornii
  */
-public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable, Iconed, Blockable {
+public interface FrameWindowPort extends ChildPort, CloseAwarePort, Titled, Closable, Iconed, Blockable {
 
     interface ComposerAccess extends ChildPort.ComposerAccess {
 

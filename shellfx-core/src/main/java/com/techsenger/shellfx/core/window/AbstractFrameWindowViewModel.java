@@ -48,7 +48,7 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWindowViewModel<C extends WindowComposer> extends AbstractChildViewModel<C>
+public abstract class AbstractFrameWindowViewModel<C extends WindowComposer> extends AbstractChildViewModel<C>
         implements WindowViewModel<C> {
 
     private final WindowType windowType;
@@ -131,7 +131,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final ObservableSource<Void> closeWindowSource = new SimpleObservableSource<>();
 
-    public AbstractWindowViewModel(WindowParams params) {
+    public AbstractFrameWindowViewModel(FrameWindowParams params) {
         super(params);
         this.windowType = params.getWindowType();
         this.modal = params.isModal();
@@ -140,7 +140,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
-    public WindowPort.ComposerAccess getComposerAccess() {
+    public FrameWindowPort.ComposerAccess getComposerAccess() {
         return getComposer();
     }
 

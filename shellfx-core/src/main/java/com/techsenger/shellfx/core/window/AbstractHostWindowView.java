@@ -32,9 +32,9 @@ import javafx.stage.Stage;
  * @author Pavel Castornii
  */
 public abstract class AbstractHostWindowView<VM extends AbstractHostWindowViewModel<?>> extends
-        AbstractWindowView<VM> implements HostWindowView<VM> {
+        AbstractFrameWindowView<VM> implements HostWindowView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer implements HostWindowView.Composer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer implements HostWindowView.Composer {
 
         private final AbstractHostWindowView<VM> view = AbstractHostWindowView.this;
 

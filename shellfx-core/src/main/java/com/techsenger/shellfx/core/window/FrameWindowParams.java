@@ -25,7 +25,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class WindowParams extends ComponentParams {
+public class FrameWindowParams extends ComponentParams {
 
     private final WindowType windowType;
 
@@ -35,7 +35,7 @@ public class WindowParams extends ComponentParams {
 
     private final @Nullable WindowConfig config;
 
-    public WindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, ShellSettings settings) {
+    public FrameWindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, ShellSettings settings) {
         this.config = config;
         this.windowType = type;
         this.modal = modal;

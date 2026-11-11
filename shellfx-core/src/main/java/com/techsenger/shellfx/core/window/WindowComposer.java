@@ -22,7 +22,7 @@ import com.techsenger.patternfx.mvvm.ChildComposer;
  *
  * @author Pavel Castornii
  */
-public interface WindowComposer extends ChildComposer, WindowPort.ComposerAccess {
+public interface WindowComposer extends ChildComposer, FrameWindowPort.ComposerAccess {
 
     /**
      * Closes both {@link WindowType#TOP_LEVEL} and {@link WindowType#NESTED} windows.

@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.window.AbstractWindowView;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -27,9 +27,9 @@ import javafx.stage.Stage;
  *
  * @author Pavel Castornii
  */
-public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends AbstractWindowView<VM> {
+public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends AbstractFrameWindowView<VM> {
 
-    public class Composer extends AbstractWindowView<VM>.Composer {
+    public class Composer extends AbstractFrameWindowView<VM>.Composer {
 
         private final DevToolsWindowView<VM> view = DevToolsWindowView.this;
 

@@ -18,20 +18,20 @@ package com.techsenger.shellfx.demo.mdi;
 
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
-import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
-import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.FrameWindowParams;
 import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DemoWindowViewModel<C extends WindowComposer> extends AbstractWindowViewModel<C> {
+public class DemoWindowViewModel<C extends WindowComposer> extends AbstractFrameWindowViewModel<C> {
 
     private final int contentIndex;
 
-    public DemoWindowViewModel(WindowParams params, int contentIndex) {
+    public DemoWindowViewModel(FrameWindowParams params, int contentIndex) {
         super(params);
         this.contentIndex = contentIndex;
     }

@@ -531,7 +531,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     @Override
     public void addWindow(WindowView<?> windowView) {
-        if (windowView instanceof AbstractWindowView<?> fxView) {
+        if (windowView instanceof AbstractFrameWindowView<?> fxView) {
             fxView.setWindowManager(this);
         }
         modifiableWindows.add(windowView);
@@ -546,7 +546,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         if (modifiableWindows.remove(windowView)) {
             this.restoreInfosByWindow.remove(windowView);
             doRemove(windowView, windowView.getViewModel().isModal());
-            if (windowView instanceof AbstractWindowView<?> fxView) {
+            if (windowView instanceof AbstractFrameWindowView<?> fxView) {
                 fxView.setWindowManager(null);
             }
             if (this.windows.size() == 0) {
@@ -776,7 +776,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     protected double getTitleBarHeight(WindowView<?> window) {
-        if (window instanceof AbstractWindowView<?> windowView) {
+        if (window instanceof AbstractFrameWindowView<?> windowView) {
             return windowView.getTitleBar().getHeight() + windowView.getWindowBox().getPadding().getBottom()
                     + windowView.getWindowBox().getPadding().getTop();
         }
@@ -784,13 +784,13 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     protected void setMaximized(WindowView<?> window, boolean maximized) {
-        if (window instanceof AbstractWindowView<?> windowView) {
+        if (window instanceof AbstractFrameWindowView<?> windowView) {
             windowView.onMaximized(maximized);
         }
     }
 
     protected void setMinimized(WindowView<?> window, boolean minimized) {
-        if (window instanceof AbstractWindowView<?> windowView) {
+        if (window instanceof AbstractFrameWindowView<?> windowView) {
             windowView.onMinimized(minimized);
         }
     }

@@ -19,7 +19,7 @@ package com.techsenger.shellfx.devtools;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigManager;
-import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
+import com.techsenger.shellfx.core.window.AbstractFrameWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractWindowViewModel<C> {
+public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractFrameWindowViewModel<C> {
 
     private final ConfigManager configManager;
 
