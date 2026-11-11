@@ -19,8 +19,8 @@ package com.techsenger.shellfx.material.style;
 import com.techsenger.annotations.Nullable;
 
 /**
- * The density of the UI. {@link #DEFAULT} is the plain sizing of the theme, which has no style class; {@link #S} and
- * {@link #XS} are more compact.
+ * The density of the UI; {@link #DEFAULT} is the plain sizing of the theme and has no style class. The style class is
+ * set on the root of a window and is not copied automatically to child JavaFX windows and popups.
  *
  * @author Pavel Castornii
  */
