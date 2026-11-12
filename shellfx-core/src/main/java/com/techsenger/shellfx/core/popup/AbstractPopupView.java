@@ -17,87 +17,44 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.area.AbstractAreaView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.material.pane.WaitingPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 
 /**
+ * The base view of a popup: a bare nested window that is placed by anchors and can wait.
  *
+ * @param <VM> the view model of the popup
  * @author Pavel Castornii
  */
-public abstract class AbstractPopupView<VM extends AbstractPopupViewModel<?>>
-        extends AbstractAreaView<VM> implements PopupView<VM> {
-
-    public class Composer extends AbstractAreaView<VM>.Composer implements PopupView.Composer {
-
-        private final AbstractPopupView<VM> view = AbstractPopupView.this;
-
-        @Override
-        public void close() {
-            var parent = getParent();
-            if (parent != null) {
-                parent.getComposer().closePopup(view);
-            }
-        }
-
-        @Override
-        public @Nullable PopupContainerView<?> getParent() {
-            return (PopupContainerView<?>) super.getParent();
-        }
-
-        @Override
-        public @Nullable PopupContainerPort getParentPort() {
-            var container = getParent();
-            return container == null ? null : container.getViewModel();
-        }
-    }
-
-    private final VBox contentBox = new VBox();
+public abstract class AbstractPopupView<VM extends AbstractPopupViewModel<?>> extends AbstractWindowView<VM>
+        implements PopupView<VM> {
 
     /**
-     * This is internal pane that is required for waiting mode.
+     * Creates a new popup backed by the given JavaFX window.
+     *
+     * @param viewModel the view model of this popup
+     * @param stylesheetRegistry the registry of the stylesheets that every window applies
+     * @param window the JavaFX window that backs a top-level popup; {@code null} for a nested one
      */
-    private final StackPane stackPane = new StackPane(contentBox);
-
-    public AbstractPopupView(VM viewModel) {
-        super(viewModel);
-    }
-
-    @Override
-    public Pane getNode() {
-        return this.stackPane;
-    }
-
-    @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
-    }
-
-    @Override
-    protected Composer createComposer() {
-        return new AbstractPopupView<VM>.Composer();
-    }
-
-    protected VBox getContentBox() {
-        return contentBox;
+    public AbstractPopupView(VM viewModel, StylesheetRegistry stylesheetRegistry, @Nullable Window window) {
+        super(viewModel, stylesheetRegistry, window);
     }
 
     @Override
     protected void build() {
-        contentBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        VBox.setVgrow(contentBox, Priority.ALWAYS);
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
+        super.build();
+        // a popup is placed by anchors, so unlike a window its node must be free to stretch between them
+        getWindowNode().setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        getWindowNode().setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        getContentBox().setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
-        WaitingPane.install(stackPane, getViewModel().waitingProperty());
-        getViewModel().widthSource().addListener((value) -> stackPane.setPrefWidth(value));
-        getViewModel().heightSource().addListener((value) -> stackPane.setPrefHeight(value));
+        WaitingPane.install(getWindowNode(), getViewModel().waitingProperty());
     }
 }

@@ -16,13 +16,14 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogView;
-import com.techsenger.shellfx.core.popup.PopupManager;
+import com.techsenger.shellfx.material.Anchors;
 import javafx.collections.ObservableList;
 
 /**
- * The manager of the {@link WindowType#NESTED} windows.
+ * The manager of the {@link WindowType#NESTED} windows, popups included.
  *
  * <p>A window passes through two independent phases. First it is added to or removed from the manager, which only
  * makes the window known to the manager. Then it is made visible or invisible through its own {@code visible}
@@ -31,7 +32,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public interface WindowManager extends PopupManager {
+public interface WindowManager {
 
     /**
      * Adds a window to the manager (the first phase). The window is added as it is: while it is invisible, it takes no
@@ -54,6 +55,35 @@ public interface WindowManager extends PopupManager {
      * @return the list of windows, invisible ones included. If no windows are present, an empty list is returned.
      */
     @Unmodifiable ObservableList<WindowView<?>> getWindows();
+
+    /**
+     * Sets the anchors of a window: the distances from the edges of the container the window keeps while the
+     * container is resized. A window without anchors is floating, which is the default, and sits where its
+     * {@code x} and {@code y} say. It can be called before or after the window is added to the manager.
+     *
+     * <p>Any manual positioning of the window (setting {@code x} or {@code y}, aligning, moving or resizing it by the
+     * user, arranging) makes it floating again. A maximized or minimized window is placed by the manager, and its
+     * anchors are applied again when it is restored.
+     *
+     * @param window the window
+     * @param anchors the anchors, or {@code null} to make the window floating
+     */
+    void setAnchors(WindowView<?> window, @Nullable Anchors anchors);
+
+    /**
+     * Returns the anchors of a window.
+     *
+     * @param window the window
+     * @return the anchors, or {@code null} if the window is floating
+     */
+    @Nullable Anchors getAnchors(WindowView<?> window);
+
+    /**
+     * Returns whether the container that owns this manager is blocked because a modal component is shown.
+     *
+     * @return true if the container is blocked by a modal component, false otherwise
+     */
+    boolean isContainerBlocked();
 
     /**
      * Aligns the given window within the {@code StackPane} according to the given {@link WindowPosition}, adjusted
@@ -112,12 +142,13 @@ public interface WindowManager extends PopupManager {
     void addDialog(DialogView<?> dialog);
 
     /**
-     * Arranges all managed windows according to the specified arrangement strategy.
+     * Arranges the visible floating windows according to the specified arrangement strategy. Anchored windows are
+     * placed by the container and are left as they are.
      * <p>
      * This operation repositions and resizes windows within the available container area based on the given
      * arrangement mode.
      *
-     * @param arrangement the arrangement strategy to apply to all windows
+     * @param arrangement the arrangement strategy to apply to the floating windows
      */
     void arrangeWindows(WindowArrangement arrangement);
 

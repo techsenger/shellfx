@@ -21,7 +21,6 @@ import com.techsenger.shellfx.core.area.AbstractAreaView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
-import com.techsenger.shellfx.core.popup.PopupContainerView;
 import com.techsenger.shellfx.core.popup.PopupParams;
 import com.techsenger.shellfx.core.popup.PopupPort;
 import com.techsenger.shellfx.core.window.WindowContainerView;
@@ -64,7 +63,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
 
         private ShellView<?> shell;
 
-        private PopupContainerView<?> container;
+        private WindowContainerView<?> container;
 
         private DockHostPort dockHostPort;
 
@@ -77,16 +76,16 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
             if (scope == OverlayScope.WINDOW) {
                 shell.getComposer().addDialog(dialogView);
             } else {
-                ((WindowContainerView<?>) container).getComposer().addDialog(dialogView);
+                container.getComposer().addDialog(dialogView);
             }
             return viewModel;
         }
 
         @Override
         public PopupPort openDemoPopup(OverlayScope scope) {
-            var params = new PopupParams(null, false);
+            var params = new PopupParams(null, false, shell.getContext().getSettings());
             var viewModel = new DemoPopupViewModel<>(params);
-            var popupView = new DemoPopupView<>(viewModel);
+            var popupView = new DemoPopupView<>(viewModel, shell.getContext().getStylesheetRegistry());
             popupView.initialize();
             if (scope == OverlayScope.WINDOW) {
                 shell.getComposer().addPopup(popupView, Anchors.topRight(20, 20));
@@ -101,7 +100,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
             return dockHostPort;
         }
 
-        private void setContainer(ShellView<?> shell, PopupContainerView<?> container) {
+        private void setContainer(ShellView<?> shell, WindowContainerView<?> container) {
             this.shell = shell;
             this.container = container;
         }
@@ -149,11 +148,10 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
      *
      * @param viewModel the view model
      * @param shell the shell the dialogs and popups of the window scope are opened in
-     * @param container the container the popups of the tab scope are opened in; the dialogs of that scope are offered
-     *     only if it is a {@link WindowContainerView}
+     * @param container the container the dialogs and popups of the tab scope are opened in
      * @param dockHostPort the dock host the area is placed in, whose user permissions the area can change
      */
-    public DemoAreaView(VM viewModel, ShellView<?> shell, PopupContainerView<?> container,
+    public DemoAreaView(VM viewModel, ShellView<?> shell, WindowContainerView<?> container,
             DockHostPort dockHostPort) {
         super(viewModel);
         getComposer().setContainer(shell, container);

@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.popup.PopupContainerPort;
+import com.techsenger.patternfx.core.ChildPort;
 import java.util.List;
 
 /**
@@ -25,9 +25,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface WindowContainerPort extends PopupContainerPort {
+public interface WindowContainerPort extends ChildPort {
 
-    interface ComposerAccess extends PopupContainerPort.ComposerAccess {
+    interface ComposerAccess extends ChildPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of windows. A new list instance is created on each call.
@@ -35,6 +35,7 @@ public interface WindowContainerPort extends PopupContainerPort {
          * @return
          */
         @Unmodifiable List<? extends WindowPort> getWindowPorts();
+
     }
 
     @Override

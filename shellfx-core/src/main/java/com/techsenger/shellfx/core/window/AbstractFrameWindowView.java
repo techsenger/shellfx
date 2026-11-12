@@ -107,8 +107,6 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
      */
     private double offsetY;
 
-    private boolean shadowVisible;
-
     private @Nullable RegionResizer resizer;
 
     private boolean resizingInProgress;
@@ -120,20 +118,23 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     };
 
     public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
-        super(viewModel, stylesheetRegistry, viewModel.getWindowType() == WindowType.TOP_LEVEL ? new Stage() : null);
+        this(viewModel, stylesheetRegistry,
+                viewModel.getWindowType() == WindowType.TOP_LEVEL ? new Stage() : null);
     }
 
     /**
-     * Creates a new window backed by the given stage.
-     *
-     * <p>This constructor is intended for {@link WindowType#TOP_LEVEL} windows only.
+     * Creates a new window backed by the given stage, which gets the scene with the content of this window.
      *
      * @param viewModel the view model of this window
      * @param stylesheetRegistry the registry of the stylesheets that every window applies
-     * @param stage the stage that backs this window
+     * @param stage the stage that backs a {@link WindowType#TOP_LEVEL} window; {@code null} for a
+     *     {@link WindowType#NESTED} one
      */
-    public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
+    public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, @Nullable Stage stage) {
         super(viewModel, stylesheetRegistry, stage);
+        if (stage != null) {
+            stage.setScene(new Scene(getNode()));
+        }
     }
 
     @Override
@@ -144,11 +145,6 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
-    }
-
-    @Override
-    protected void setScene(Scene scene) {
-        getWindow().setScene(scene);
     }
 
     @Override
@@ -198,6 +194,7 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
                     viewModel.maxHeightProperty(),
                     (e) -> {
                         resizingInProgress = true;
+                        releaseAnchors();
                         getViewModel().resizingProperty().set(true);
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
                         windowNode.fireEvent(event);
@@ -371,24 +368,6 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         return blockPane;
     }
 
-    protected void setShadowVisible(boolean visible) {
-        checkIfNested();
-        if (this.shadowVisible == visible) {
-            return;
-        }
-        if (visible) {
-            getWindowNode().getStyleClass().add(StyleClasses.SHADOW);
-        } else {
-            getWindowNode().getStyleClass().remove(StyleClasses.SHADOW);
-        }
-        this.shadowVisible = visible;
-    }
-
-    protected boolean isShadowVisible() {
-        checkIfNested();
-        return shadowVisible;
-    }
-
     void onMaximized(boolean maximized) {
         getViewModel().maximizedWrapper().set(maximized);
         this.maximized.set(maximized);
@@ -491,6 +470,7 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     private void onMouseDragged(MouseEvent event) {
         if (!resizingInProgress) {
             this.titleBar.setCursor(Cursor.CLOSED_HAND);
+            releaseAnchors();
             var windowNode = getWindowNode();
             var newX = event.getSceneX() - offsetX;
             var newY = event.getSceneY() - offsetY;

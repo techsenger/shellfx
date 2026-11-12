@@ -16,49 +16,25 @@
 
 package com.techsenger.shellfx.demo.ide;
 
-import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.popup.AbstractPopupManager;
-import com.techsenger.shellfx.core.popup.ContainerPopupPort;
-import com.techsenger.shellfx.core.popup.PopupContainerView;
-import com.techsenger.shellfx.core.popup.PopupManager;
-import com.techsenger.shellfx.core.popup.PopupView;
-import com.techsenger.shellfx.core.tab.AbstractTabView;
+import com.techsenger.shellfx.core.tab.AbstractHostTabView;
 import com.techsenger.shellfx.demo.area.DemoAreaParams;
 import com.techsenger.shellfx.demo.area.DemoAreaView;
 import com.techsenger.shellfx.demo.area.DemoAreaViewModel;
 import com.techsenger.shellfx.layout.dockhost.DockHostPort;
-import com.techsenger.shellfx.material.Anchors;
-import java.util.List;
-import javafx.scene.input.InputEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * This tab is a popup container.
+ * This tab is a window container: dialogs and popups of the tab scope are opened in it.
  *
  * @author Pavel Castornii
  */
-public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractTabView<VM> implements
-        PopupContainerView<VM> {
+public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractHostTabView<VM> {
 
-    public class Composer extends AbstractTabView<VM>.Composer implements IdeMainTabComposer,
-            PopupContainerView.Composer {
+    public class Composer extends AbstractHostTabView<VM>.Composer implements IdeMainTabComposer {
 
         private final IdeMainTabView<VM> view = IdeMainTabView.this;
-
-        private final PopupManager popupManager = new AbstractPopupManager(() -> view.getWrapperPane()) {
-
-            @Override
-            protected void onContainerBlocked(boolean blocked) {
-                if (blocked) {
-                    view.getNode().getContent().addEventFilter(InputEvent.ANY, getEventBlocker());
-                } else {
-                    view.getNode().getContent().removeEventFilter(InputEvent.ANY, getEventBlocker());
-                }
-                getParent().setTabHeaderBlocked(view.getNode(), blocked);
-            }
-        };
 
         @Override
         public void compose() {
@@ -67,34 +43,6 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
             getModifiableChildren().add(area);
             VBox.setVgrow(area.getNode(), Priority.ALWAYS);
             getContentBox().getChildren().add(area.getNode());
-        }
-
-        @Override
-        public void addPopup(PopupView<?> popup, Anchors anchors) {
-            getModifiableChildren().add(popup);
-            this.popupManager.addPopup(popup, anchors);
-        }
-
-        @Override
-        public void removePopup(PopupView<?> popup) {
-            this.popupManager.removePopup(popup);
-            getModifiableChildren().remove(popup);
-        }
-
-        @Override
-        public void closePopup(PopupView<?> popup) {
-            removePopup(popup);
-            popup.deinitializeTree();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends PopupView<?>> getPopups() {
-            return popupManager.getPopups();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends ContainerPopupPort> getPopupPorts() {
-            return popupManager.getPopups().stream().map(d -> d.getViewModel()).toList();
         }
 
         protected DemoAreaView<?> createArea() {

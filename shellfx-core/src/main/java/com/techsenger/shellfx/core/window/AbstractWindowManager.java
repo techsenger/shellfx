@@ -22,7 +22,6 @@ import com.techsenger.patternfx.mvvm.ChildView;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.patternfx.mvvm.ViewUtils;
 import com.techsenger.shellfx.core.dialog.DialogView;
-import com.techsenger.shellfx.core.popup.AbstractPopupManager;
 import com.techsenger.shellfx.core.popup.PopupView;
 import static com.techsenger.shellfx.core.window.WindowArrangement.CASCADE;
 import static com.techsenger.shellfx.core.window.WindowArrangement.TILE_HORIZONTAL;
@@ -41,6 +40,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
@@ -52,7 +53,7 @@ import javafx.util.Duration;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWindowManager extends AbstractPopupManager implements WindowManager {
+public abstract class AbstractWindowManager implements WindowManager {
 
     private enum SpecialState {
         MAXIMIZED, MINIMIZED
@@ -170,8 +171,9 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private static final double DIALOG_Y_OFFSET = -50.0;
 
     private static @Nullable WindowPane getWindowPane(WindowView<?> window) {
-        if (window.getNode() != null) {
-            return (WindowPane) window.getNode().getParent();
+        // a popup is a window too, but it sits in a pane of its own
+        if (window.getNode() != null && window.getNode().getParent() instanceof WindowPane pane) {
+            return pane;
         } else {
             return null;
         }
@@ -332,7 +334,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     private static Optional<WindowView<?>> findComponentWindow(ParentView<?> component, StackPane windowPane) {
         while (component != null) {
-            if (component instanceof WindowView<?> window) {
+            if (component instanceof WindowView<?> window && !(window instanceof PopupView<?>)) {
                 var bgPane = getWindowPane(window);
                 if (bgPane != null && bgPane.getParent() == windowPane) {
                     return Optional.of(window);
@@ -501,8 +503,27 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private final @Unmodifiable ObservableList<WindowView<?>> windows =
             FXCollections.unmodifiableObservableList(modifiableWindows);
 
+    private final Supplier<StackPane> stackPane;
+
+    private int modalCount = 0;
+
+    private boolean containerBlocked;
+
     // The last window in z-order.
     private WindowView<?> lastWindow;
+
+    // The last popup in z-order.
+    private WindowView<?> lastPopup;
+
+    // The anchors set by the client; kept apart from the AnchorPane constraints, which a maximized or minimized window
+    // replaces, and independent of whether the window has been added to the manager yet.
+    private final Map<WindowView<?>, Anchors> anchorsByWindow = new HashMap<>();
+
+    private final EventHandler<Event> eventBlocker = event -> {
+        if (!isEventTargetInsideModal(event)) {
+            event.consume();
+        }
+    };
 
     private final Map<WindowView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
 
@@ -518,7 +539,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     public AbstractWindowManager(Supplier<StackPane> stackPane,
             Supplier<ReadOnlyObjectProperty<@Nullable ParentView<?>>> focused) {
-        super(stackPane);
+        this.stackPane = stackPane;
         this.focused = focused;
         this.focusedListener = (ov, oldV, newV) ->  {
             if (newV) {
@@ -535,7 +556,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             fxView.setWindowManager(this);
         }
         modifiableWindows.add(windowView);
-        doAdd(windowView, windowView.getViewModel().isModal(), null);
+        doAddWindow(windowView, windowView.getViewModel().isModal());
         if (this.windows.size() == 1) {
             getStackPane().get().getScene().getWindow().focusedProperty().addListener(focusedListener);
         }
@@ -545,7 +566,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     public void removeWindow(WindowView<?> windowView) {
         if (modifiableWindows.remove(windowView)) {
             this.restoreInfosByWindow.remove(windowView);
-            doRemove(windowView, windowView.getViewModel().isModal());
+            this.anchorsByWindow.remove(windowView);
+            doRemoveWindow(windowView, windowView.getViewModel().isModal());
             if (windowView instanceof AbstractWindowView<?> fxView) {
                 fxView.setWindowManager(null);
             }
@@ -561,12 +583,35 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
+    public boolean isContainerBlocked() {
+        return containerBlocked;
+    }
+
+    @Override
+    public void setAnchors(WindowView<?> window, @Nullable Anchors anchors) {
+        if (anchors == null) {
+            this.anchorsByWindow.remove(window);
+        } else {
+            this.anchorsByWindow.put(window, anchors);
+        }
+        applyAnchors(window);
+    }
+
+    @Override
+    public @Nullable Anchors getAnchors(WindowView<?> window) {
+        return this.anchorsByWindow.get(window);
+    }
+
+    @Override
     public void arrangeWindows(WindowArrangement arrangement) {
         if (this.windows.isEmpty()) {
             return;
         }
 
-        List<WindowView<?>> windowsByZOder = getWindowsByZOrder();
+        // anchored windows are placed by the container, so only the floating ones are arranged
+        List<WindowView<?>> windowsByZOder = getWindowsByZOrder().stream()
+                .filter(w -> getAnchors(w) == null)
+                .toList();
         if (windowsByZOder.isEmpty()) {
             return;
         }
@@ -673,6 +718,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             setMinimized(window, false);
         } else {
             createAndSaveRestoreInfo(SpecialState.MAXIMIZED, window);
+            AnchorPane.clearConstraints(window.getNode());
         }
         var n = window.getNode();
         var from = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
@@ -707,6 +753,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             setMaximized(window, false);
         } else {
             createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
+            AnchorPane.clearConstraints(window.getNode());
         }
         var allMinimizedWindowBounds = this.windows.stream()
                 .filter(w -> w != window && w.getViewModel() instanceof FrameWindowViewModel<?> f && f.isMinimized())
@@ -740,19 +787,22 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 AnchorPane.clearConstraints(window.getNode());
             }
             var restoredBounds = restoreBounds(info.bounds);
+            // the anchors of the window are applied again as soon as it has got its normal bounds back
+            Runnable reanchor = () -> applyAnchors(window);
             if (this.animationEnabled) {
                 var n = window.getNode();
                 var from = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
                 if (info.state == SpecialState.MAXIMIZED) {
-                    animateMaximize(n, from, restoredBounds, null);
+                    animateMaximize(n, from, restoredBounds, reanchor);
                 } else {
-                    animateMinimize(n, from, restoredBounds, MinimizeDirection.FROM_SLOT, null);
+                    animateMinimize(n, from, restoredBounds, MinimizeDirection.FROM_SLOT, reanchor);
                 }
             } else {
                 window.getNode().setLayoutX(restoredBounds.x);
                 window.getNode().setLayoutY(restoredBounds.y);
                 window.getViewModel().setWidth(restoredBounds.width);
                 window.getViewModel().setHeight(restoredBounds.height);
+                reanchor.run();
             }
             if (info.state == SpecialState.MAXIMIZED) {
                 setMaximized(window, false);
@@ -797,78 +847,29 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    private void focusLast() {
-        // popups never take the focus automatically
-        if (this.lastWindow != null) {
-            // there is a time gap, if a window is activated by focus, so it looks very stange
-            // that's why we do manual activation here
-            deactivateAllWindows(this.lastWindow);
-            activateWindow(this.lastWindow);
-            this.lastWindow.requestFocus();
-        }
+    protected Supplier<StackPane> getStackPane() {
+        return stackPane;
     }
 
-    @Override
-    protected ChildView<?> getLastModal() {
-        var popup = super.getLastModal();
-        if (popup != null) {
-            return popup;
-        }
-        if (this.lastWindow != null && this.lastWindow.getViewModel().isModal()) {
-            return this.lastWindow;
-        }
-        return null;
+    protected EventHandler<Event> getEventBlocker() {
+        return eventBlocker;
     }
 
-    @Override
-    protected void doAdd(ChildView<?> view, boolean modal, Anchors anchors) {
-        if (view instanceof PopupView<?> popup) {
-            super.doAdd(popup, modal, anchors);
-            return;
+    protected abstract void onContainerBlocked(boolean blocked);
+
+    protected void onModalAdded() {
+        if (modalCount == 0) {
+            this.containerBlocked = true;
+            onContainerBlocked(this.containerBlocked);
         }
-        //for every node a bg pane is created
-        var windowView = (WindowView<?>) view;
-        var bgPane = new WindowPane((Node) view.getNode());
-        bgPane.visibilityListener = (ov, oldV, newV) -> {
-            if (newV) {
-                onWindowShown(windowView);
-            } else {
-                onWindowHidden(windowView);
-            }
-        };
-        windowView.getViewModel().visibleProperty().addListener(bgPane.visibilityListener);
-        // the pane is shown by onWindowShown(), the same way as when the window becomes visible later
-        bgPane.setVisible(false);
-        bgPane.setManaged(false);
-        if (!modal) {
-            // Do not use setMouseTransparent(true) here — it propagates to all children, making them unresponsive to
-            // mouse events regardless of their own settings. Instead, disable bounds-based picking so the pane itself
-            // does not consume mouse events, while children remain fully interactive.
-            bgPane.setPickOnBounds(false);
-        }
-        getStackPane().get().getChildren().add(bgPane);
-        if (windowView.getViewModel().isVisible()) {
-            onWindowShown(windowView);
-        }
+        modalCount++;
     }
 
-    @Override
-    protected void doRemove(ChildView<?> view, boolean modal) {
-        if (view instanceof PopupView<?>) {
-            super.doRemove(view, modal);
-            return;
-        }
-        var windowView = (WindowView<?>) view;
-        var bgPane = getWindowPane(windowView);
-        if (bgPane != null && bgPane.visibilityListener != null) {
-            windowView.getViewModel().visibleProperty().removeListener(bgPane.visibilityListener);
-        }
-        // an invisible window took no part in z-order, focus and modality, so its removal changes none of them
-        var visible = windowView.getViewModel().isVisible();
-        super.doRemove(view, modal && visible);
-        if (visible) {
-            reorderAll();
-            focusLast();
+    protected void onModalRemoved() {
+        modalCount--;
+        if (modalCount == 0) {
+            this.containerBlocked = false;
+            onContainerBlocked(this.containerBlocked);
         }
     }
 
@@ -915,7 +916,10 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             aligner.run();
         }
         reorderAll();
-        focusLast();
+        // A popup never takes the focus itself: the client calls requestFocus() or the user clicks it.
+        if (!(window instanceof PopupView<?>)) {
+            focusLast();
+        }
     }
 
     private void onWindowHidden(WindowView<?> window) {
@@ -928,7 +932,134 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             onModalRemoved();
         }
         reorderAll();
-        focusLast();
+        if (!(window instanceof PopupView<?>)) {
+            focusLast();
+        }
+    }
+
+    private void applyAnchors(WindowView<?> window) {
+        // a window that is not added yet has no pane, and a maximized or minimized one is placed by the manager
+        if (getWindowPane(window) == null || this.restoreInfosByWindow.containsKey(window)) {
+            return;
+        }
+        var anchors = this.anchorsByWindow.get(window);
+        var node = window.getNode();
+        AnchorPane.setTopAnchor(node, anchors == null ? null : anchors.getTop());
+        AnchorPane.setRightAnchor(node, anchors == null ? null : anchors.getRight());
+        AnchorPane.setBottomAnchor(node, anchors == null ? null : anchors.getBottom());
+        AnchorPane.setLeftAnchor(node, anchors == null ? null : anchors.getLeft());
+    }
+
+    private void doAddWindow(WindowView<?> windowView, boolean modal) {
+        //for every node a bg pane is created
+        var bgPane = new WindowPane(windowView.getNode());
+        bgPane.visibilityListener = (ov, oldV, newV) -> {
+            if (newV) {
+                onWindowShown(windowView);
+            } else {
+                onWindowHidden(windowView);
+            }
+        };
+        windowView.getViewModel().visibleProperty().addListener(bgPane.visibilityListener);
+        // the pane is shown by onWindowShown(), the same way as when the window becomes visible later
+        bgPane.setVisible(false);
+        bgPane.setManaged(false);
+        if (!modal) {
+            // Do not use setMouseTransparent(true) here — it propagates to all children, making them unresponsive to
+            // mouse events regardless of their own settings. Instead, disable bounds-based picking so the pane itself
+            // does not consume mouse events, while children remain fully interactive.
+            bgPane.setPickOnBounds(false);
+        }
+        getStackPane().get().getChildren().add(bgPane);
+        applyAnchors(windowView);
+        if (windowView.getViewModel().isVisible()) {
+            onWindowShown(windowView);
+        }
+    }
+
+    private void doRemoveWindow(WindowView<?> windowView, boolean modal) {
+        var bgPane = getWindowPane(windowView);
+        if (bgPane != null && bgPane.visibilityListener != null) {
+            windowView.getViewModel().visibleProperty().removeListener(bgPane.visibilityListener);
+        }
+        // an invisible window took no part in z-order, focus and modality, so its removal changes none of them
+        var visible = windowView.getViewModel().isVisible();
+        getStackPane().get().getChildren().remove(windowView.getNode().getParent());
+        if (modal && visible) {
+            onModalRemoved();
+        }
+        if (visible) {
+            reorderAll();
+            if (!(windowView instanceof PopupView<?>)) {
+                focusLast();
+            }
+        }
+    }
+
+    private void focusLast() {
+        // popups never take the focus automatically
+        if (this.lastWindow != null) {
+            // there is a time gap, if a window is activated by focus, so it looks very stange
+            // that's why we do manual activation here
+            deactivateAllWindows(this.lastWindow);
+            activateWindow(this.lastWindow);
+            this.lastWindow.requestFocus();
+        }
+    }
+
+    private void reorderPopups() {
+        this.lastPopup = null;
+        List<WindowView<?>> modalPopups = new ArrayList<>();
+        for (var popup : windows) {
+            if (!(popup instanceof PopupView<?>) || !popup.getViewModel().isVisible()) {
+                continue;
+            }
+            this.lastPopup = popup;
+            var pane = getWindowPane(popup);
+            if (pane != null) {
+                pane.toFront();
+                if (popup.getViewModel().isModal()) {
+                    modalPopups.add(popup);
+                }
+            }
+        }
+
+        for (var popup : modalPopups) {
+            var pane = getWindowPane(popup);
+            if (pane != null) {
+                pane.toFront();
+            }
+        }
+        if (!modalPopups.isEmpty()) {
+            this.lastPopup = modalPopups.getLast();
+        }
+    }
+
+    private @Nullable ChildView<?> getLastModal() {
+        if (this.lastPopup != null && this.lastPopup.getViewModel().isModal()) {
+            return this.lastPopup;
+        }
+        if (this.lastWindow != null && this.lastWindow.getViewModel().isModal()) {
+            return this.lastWindow;
+        }
+        return null;
+    }
+
+    private boolean isEventTargetInsideModal(Event event) {
+        ChildView<?> modalComponent = getLastModal();
+        if (modalComponent == null) {
+            return false;
+        }
+        if (event.getTarget() instanceof Node target) {
+            Node current = target;
+            while (current != null) {
+                if (current == modalComponent.getNode()) {
+                    return true;
+                }
+                current = current.getParent();
+            }
+        }
+        return false;
     }
 
     // Z-order:
@@ -975,7 +1106,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 .filter(n -> n.getClass() == WindowPane.class)
                 .map(WindowPane.class::cast)
                 .<WindowView<?>>map(n -> (WindowView<?>) ViewUtils.getView(n.getChildren().get(0)))
-                .filter(w -> w.getViewModel().isVisible())
+                .filter(w -> !(w instanceof PopupView<?>) && w.getViewModel().isVisible())
                 .toList();
     }
 

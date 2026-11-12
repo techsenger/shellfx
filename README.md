@@ -212,10 +212,6 @@ class TreePageContainer {
     <<interface>>
 }
 
-class PopupContainer {
-    <<interface>>
-}
-
 class WindowContainer {
     <<interface>>
 }
@@ -251,10 +247,8 @@ Parent <|-- Child
 
 Child <|-- PageContainer
 Child <|-- TreePageContainer
-Child <|-- PopupContainer
 Child <|-- TabContainer
-
-PopupContainer <|-- WindowContainer
+Child <|-- WindowContainer
 
 Parent <|.. AbstractParent
 
@@ -265,7 +259,7 @@ AbstractChild <|-- AbstractWindow
 AbstractChild <|-- AbstractTab
 
 AbstractArea <|-- AbstractPage
-AbstractArea <|-- AbstractPopup
+AbstractWindow <|-- AbstractPopup
 AbstractArea <|-- AbstractPageHost
 AbstractArea <|-- TabHost
 
@@ -512,8 +506,14 @@ There are two types of scope: `Window` and `Tab`. `Popup`s in the `Tab` scope ar
 only while that tab is open. `Popup`s in the `Window` scope are global to the `Window` and remain visible even when all
 tabs are closed.
 
-`Popup` can be added to any component that implements the `PopupContainer` interface. The platform provides two
-components that implement this interface: `Tab` and `Window`.
+`Popup` is a bare `Window` and is added to any component that implements the `WindowContainer` interface. The
+platform provides two components that implement this interface: `Tab` and `Window`. One window manager of such a
+container manages all its nested windows, popups included.
+
+Every nested window is either floating (the default: it sits where its `x` and `y` say and the user can move it) or
+anchored (it keeps its distances from the edges of the container, see `Anchors`). The container offers `setAnchors`
+and `getAnchors` for that, in any order relative to `addWindow`, and `addPopup(popup, anchors)` as a shortcut for both.
+Any manual positioning of a window makes it floating again.
 
 Like a window, a popup is created invisible: the client fills it in and calls `setVisible(true)` of its `Port`. An
 invisible popup is a part of the component tree, but takes no part in z-order and modality: a modal popup blocks its

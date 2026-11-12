@@ -16,14 +16,15 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.shellfx.core.area.AreaConfig;
+import com.techsenger.shellfx.core.window.WindowConfig;
 import java.io.Serial;
 
 /**
+ * The config of a popup.
  *
  * @author Pavel Castornii
  */
-public class PopupConfig extends AreaConfig {
+public class PopupConfig extends WindowConfig {
 
     @Serial
     private static final long serialVersionUID = 1L;

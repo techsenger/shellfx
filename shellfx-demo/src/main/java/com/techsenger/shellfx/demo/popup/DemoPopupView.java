@@ -17,6 +17,8 @@
 package com.techsenger.shellfx.demo.popup;
 
 import com.techsenger.shellfx.core.popup.AbstractPopupView;
+import com.techsenger.shellfx.core.registries.StylesheetRegistry;
+import com.techsenger.shellfx.material.style.StyleClasses;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -30,8 +32,8 @@ public class DemoPopupView<VM extends DemoPopupViewModel<?>> extends AbstractPop
 
     private final Button closeButton = new Button("Close");
 
-    public DemoPopupView(VM viewModel) {
-        super(viewModel);
+    public DemoPopupView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
+        super(viewModel, stylesheetRegistry, null);
     }
 
     @Override
@@ -44,8 +46,8 @@ public class DemoPopupView<VM extends DemoPopupViewModel<?>> extends AbstractPop
         super.build();
         getContentBox().getChildren().addAll(label, closeButton);
         getContentBox().setSpacing(20);
-        getContentBox().setStyle("-fx-border-width: 2px; -fx-border-color: -color-accent-7; "
-                + "-fx-padding: 20; -fx-background-color: -color-bg-default");
+        getContentBox().setStyle("-fx-padding: 20;");
+        getContentBox().getStyleClass().add(StyleClasses.CORNERS_ALL);
     }
 
     @Override

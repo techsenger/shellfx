@@ -16,13 +16,12 @@
 
 package com.techsenger.shellfx.demo.ide;
 
-import com.techsenger.shellfx.core.popup.PopupContainerComposer;
-import com.techsenger.shellfx.core.tab.TabComposer;
+import com.techsenger.shellfx.core.tab.HostTabComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface IdeMainTabComposer extends TabComposer, PopupContainerComposer, IdeMainTabPort.ComposerAccess {
+public interface IdeMainTabComposer extends HostTabComposer, IdeMainTabPort.ComposerAccess {
 
 }

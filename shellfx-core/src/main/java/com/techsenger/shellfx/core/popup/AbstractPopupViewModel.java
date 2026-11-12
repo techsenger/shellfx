@@ -17,82 +17,23 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
-import com.techsenger.shellfx.material.RequestSetter;
-import com.techsenger.toolkit.fx.value.ObservableSource;
-import com.techsenger.toolkit.fx.value.SimpleObservableSource;
+import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
+ * The base view model of a popup: a bare window that can also wait.
  *
+ * @param <C> the composer of the popup
  * @author Pavel Castornii
  */
-public abstract class AbstractPopupViewModel<C extends PopupComposer> extends AbstractAreaViewModel<C>
+public abstract class AbstractPopupViewModel<C extends PopupComposer> extends AbstractWindowViewModel<C>
         implements PopupViewModel<C> {
-
-    private final boolean modal;
-
-    private final ObservableSource<Double> widthSource = new SimpleObservableSource<>();
-
-    private final ObservableSource<Double> heightSource = new SimpleObservableSource<>();
-
-    private final BooleanProperty visible = new SimpleBooleanProperty();
 
     private final BooleanProperty waiting = new SimpleBooleanProperty();
 
-    private Runnable onCloseRequest = () -> closeSafely();
-
-    private Runnable onClosed;
-
     public AbstractPopupViewModel(PopupParams params) {
         super(params);
-        this.modal = params.isModal();
-    }
-
-    @Override
-    public PopupPort.ComposerAccess getComposerAccess() {
-        return getComposer();
-    }
-
-    @Override
-    public boolean isModal() {
-        return this.modal;
-    }
-
-    @Override
-    public void close() {
-        getComposer().close();
-        if (this.onClosed != null) {
-            this.onClosed.run();
-        }
-    }
-
-    @Override
-    @RequestSetter
-    public void setWidth(double width) {
-        this.widthSource.next(width);
-    }
-
-    @Override
-    @RequestSetter
-    public void setHeight(double height) {
-        this.heightSource.next(height);
-    }
-
-    @Override
-    public boolean isVisible() {
-        return visible.get();
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.visible.set(visible);
-    }
-
-    @Override
-    public BooleanProperty visibleProperty() {
-        return visible;
     }
 
     @Override
@@ -111,41 +52,7 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
     }
 
     @Override
-    public Runnable getOnCloseRequest() {
-        return this.onCloseRequest;
-    }
-
-    @Override
-    public void setOnCloseRequest(Runnable runnable) {
-        this.onCloseRequest = runnable;
-    }
-
-    @Override
-    public Runnable getOnClosed() {
-        return onClosed;
-    }
-
-    @Override
-    public void setOnClosed(Runnable onClosed) {
-        this.onClosed = onClosed;
-    }
-
-    @Override
     protected @Nullable PopupConfig getConfig() {
         return (PopupConfig) super.getConfig();
-    }
-
-    protected void onCloseRequest() {
-        if (this.onCloseRequest != null) {
-            this.onCloseRequest.run();
-        }
-    }
-
-    ObservableSource<Double> widthSource() {
-        return this.widthSource;
-    }
-
-    ObservableSource<Double> heightSource() {
-        return this.heightSource;
     }
 }

@@ -16,10 +16,10 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.dialog.DialogView;
-import com.techsenger.shellfx.core.popup.ContainerPopupPort;
 import com.techsenger.shellfx.core.popup.PopupView;
 import com.techsenger.shellfx.core.window.AbstractWindowManager;
 import com.techsenger.shellfx.core.window.ContainerWindowPort;
@@ -120,30 +120,18 @@ public abstract class AbstractHostTabView<VM extends AbstractHostTabViewModel<?>
 
         @Override
         public void addPopup(PopupView<?> popup, Anchors anchors) {
-            getModifiableChildren().add(popup);
-            windowManager.addPopup(popup, anchors);
+            addWindow(popup);
+            setAnchors(popup, anchors);
         }
 
         @Override
-        public void removePopup(PopupView<?> popup) {
-            windowManager.removePopup(popup);
-            getModifiableChildren().remove(popup);
+        public void setAnchors(WindowView<?> window, @Nullable Anchors anchors) {
+            windowManager.setAnchors(window, anchors);
         }
 
         @Override
-        public void closePopup(PopupView<?> popup) {
-            removePopup(popup);
-            popup.deinitializeTree();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends PopupView<?>> getPopups() {
-            return windowManager.getPopups();
-        }
-
-        @Override
-        public List<? extends ContainerPopupPort> getPopupPorts() {
-            return windowManager.getPopups().stream().map(v -> v.getViewModel()).toList();
+        public @Nullable Anchors getAnchors(WindowView<?> window) {
+            return windowManager.getAnchors(window);
         }
 
         protected WindowManager getWindowManager() {

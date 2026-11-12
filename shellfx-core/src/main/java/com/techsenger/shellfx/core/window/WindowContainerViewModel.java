@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.core.window;
 
-import com.techsenger.shellfx.core.popup.PopupContainerViewModel;
+import com.techsenger.patternfx.mvvm.ChildViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowContainerViewModel<C extends WindowContainerComposer> extends PopupContainerViewModel<C>,
+public interface WindowContainerViewModel<C extends WindowContainerComposer> extends ChildViewModel<C>,
         WindowContainerPort {
 
 }

@@ -16,16 +16,15 @@
 
 package com.techsenger.shellfx.demo.ide;
 
-import com.techsenger.shellfx.core.popup.PopupContainerPort;
-import com.techsenger.shellfx.core.tab.TabPort;
+import com.techsenger.shellfx.core.tab.HostTabPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface IdeMainTabPort extends TabPort, PopupContainerPort {
+public interface IdeMainTabPort extends HostTabPort {
 
-    interface ComposerAccess extends TabPort.ComposerAccess, PopupContainerPort.ComposerAccess {
+    interface ComposerAccess extends HostTabPort.ComposerAccess {
 
     }
 

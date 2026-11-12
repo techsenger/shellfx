@@ -16,14 +16,14 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.shellfx.core.area.AreaViewModel;
-import com.techsenger.shellfx.core.close.CloseAwareViewModel;
+import com.techsenger.shellfx.core.window.WindowViewModel;
 
 /**
+ * The view model of a popup.
  *
+ * @param <C> the composer of the popup
  * @author Pavel Castornii
  */
-public interface PopupViewModel<C extends PopupComposer> extends AreaViewModel<C>, CloseAwareViewModel<C>,
-        ContainerPopupPort {
+public interface PopupViewModel<C extends PopupComposer> extends WindowViewModel<C>, PopupPort {
 
 }

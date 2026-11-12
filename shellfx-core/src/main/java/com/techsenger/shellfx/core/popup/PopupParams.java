@@ -17,23 +17,19 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.settings.ShellSettings;
+import com.techsenger.shellfx.core.window.WindowParams;
+import com.techsenger.shellfx.core.window.WindowType;
 
 /**
+ * The parameters of a popup, which is always a {@link WindowType#NESTED} window.
  *
  * @author Pavel Castornii
  */
-public class PopupParams extends AreaParams {
+public class PopupParams extends WindowParams {
 
-    private final boolean modal;
-
-    public PopupParams(@Nullable PopupConfig config, boolean modal) {
-        super(config);
-        this.modal = modal;
-    }
-
-    public boolean isModal() {
-        return modal;
+    public PopupParams(@Nullable PopupConfig config, boolean modal, ShellSettings settings) {
+        super(config, WindowType.NESTED, modal, settings);
     }
 
     @Override

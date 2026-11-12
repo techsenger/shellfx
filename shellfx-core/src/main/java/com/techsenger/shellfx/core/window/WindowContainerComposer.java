@@ -17,15 +17,16 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.popup.PopupContainerComposer;
+import com.techsenger.patternfx.mvvm.ChildComposer;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowContainerComposer extends PopupContainerComposer, WindowContainerPort.ComposerAccess {
+public interface WindowContainerComposer extends ChildComposer, WindowContainerPort.ComposerAccess {
 
     @Override
     @Unmodifiable List<? extends ContainerWindowPort> getWindowPorts();
+
 }

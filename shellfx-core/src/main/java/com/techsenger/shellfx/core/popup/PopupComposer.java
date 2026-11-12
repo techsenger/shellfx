@@ -16,16 +16,13 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.patternfx.mvvm.ChildComposer;
+import com.techsenger.shellfx.core.window.WindowComposer;
 
 /**
+ * The composer of a popup.
  *
  * @author Pavel Castornii
  */
-public interface PopupComposer extends ChildComposer, PopupPort.ComposerAccess {
+public interface PopupComposer extends WindowComposer {
 
-    /**
-     * Removes this popup from its container's component tree.
-     */
-    void close();
 }

@@ -16,18 +16,21 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvvm.ChildView;
 import com.techsenger.shellfx.core.dialog.DialogView;
-import com.techsenger.shellfx.core.popup.PopupContainerView;
+import com.techsenger.shellfx.core.popup.PopupView;
+import com.techsenger.shellfx.material.Anchors;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowContainerView<VM extends WindowContainerViewModel<?>> extends PopupContainerView<VM> {
+public interface WindowContainerView<VM extends WindowContainerViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends PopupContainerView.Composer, WindowContainerComposer {
+    interface Composer extends ChildView.Composer, WindowContainerComposer {
 
         /**
          * Adds the specified window component to the component tree. The window is added as it is: while it is
@@ -58,12 +61,13 @@ public interface WindowContainerView<VM extends WindowContainerViewModel<?>> ext
         @Unmodifiable List<? extends WindowView<?>> getWindows();
 
         /**
-         * Arranges all managed windows according to the specified arrangement strategy.
+         * Arranges the visible floating windows according to the specified arrangement strategy. Anchored windows are
+         * placed by the container and are left as they are.
          * <p>
          * This operation repositions and resizes windows within the available
          * container area based on the given arrangement mode.
          *
-         * @param arrangement the arrangement strategy to apply to all windows
+         * @param arrangement the arrangement strategy to apply to the floating windows
          */
         void arrangeWindows(WindowArrangement arrangement);
 
@@ -174,6 +178,33 @@ public interface WindowContainerView<VM extends WindowContainerViewModel<?>> ext
          * @param dialog the dialog to add and align
          */
         void addDialog(DialogView<?> dialog);
+
+        /**
+         * Convenience method that adds the given popup to the component tree and anchors it. Equivalent to calling
+         * {@link #addWindow(WindowView)} followed by {@link #setAnchors(WindowView, Anchors)}.
+         *
+         * @param popup the popup component to add
+         * @param anchors the distances of the popup from the edges of the container
+         */
+        void addPopup(PopupView<?> popup, Anchors anchors);
+
+        /**
+         * Sets the anchors of a window: the distances from the edges of the container it keeps while the container is
+         * resized. A window without anchors is floating, which is the default. It can be called before or after the
+         * window is added. Any manual positioning of the window makes it floating again.
+         *
+         * @param window the window
+         * @param anchors the anchors, or {@code null} to make the window floating
+         */
+        void setAnchors(WindowView<?> window, @Nullable Anchors anchors);
+
+        /**
+         * Returns the anchors of a window.
+         *
+         * @param window the window
+         * @return the anchors, or {@code null} if the window is floating
+         */
+        @Nullable Anchors getAnchors(WindowView<?> window);
     }
 
     @Override

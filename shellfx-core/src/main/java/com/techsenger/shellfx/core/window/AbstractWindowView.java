@@ -45,7 +45,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.InputEvent;
@@ -226,13 +225,15 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private final PulseListenerManager pulseListenerManager;
 
+    private boolean shadowVisible;
+
     /**
      * Creates a new window backed by the given JavaFX window.
      *
      * @param viewModel the view model of this window
      * @param stylesheetRegistry the registry of the stylesheets that every window applies
-     * @param window the JavaFX window that backs a {@link WindowType#TOP_LEVEL} window; {@code null} for a
-     *     {@link WindowType#NESTED} one
+     * @param window the JavaFX window that backs a {@link WindowType#TOP_LEVEL} window and already shows a scene
+     *     whose root is {@link #getNode()}; {@code null} for a {@link WindowType#NESTED} one
      */
     public AbstractWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, @Nullable Window window) {
         super(viewModel);
@@ -279,14 +280,6 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         return contentPane;
     }
 
-    /**
-     * Puts the scene with the content of this window into its JavaFX window. Called while building a
-     * {@link WindowType#TOP_LEVEL} window, because only the concrete kind of the window knows how it takes a scene.
-     *
-     * @param scene the scene to show in the window
-     */
-    protected abstract void setScene(Scene scene);
-
     @Override
     protected Composer createComposer() {
         return new AbstractWindowView<VM>.Composer();
@@ -301,8 +294,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         this.contentPane.getStyleClass().add("content-pane");
         var viewModel = getViewModel();
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
-            var scene = new Scene(windowNode);
-            setScene(scene);
+            var scene = this.window.getScene();
             this.stylesheetManager = new StylesheetManager(scene.getStylesheets(), getDescriptor().getLogPrefix(),
                     stylesheetRegistry);
             this.fontApplier = new FontApplier(windowNode);
@@ -432,6 +424,29 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
     }
 
     /**
+     * Shows or hides the shadow around a nested window.
+     *
+     * @param visible {@code true} to show the shadow
+     */
+    protected void setShadowVisible(boolean visible) {
+        checkIfNested();
+        if (this.shadowVisible == visible) {
+            return;
+        }
+        if (visible) {
+            getWindowNode().getStyleClass().add(StyleClasses.SHADOW);
+        } else {
+            getWindowNode().getStyleClass().remove(StyleClasses.SHADOW);
+        }
+        this.shadowVisible = visible;
+    }
+
+    protected boolean isShadowVisible() {
+        checkIfNested();
+        return shadowVisible;
+    }
+
+    /**
      * JavaFX doesn't support the same accelerator to be installed in multiple MenuItems. See this bug:
      * https://bugs.openjdk.org/browse/JDK-8088068 . This method is a workaround for this problem.
      *
@@ -482,6 +497,15 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     void setWindowManager(@Nullable WindowManager windowManager) {
         this.windowManager = windowManager;
+    }
+
+    /**
+     * Makes this window floating, as any manual positioning of a nested window does.
+     */
+    void releaseAnchors() {
+        if (this.windowManager != null) {
+            this.windowManager.setAnchors(this, null);
+        }
     }
 
     void updateWidth(double value) {
@@ -574,6 +598,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
                 this.window.setX(x);
             }
         } else {
+            releaseAnchors();
             this.windowNode.setLayoutX(x);
         }
     }
@@ -584,6 +609,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
                 this.window.setY(y);
             }
         } else {
+            releaseAnchors();
             this.windowNode.setLayoutY(y);
         }
     }

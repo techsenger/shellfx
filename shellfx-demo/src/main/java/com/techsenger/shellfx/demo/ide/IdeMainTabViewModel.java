@@ -18,9 +18,8 @@ package com.techsenger.shellfx.demo.ide;
 
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
-import com.techsenger.shellfx.core.popup.PopupContainerViewModel;
-import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
-import com.techsenger.shellfx.core.tab.TabParams;
+import com.techsenger.shellfx.core.tab.AbstractHostTabViewModel;
+import com.techsenger.shellfx.core.tab.HostTabParams;
 import com.techsenger.shellfx.demo.styles.DemoIcons;
 import java.util.function.Consumer;
 
@@ -28,11 +27,11 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractTabViewModel<C>
-        implements PopupContainerViewModel<C>, IdeMainTabPort {
+public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractHostTabViewModel<C>
+        implements IdeMainTabPort {
 
     public IdeMainTabViewModel() {
-        super(new TabParams(null));
+        super(new HostTabParams(null));
     }
 
     @Override
