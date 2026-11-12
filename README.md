@@ -495,34 +495,42 @@ dialogs as its steps.
 
 ### Popup <a name="core-popup"></a>
 
-All `Popup`s in ShellFX are inline and have a scope that affects what will be blocked when the `Popup` is open.
+`Popup` inherits `Window` and is a specialized component for short-lived content that must not interrupt the user:
+notifications, completion lists, hints and progress overlays. Since `Popup` inherits `Window`, it uses the same API as
+regular windows and is managed by the same window manager as all other nested windows. Unlike a `FrameWindow`
+(and so unlike a `Dialog`), a popup is a bare window: it has no title bar, buttons or border, and the user can neither
+move nor resize it. It is placed and sized by the client.
 
-Inline `Popup`s are components that appear embedded within the current application window, typically overlaid on top
-of the existing content. They are contextually tied to a specific section (e.g., a `Shell` or `Tab`) and do not
-create a separate OS-level window. In contrast, modal window `Popup`s (or native `Popup`s) open as standalone
-OS-managed windows with their own frames and system controls, completely independent of the parent UI.
+Popups can be displayed either as `NESTED` or `TOP_LEVEL` windows. A nested popup is rendered within a
+`WindowContainer`: it appears embedded within the current application window, typically overlaid on top of the
+existing content, and does not create a separate OS-level window. A top-level popup is displayed in a separate native
+window without a system frame, so it can extend beyond the bounds of the application window, for example a completion
+list or a hint near the edge of the screen. Both variants are accessed through the same API, so a popup is
+implemented once and can be shown either inside the application or in a separate native window.
 
-There are two types of scope: `Window` and `Tab`. `Popup`s in the `Tab` scope are bound to a specific tab and are visible
-only while that tab is open. `Popup`s in the `Window` scope are global to the `Window` and remain visible even when all
-tabs are closed.
+Nested popups can be displayed in any implementation of `WindowContainer`. The platform provides two implementations:
+`HostWindow` and `HostTab`. This gives a nested popup one of two scopes, and the scope affects what is blocked when a
+modal popup is open. `Popup`s in the `Tab` scope are added to a specific tab and are visible only while that tab is
+open. `Popup`s in the `Window` scope are added to the window and remain visible even when all tabs are closed.
 
-`Popup` is a bare `Window` and is added to any component that implements the `WindowContainer` interface. The
-platform provides two components that implement this interface: `Tab` and `Window`. One window manager of such a
-container manages all its nested windows, popups included.
-
-Every nested window is either floating (the default: it sits where its `x` and `y` say and the user can move it) or
-anchored (it keeps its distances from the edges of the container, see `Anchors`). The container offers `setAnchors`
-and `getAnchors` for that, in any order relative to `addWindow`, and `addPopup(popup, anchors)` as a shortcut for both.
-Any manual positioning of a window makes it floating again.
-
-Like a window, a popup is created invisible: the client fills it in and calls `setVisible(true)` of its `Port`. An
+Like any window, a popup is created invisible: the client fills it in and calls `setVisible(true)` of its `Port`. An
 invisible popup is a part of the component tree, but takes no part in z-order and modality: a modal popup blocks its
 container only while it is visible. Making a popup invisible is not closing it: it stays in the component tree and has
-to be closed to be removed.
+to be closed, like any window, to be removed.
 
-However, a popup differs from a window in one respect: it never takes the focus automatically, because notifications
-must not interrupt the user. The focus moves to a popup only when the client calls `requestFocus()` or the user clicks
-it.
+A popup shows content and has no result of its own. Opening it does not block the application's execution flow, and
+the client or the user closes it when the content is no longer needed. While the popup waits for something, its
+`waiting` property shows a waiting overlay over the content.
+
+Every nested window, a nested popup included, is either floating (the default: it sits where its `x` and `y` say) or
+anchored (it keeps its distances from the edges of the container, see `Anchors`). The container offers `setAnchors` and
+`getAnchors` for that, in any order relative to `addWindow`, and `addPopup(popup, anchors)` as a shortcut for both.
+Any manual positioning of a window makes it floating again. Nested popups are normally anchored, for example to the
+bottom-right corner for notifications. A top-level popup is placed in screen coordinates instead.
+
+A popup differs from a window in one more respect: it is always shown above the windows of its container, a modal
+popup above all the others, and it never takes the focus automatically, because notifications must not interrupt the
+user. The focus moves to a popup only when the client calls `requestFocus()` or the user clicks it.
 
 ### Area <a name="core-area"></a>
 
