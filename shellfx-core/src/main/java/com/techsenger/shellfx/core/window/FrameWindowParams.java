@@ -17,52 +17,16 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.core.ComponentParams;
 import com.techsenger.shellfx.core.settings.ShellSettings;
-import java.util.Objects;
 
 /**
+ * The parameters of a window with a title bar.
  *
  * @author Pavel Castornii
  */
-public class FrameWindowParams extends ComponentParams {
-
-    private final WindowType windowType;
-
-    private final boolean modal;
-
-    private final ShellSettings settings;
-
-    private final @Nullable WindowConfig config;
+public class FrameWindowParams extends WindowParams {
 
     public FrameWindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, ShellSettings settings) {
-        this.config = config;
-        this.windowType = type;
-        this.modal = modal;
-        this.settings = settings;
-    }
-
-    public WindowType getWindowType() {
-        return windowType;
-    }
-
-    public boolean isModal() {
-        return modal;
-    }
-
-    public ShellSettings getSettings() {
-        return settings;
-    }
-
-    public @Nullable WindowConfig getConfig() {
-        return config;
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-        if (this.windowType == WindowType.TOP_LEVEL) {
-            Objects.requireNonNull(settings);
-        }
+        super(config, type, modal, settings);
     }
 }

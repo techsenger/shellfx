@@ -28,9 +28,9 @@ import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.core.tab.TabView;
+import com.techsenger.shellfx.core.window.FrameWindowView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.core.window.WindowView;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarParams;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarView;
@@ -224,7 +224,7 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
             if (params.getWindowType() == WindowType.NESTED) {
                 view.windowContainer.addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getWindow().initOwner(getNode().getContent().getScene().getWindow());
             }
             return dialog.getViewModel();
         }
@@ -425,9 +425,9 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
                 var jfxComponent = (JfxComponentItem) component;
                 var fxView = jfxComponent.getView();
                 Element element;
-                if (fxView instanceof WindowView<?> window) {
+                if (fxView instanceof FrameWindowView<?> window) {
                     if (window.getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-                        var stage = window.getStage();
+                        var stage = window.getWindow();
                         element = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
                     } else {
                         element = LocalElement.of(window.getNode());

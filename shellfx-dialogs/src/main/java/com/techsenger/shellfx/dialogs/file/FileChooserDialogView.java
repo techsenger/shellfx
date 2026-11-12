@@ -127,7 +127,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
             if (dialog.getViewModel().getWindowType() == WindowType.NESTED) {
                 getParent().getComposer().addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getNode().getScene().getWindow());
+                dialog.getWindow().initOwner(getNode().getScene().getWindow());
             }
             return dialog.getViewModel();
         }

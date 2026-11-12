@@ -144,7 +144,7 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
      * a height set by the user is kept; a nested dialog follows its content by itself.
      */
     private void fitStageHeight() {
-        var stage = getStage();
+        var stage = getWindow();
         var scene = stage.getScene();
         if (!resizeRequired || !stage.isShowing()) {
             return;

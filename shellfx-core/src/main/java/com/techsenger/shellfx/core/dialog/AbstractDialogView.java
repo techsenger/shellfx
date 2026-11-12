@@ -148,7 +148,7 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
     protected void addHandlers() {
         super.addHandlers();
         if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            getStage().addEventHandler(WindowEvent.WINDOW_SHOWING, (e) -> buttonWidthGroup.refresh());
+            getWindow().addEventHandler(WindowEvent.WINDOW_SHOWING, (e) -> buttonWidthGroup.refresh());
         }
     }
 

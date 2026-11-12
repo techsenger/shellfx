@@ -18,54 +18,27 @@ package com.techsenger.shellfx.core.window;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Nullable;
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvvm.AbstractChildView;
-import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.patternfx.mvvm.ViewUtils;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.style.CoreIcons;
-import com.techsenger.shellfx.core.style.CssAnchor;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.IconViewBox;
-import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
-import com.techsenger.shellfx.material.style.Stylesheet;
-import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
-import com.techsenger.shellfx.material.theme.JavaFxTheme;
-import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.Spacer;
-import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javafx.animation.PauseTransition;
-import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.InputEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HeaderBar;
@@ -74,121 +47,22 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * The base view of a window with a title bar: it adds the title, the icon, the buttons for closing, minimizing and
+ * maximizing, the border and the shadow, and lets the user move and resize a nested window.
  *
+ * @param <VM> the view model of the window
  * @author Pavel Castornii
  */
-public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowViewModel<?>> extends AbstractChildView<VM>
-        implements WindowView<VM> {
+public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowViewModel<?>>
+        extends AbstractWindowView<VM> implements FrameWindowView<VM> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractFrameWindowView.class);
+    public class Composer extends AbstractWindowView<VM>.Composer {
 
-    /**
-     * Creates the stylesheets that windows need to look right: the platform styles. The application registers them
-     * in the {@link StylesheetRegistry} before the first window is created and before the other stylesheets.
-     *
-     * @return the default stylesheets
-     */
-    public static @Unmodifiable List<Stylesheet> createDefaultStylesheets() {
-        Set<Theme> allThemes = Stream.concat(
-                Arrays.stream(AtlantaFxTheme.values()),
-                Arrays.stream(JavaFxTheme.values()))
-                .collect(Collectors.toSet());
-        List<Stylesheet> result = new ArrayList<>();
-        result.add(new Stylesheet(CssAnchor.class.getResource("core.css").toExternalForm(),
-                Set.of(AtlantaFxTheme.values())));
-        result.add(new Stylesheet(StyleClasses.class.getResource("material.css").toExternalForm(), allThemes));
-        return Collections.unmodifiableList(result);
-    }
-
-    public class Composer extends AbstractChildView<VM>.Composer implements WindowView.Composer {
-
-        private final ReadOnlyObjectWrapper<ParentView<?>> focused = new ReadOnlyObjectWrapper<>();
-
-        private final AbstractFrameWindowView<VM> view = AbstractFrameWindowView.this;
-
-        /**
-         * PauseTransition used to implement debounce on the JavaFX thread with duration.
-         */
-        private PauseTransition focusDebouncePause;
-
-        @Override
-        public void compose() {
-            super.compose();
-            if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-                this.focusDebouncePause = new PauseTransition(Duration.millis(150));
-                if (logger.isDebugEnabled()) {
-                    this.focused.addListener((ov, oldV, newV) -> {
-                        logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
-                                (newV == null) ? null : newV.getViewModel().getDescriptor().getFullName());
-                    });
-                }
-                view.stage.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
-                    this.focusDebouncePause.stop();
-                    this.focusDebouncePause.playFromStart();
-                });
-                this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
-            }
-        }
-
-        @Override
-        public ReadOnlyObjectProperty<@Nullable ParentView<?>> focusedProperty() {
-            checkIfTopLevel();
-            return this.focused.getReadOnlyProperty();
-        }
-
-        @Override
-        public @Nullable ParentView<?> getFocused() {
-            checkIfTopLevel();
-            return this.focused.get();
-        }
-
-        @Override
-        public void close() {
-            checkIfNested();
-            var parent = getParent();
-            if (parent != null) {
-                ((WindowContainerView.Composer) parent.getComposer()).closeWindow(view);
-            }
-        }
-
-        @Override
-        public @Nullable WindowContainerView<?> getParent() {
-            checkIfNested();
-            return (WindowContainerView<?>) super.getParent();
-        }
-
-        @Override
-        public @Nullable WindowContainerPort getParentPort() {
-            checkIfNested();
-            var container = getParent();
-            return container == null ? null : container.getViewModel();
-        }
-
-        protected void onFocusPauseFinished() {
-            var newNode = view.stage.getScene().getFocusOwner();
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Focused node: {}", getDescriptor().getLogPrefix(), newNode);
-            }
-            if (newNode == null) {
-                setFocused(null);
-                return;
-            }
-            var component = ViewUtils.findView(newNode, ParentView.class);
-            setFocused(component);
-        }
-
-        private void setFocused(ParentView<?> focused) {
-            this.focused.set(focused);
-        }
     }
 
     /**
@@ -217,49 +91,11 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
 
     private final HBox rightBox = new HBox(closeButton);
 
-    private Region titleBar;
-
     private final StackPane titlePane = new StackPane();
 
-    private final VBox contentBox = new VBox();
-
-    private final StackPane contentPane = new StackPane(contentBox);
-
-    /**
-     * Keeps the preferred size of the window within the minimum and maximum size of the view model, so a window
-     * is opened with a size that follows them, not only the content.
-     */
-    private final VBox windowBox = new VBox(contentPane) {
-
-        @Override
-        protected double computePrefWidth(double height) {
-            var viewModel = getViewModel();
-            return Math.max(viewModel.getMinWidth(), Math.min(viewModel.getMaxWidth(), super.computePrefWidth(height)));
-        }
-
-        @Override
-        protected double computePrefHeight(double width) {
-            var viewModel = getViewModel();
-            return Math.max(viewModel.getMinHeight(),
-                    Math.min(viewModel.getMaxHeight(), super.computePrefHeight(width)));
-        }
-    };
-
-    private final StackPane windowNode = new StackPane(windowBox);
-
-    private final StylesheetRegistry stylesheetRegistry;
-
-    private @Nullable StylesheetManager stylesheetManager;
+    private Region titleBar;
 
     private @Nullable Pane blockPane;
-
-    private @Nullable Stage stage;
-
-    private @Nullable InputEvent inputEvent;
-
-    private @Nullable FontApplier fontApplier;
-
-    private Density density = Density.DEFAULT;
 
     /**
      * While dragging we need the difference. So, we keep in this variable previous value.
@@ -273,23 +109,9 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
 
     private boolean shadowVisible;
 
-    /**
-     * The minimum width calculated from the window content.
-     */
-    private final DoubleProperty calculatedMinWidth = new SimpleDoubleProperty();
-
-    /**
-     * The minimum height calculated from the window content.
-     */
-    private final DoubleProperty calculatedMinHeight = new SimpleDoubleProperty();
-
     private @Nullable RegionResizer resizer;
 
-    private @Nullable WindowManager windowManager;
-
     private boolean resizingInProgress;
-
-    private PulseListenerManager pulseListenerManager;
 
     private final EventHandler<? super MouseEvent> maximizeHandler = (e) -> {
         if (e.getClickCount() == 2) {
@@ -298,14 +120,7 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     };
 
     public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry) {
-        this(viewModel, stylesheetRegistry, null);
-        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(), () -> {
-            if (viewModel.getWindowType() == WindowType.NESTED) {
-                return getNode().sceneProperty();
-            } else {
-                return getStage().sceneProperty();
-            }
-        });
+        super(viewModel, stylesheetRegistry, viewModel.getWindowType() == WindowType.TOP_LEVEL ? new Stage() : null);
     }
 
     /**
@@ -318,32 +133,12 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
      * @param stage the stage that backs this window
      */
     public AbstractFrameWindowView(VM viewModel, StylesheetRegistry stylesheetRegistry, Stage stage) {
-        super(viewModel);
-        this.stage = stage;
-        this.stylesheetRegistry = stylesheetRegistry;
+        super(viewModel, stylesheetRegistry, stage);
     }
 
     @Override
-    public Region getNode() {
-        return this.windowNode;
-    }
-
-    @Override
-    public Stage getStage() {
-        checkIfTopLevel();
-        return this.stage;
-    }
-
-    @Override
-    public @Nullable InputEvent getInputEvent() {
-        checkIfTopLevel();
-        return this.inputEvent;
-    }
-
-    @Override
-    public @Unmodifiable List<Stylesheet> getStylesheets() {
-        checkIfTopLevel();
-        return this.stylesheetManager.getStylesheets();
+    public Stage getWindow() {
+        return (Stage) super.getWindow();
     }
 
     @Override
@@ -351,8 +146,9 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         return (Composer) super.getComposer();
     }
 
-    public StackPane getContentPane() {
-        return contentPane;
+    @Override
+    protected void setScene(Scene scene) {
+        getWindow().setScene(scene);
     }
 
     @Override
@@ -369,51 +165,34 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
                 "minimize-button");
         this.maximizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SQUARE, StyleClasses.SIZE_S,
                 "maximize-button");
-        this.windowBox.getStyleClass().add("window-box");
         this.leftBox.getStyleClass().add("left-box");
         this.rightBox.getStyleClass().add("right-box");
         this.rightBox.setSpacing(Spacing.getHorizontal() + Spacing.getHorizontalThird());
-        this.contentBox.getStyleClass().add("content-box");
-        VBox.setVgrow(contentPane, Priority.ALWAYS);
         this.titlePane.getStyleClass().add("title-pane");
-        this.contentPane.getStyleClass().add("content-pane");
         var viewModel = getViewModel();
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
             this.titleBar = new HeaderBar(leftBox, null, rightBox);
-            if (this.stage == null) {
-                this.stage = new Stage();
-            }
+            var stage = getWindow();
             HeaderBar.setSystemButtonHeight(stage, 0); // to hide default buttons
             stage.initStyle(StageStyle.EXTENDED);
-            var scene = new Scene(windowNode);
-            stage.setScene(scene);
-            this.stylesheetManager = new StylesheetManager(scene.getStylesheets(), getDescriptor().getLogPrefix(),
-                    stylesheetRegistry);
-            this.fontApplier = new FontApplier(windowNode);
-            ViewUtils.setView(scene, this);
             if (viewModel.isModal()) {
                 // it is not possible to change modality for the primary stage after it has been shown
-                this.stage.initModality(Modality.WINDOW_MODAL);
+                stage.initModality(Modality.WINDOW_MODAL);
             }
         } else {
             this.titleBar = new HBox(leftBox, titleLabel, new Spacer(Orientation.HORIZONTAL), rightBox);
             titleBar.getStyleClass().add(StyleClasses.CORNERS_TOP);
             titleBar.setMinHeight(Region.USE_PREF_SIZE);
             VBox.setVgrow(this.titleBar, Priority.NEVER);
-            this.stage = null;
-            contentBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
-            this.windowBox.getStyleClass().add(StyleClasses.CORNERS_ALL);
-            this.windowNode.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-            this.windowNode.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-            this.windowNode.setLayoutX(0.0);
-            this.windowNode.setLayoutY(0.0);
+            getContentBox().getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
+            var windowNode = getWindowNode();
             DoubleProperty resultMinWidth = new SimpleDoubleProperty();
             resultMinWidth.bind(Bindings.when(viewModel.minWidthProperty().isEqualTo(0))
-                    .then(calculatedMinWidth)
+                    .then(calculatedMinWidthProperty())
                     .otherwise(viewModel.minWidthProperty()));
             DoubleProperty resultMinHeight = new SimpleDoubleProperty();
             resultMinHeight.bind(Bindings.when(viewModel.minHeightProperty().isEqualTo(0))
-                    .then(calculatedMinHeight)
+                    .then(calculatedMinHeightProperty())
                     .otherwise(viewModel.minHeightProperty()));
             this.resizer = new RegionResizer(resultMinWidth, resultMinHeight, viewModel.maxWidthProperty(),
                     viewModel.maxHeightProperty(),
@@ -421,7 +200,7 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
                         resizingInProgress = true;
                         getViewModel().resizingProperty().set(true);
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
-                        this.windowNode.fireEvent(event);
+                        windowNode.fireEvent(event);
                         calculateMinSize();
                         // it is necessary to set sizes for both sides, as we don't know which side the user will resize
                         updateWidth(windowNode.getWidth());
@@ -429,17 +208,15 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
                     },
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
-                        this.windowNode.fireEvent(event);
+                        windowNode.fireEvent(event);
                         resizingInProgress = false;
                         getViewModel().resizingProperty().set(false);
                     });
             this.resizer.initialize(windowNode);
-            ViewUtils.setView(windowNode, this);
         }
         this.titleBar.getStyleClass().add("title-bar");
         this.titlePane.getChildren().add(this.titleBar);
-        this.windowBox.getChildren().add(0, titlePane);
-        windowNode.getStyleClass().add("window");
+        getWindowBox().getChildren().add(0, titlePane);
     }
 
     @Override
@@ -450,28 +227,18 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         iconViewBox.iconProperty().bind(viewModel.iconProperty());
         closeButton.disableProperty().bind(viewModel.closableProperty().not());
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
+            var stage = getWindow();
             // it is necessary to update the title of the stage because it is shown in the title bar of the OS
-            this.stage.titleProperty().bind(this.titleLabel.textProperty());
-            viewModel.widthWrapper().bind(this.stage.widthProperty());
-            viewModel.heightWrapper().bind(this.stage.heightProperty());
-            viewModel.maximizedWrapper().bind(this.stage.maximizedProperty());
-            viewModel.minimizedWrapper().bind(this.stage.iconifiedProperty());
-            viewModel.xWrapper().bind(this.stage.xProperty());
-            viewModel.yWrapper().bind(this.stage.yProperty());
-            this.stage.minWidthProperty().bind(viewModel.minWidthProperty());
-            this.stage.minHeightProperty().bind(viewModel.minHeightProperty());
-            this.stage.maxWidthProperty().bind(viewModel.maxWidthProperty());
-            this.stage.maxHeightProperty().bind(viewModel.maxHeightProperty());
+            stage.titleProperty().bind(this.titleLabel.textProperty());
+            viewModel.maximizedWrapper().bind(stage.maximizedProperty());
+            viewModel.minimizedWrapper().bind(stage.iconifiedProperty());
+            stage.minWidthProperty().bind(viewModel.minWidthProperty());
+            stage.minHeightProperty().bind(viewModel.minHeightProperty());
+            stage.maxWidthProperty().bind(viewModel.maxWidthProperty());
+            stage.maxHeightProperty().bind(viewModel.maxHeightProperty());
         } else {
             this.resizer.disabledProperty().bind(viewModel.resizableProperty().not()
                     .or(this.maximized).or(this.minimized));
-            // a nested window follows the visibility of its node; an invisible one takes no place in the layout
-            windowNode.visibleProperty().bindBidirectional(viewModel.visibleProperty());
-            windowNode.managedProperty().bind(windowNode.visibleProperty());
-            viewModel.widthWrapper().bind(windowNode.widthProperty());
-            viewModel.heightWrapper().bind(windowNode.heightProperty());
-            viewModel.xWrapper().bind(windowNode.layoutXProperty());
-            viewModel.yWrapper().bind(windowNode.layoutYProperty());
         }
     }
 
@@ -479,17 +246,21 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     protected void addListeners() {
         super.addListeners();
         var viewModel = getViewModel();
-        viewModel.closeWindowSource().addListener((newV) -> this.stage.close());
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.maximizedProperty().addListener((ov, oldV, newV) -> this.maximized.set(newV));
-            this.stage.focusedProperty().addListener((ov, oldV, newV) -> getViewModel().setActive(newV));
-            this.stage.showingProperty().addListener((ov, oldV, newV) -> getViewModel().setVisible(newV));
-            ValueUtils.callAndAddListener(viewModel.visibleProperty(), (ov, oldV, newV) -> updateVisible(newV));
+            var stage = getWindow();
+            stage.maximizedProperty().addListener((ov, oldV, newV) -> this.maximized.set(newV));
+            ValueUtils.callAndAddListener(viewModel.visibleProperty(), (ov, oldV, newV) -> {
+                if (newV) {
+                    stage.show();
+                } else {
+                    stage.hide();
+                }
+            });
+            ValueUtils.callAndAddListener(viewModel.alwaysOnTopProperty(),
+                    (ov, oldV, newV) -> stage.setAlwaysOnTop(newV));
             ValueUtils.callAndAddListener(viewModel.resizableProperty(),
-                    (ov, oldV, newV) -> this.stage.setResizable(newV));
+                    (ov, oldV, newV) -> stage.setResizable(newV));
         } else {
-            windowNode.widthProperty().addListener((ov, oldV, newV) -> checkContentFits());
-            windowNode.heightProperty().addListener((ov, oldV, newV) -> checkContentFits());
             this.minimized.addListener((ov, oldV, newV) -> {
                 if (newV) {
                     this.minimizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);
@@ -499,55 +270,20 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
             });
         }
         this.maximized.addListener((ov, oldV, newV) -> {
-            this.windowBox.pseudoClassStateChanged(PseudoClasses.MAXIMIZED, newV);
+            getWindowBox().pseudoClassStateChanged(PseudoClasses.MAXIMIZED, newV);
             if (newV) {
                 this.maximizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);
             } else {
                 this.maximizeIconView.setIcon(CoreIcons.WINDOW_MAXIMIZE);
             }
         });
-        ValueUtils.callAndAddListener(viewModel.alwaysOnTopProperty(), (ov, oldV, newV) -> updateAlwaysOnTop(newV));
         updateMaximized(viewModel.isMaximized());
         viewModel.maximizedSource().addListener((value) -> updateMaximized(value));
         ValueUtils.callAndAddListener(viewModel.maximizableProperty(), (ov, oldV, newV) -> updateMaximizable(newV));
         updateMinimized(viewModel.isMinimized());
         viewModel.minimizedSource().addListener((value) -> updateMinimized(value));
         ValueUtils.callAndAddListener(viewModel.minimizableProperty(), (ov, oldV, newV) -> updateMinimizable(newV));
-        viewModel.minWidthProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
-        viewModel.maxWidthProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
-        viewModel.minHeightProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
-        viewModel.maxHeightProperty().addListener((ov, oldV, newV) -> this.windowBox.requestLayout());
-        viewModel.widthSource().addListener((value) -> updateWidth(value));
-        viewModel.heightSource().addListener((value) -> updateHeight(value));
-        updateX(viewModel.getX());
-        viewModel.xSource().addListener((value) -> updateX(value));
-        updateY(viewModel.getY());
-        viewModel.ySource().addListener((value) -> updateY(value));
-
-        ValueUtils.callAndAddListener(viewModel.themeProperty(), (ov, oldV, newV) -> updateTheme(newV));
-        if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
-            // density/font only ever apply to a TOP_LEVEL window's own Scene/FontApplier; a NESTED window's
-            // density/font come from its enclosing TOP_LEVEL window instead, so no listener is needed here.
-            ValueUtils.callAndAddListener(viewModel.densityProperty(), (ov, oldV, newV) -> updateDensity(newV));
-            ValueUtils.callAndAddListener(viewModel.regularFontProperty(),
-                    (ov, oldV, newV) -> updateRegularFont(newV));
-            ValueUtils.callAndAddListener(viewModel.monospaceFontProperty(),
-                    (ov, oldV, newV) -> updateMonospaceFont(newV));
-        }
         ValueUtils.callAndAddListener(viewModel.blockedProperty(), (ov, oldV, newV) -> updateBlocked(newV));
-        ValueUtils.callAndAddListener(viewModel.activeProperty(), (ov, oldV, newV) -> updateActive(newV));
-    }
-
-    protected PulseListenerManager getPulseListenerManager() {
-        return pulseListenerManager;
-    }
-
-    @Override
-    protected void removeListeners() {
-        super.removeListeners();
-        if (this.stylesheetManager != null) {
-            this.stylesheetManager.dispose();
-        }
     }
 
     @Override
@@ -557,35 +293,10 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         this.closeButton.setOnAction(e -> viewModel.onCloseRequest());
         this.maximizeButton.setOnAction(e -> viewModel.onMaximize());
         this.minimizeButton.setOnAction(e -> viewModel.onMinimize());
-        if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
-            var originalDispatcher = this.stage.getEventDispatcher();
-            this.stage.setEventDispatcher((event, tail) -> {
-                if (!(event instanceof InputEvent e)) {
-                    return originalDispatcher.dispatchEvent(event, tail);
-                }
-                this.inputEvent = e;
-                try {
-                    return originalDispatcher.dispatchEvent(event, tail);
-                } finally {
-                    this.inputEvent = null;
-                }
-            });
-            this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
-            stage.setOnCloseRequest(event -> {
-                event.consume();
-                viewModel.onCloseRequest();
-            });
-        } else {
+        if (viewModel.getWindowType() == WindowType.NESTED) {
             titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, (event) -> this.onMousePressed(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, (event) -> this.onMouseDragged(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, (event) -> this.onMouseReleased(event));
-            windowNode.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> {
-                // A click gives the window focus only if it has none yet: taking focus from a control inside
-                // would, for example, collapse the selection of a text field before its context menu is built.
-                if (!windowNode.isFocusWithin()) {
-                    windowNode.requestFocus();
-                }
-            });
         }
     }
 
@@ -656,61 +367,8 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         return titlePane;
     }
 
-    protected VBox getContentBox() {
-        return contentBox;
-    }
-
-    protected VBox getWindowBox() {
-        return windowBox;
-    }
-
     protected Pane getBlockPane() {
         return blockPane;
-    }
-
-    /**
-     * JavaFX doesn't support the same accelerator to be installed in multiple MenuItems. See this bug:
-     * https://bugs.openjdk.org/browse/JDK-8088068 . This method is a workaround for this problem.
-     *
-     * @param e
-     */
-    protected void fixAcceleratorKeyPressed(KeyEvent e) {
-        Node focusedNode = stage.getScene().getFocusOwner();
-        if (focusedNode != null && focusedNode instanceof Control) {
-            Control c = (Control) focusedNode;
-            if (c.getContextMenu() != null) {
-                for (MenuItem item : c.getContextMenu().getItems()) {
-                    if (item.getAccelerator() != null && item.getAccelerator().match(e)) {
-                        item.fire();
-                        e.consume();
-                    }
-                }
-            }
-        }
-    }
-
-    protected StylesheetRegistry getStylesheetRegistry() {
-        return stylesheetRegistry;
-    }
-
-    /**
-     * Adds stylesheets to this window only. Stylesheets that every window needs belong in the registry.
-     *
-     * @param sheets the stylesheets to add
-     */
-    protected void addStylesheets(List<Stylesheet> sheets) {
-        checkIfTopLevel();
-        this.stylesheetManager.addStylesheets(sheets);
-    }
-
-    /**
-     * Removes stylesheets from this window.
-     *
-     * @param sheets the stylesheets to remove
-     */
-    protected void removeStylesheets(List<Stylesheet> sheets) {
-        checkIfTopLevel();
-        this.stylesheetManager.removeStylesheets(sheets);
     }
 
     protected void setShadowVisible(boolean visible) {
@@ -719,9 +377,9 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
             return;
         }
         if (visible) {
-            this.windowNode.getStyleClass().add(StyleClasses.SHADOW);
+            getWindowNode().getStyleClass().add(StyleClasses.SHADOW);
         } else {
-            this.windowNode.getStyleClass().remove(StyleClasses.SHADOW);
+            getWindowNode().getStyleClass().remove(StyleClasses.SHADOW);
         }
         this.shadowVisible = visible;
     }
@@ -729,14 +387,6 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     protected boolean isShadowVisible() {
         checkIfNested();
         return shadowVisible;
-    }
-
-    void updateActive(boolean active) {
-        windowBox.pseudoClassStateChanged(PseudoClasses.INACTIVE, !active);
-    }
-
-    void setWindowManager(@Nullable WindowManager windowManager) {
-        this.windowManager = windowManager;
     }
 
     void onMaximized(boolean maximized) {
@@ -757,17 +407,9 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         this.minimized.set(minimized);
     }
 
-    private void updateAlwaysOnTop(boolean alwaysOnTop) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setAlwaysOnTop(alwaysOnTop);
-        } else if (this.windowManager != null) {
-            this.windowManager.updateWindow(this);
-        }
-    }
-
     private void updateMaximized(boolean maximized) {
         if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setMaximized(maximized);
+            getWindow().setMaximized(maximized);
         } else {
             var parent = getComposer().getParent();
             if (parent != null) {
@@ -801,7 +443,7 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
 
     private void updateMinimized(boolean minimized) {
         if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setIconified(minimized);
+            getWindow().setIconified(minimized);
         } else {
             var parent = getComposer().getParent();
             if (parent != null) {
@@ -827,128 +469,21 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         }
     }
 
-    private void updateDensity(Density density) {
-        checkIfTopLevel();
-        var styleClasses = this.stage.getScene().getRoot().getStyleClass();
-        if (this.density.getStyleClass() != null) {
-            styleClasses.remove(this.density.getStyleClass());
-        }
-        this.density = density;
-        if (this.density.getStyleClass() != null) {
-            styleClasses.add(this.density.getStyleClass());
-        }
-    }
-
-    private void updateTheme(Theme theme) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
-            this.stylesheetManager.setTheme(theme);
-        }
-    }
-
-    private void updateRegularFont(Font font) {
-        checkIfTopLevel();
-        this.fontApplier.setRegularFont(font);
-    }
-
-    private void updateMonospaceFont(Font font) {
-        checkIfTopLevel();
-        this.fontApplier.setMonospaceFont(font);
-    }
-
     private void updateBlocked(boolean blocked) {
         if (blocked) {
             this.blockPane = new Pane();
             this.blockPane.setMouseTransparent(false);
-            this.windowNode.getChildren().add(this.blockPane);
+            getWindowNode().getChildren().add(this.blockPane);
         } else {
-            this.windowNode.getChildren().remove(this.blockPane);
+            getWindowNode().getChildren().remove(this.blockPane);
             this.blockPane = null;
-        }
-    }
-
-    private void updateX(double x) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            // NaN is the Stage's own sentinel for "not positioned yet"; forwarding it into setX would mark the
-            // Stage as explicitly positioned and suppress the platform's default centering on first show()
-            if (!Double.isNaN(x)) {
-                this.stage.setX(x);
-            }
-        } else {
-            this.windowNode.setLayoutX(x);
-        }
-    }
-
-    private void updateY(double y) {
-        if (getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
-            if (!Double.isNaN(y)) {
-                this.stage.setY(y);
-            }
-        } else {
-            this.windowNode.setLayoutY(y);
-        }
-    }
-
-    private void updateVisible(boolean value) {
-        if (this.stage == null) {
-            return;
-        }
-        if (value) {
-            this.stage.show();
-        } else {
-            this.stage.hide();
-        }
-    }
-
-    private void updateWidth(double value) {
-        if (this.stage == null) {
-            this.windowNode.setMinWidth(value);
-            this.windowNode.setMaxWidth(value);
-        } else {
-            this.stage.setWidth(value);
-        }
-    }
-
-    private void updateHeight(double value) {
-        if (this.stage == null) {
-            this.windowNode.setMinHeight(value);
-            this.windowNode.setMaxHeight(value);
-        } else {
-            this.stage.setHeight(value);
-        }
-    }
-
-    /**
-     * Hides the content if the window is too small to fit it during resizing (manual or animated).
-     */
-    private void checkContentFits() {
-        var containerHeight = windowNode.getHeight() - windowNode.getPadding().getTop()
-                        - windowNode.getPadding().getBottom();
-        var containerWidth = windowNode.getWidth() - windowNode.getPadding().getLeft()
-                        - windowNode.getPadding().getRight();
-        boolean fits = containerHeight >= calculatedMinHeight.get() && containerWidth >= calculatedMinWidth.get();
-        contentPane.setVisible(fits);
-        contentPane.setManaged(fits);
-    }
-
-    private void checkIfTopLevel() {
-        if (getViewModel().getWindowType() != WindowType.TOP_LEVEL) {
-            throw new UnsupportedOperationException("The operation is not supported for " + WindowType.NESTED
-                    + " Window");
-        }
-    }
-
-    private void checkIfNested() {
-        if (getViewModel().getWindowType() != WindowType.NESTED) {
-            throw new UnsupportedOperationException("The operation is not supported for " + WindowType.TOP_LEVEL
-                    + " Window");
         }
     }
 
     private void onMousePressed(MouseEvent event) {
         if (!resizingInProgress) {
-            offsetX = event.getSceneX() - this.windowNode.getLayoutX();
-            offsetY = event.getSceneY() - this.windowNode.getLayoutY();
+            offsetX = event.getSceneX() - getWindowNode().getLayoutX();
+            offsetY = event.getSceneY() - getWindowNode().getLayoutY();
             event.consume();
         }
     }
@@ -956,9 +491,10 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
     private void onMouseDragged(MouseEvent event) {
         if (!resizingInProgress) {
             this.titleBar.setCursor(Cursor.CLOSED_HAND);
+            var windowNode = getWindowNode();
             var newX = event.getSceneX() - offsetX;
             var newY = event.getSceneY() - offsetY;
-            var parent = (Pane) this.windowNode.getParent();
+            var parent = (Pane) windowNode.getParent();
             //checking position constraints
             if (newY < 0) {
                 newY = 0;
@@ -967,15 +503,15 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
                 if (newX < 0) {
                     newX = 0;
                 }
-                if ((newX + this.windowNode.getWidth()) > parent.getWidth()) {
-                    newX = parent.getWidth() - this.windowNode.getWidth();
+                if ((newX + windowNode.getWidth()) > parent.getWidth()) {
+                    newX = parent.getWidth() - windowNode.getWidth();
                 }
-                if ((newY + this.windowNode.getHeight()) > parent.getHeight()) {
-                    newY = parent.getHeight() - this.windowNode.getHeight();
+                if ((newY + windowNode.getHeight()) > parent.getHeight()) {
+                    newY = parent.getHeight() - windowNode.getHeight();
                 }
             }
-            this.windowNode.setLayoutX(newX);
-            this.windowNode.setLayoutY(newY);
+            windowNode.setLayoutX(newX);
+            windowNode.setLayoutY(newY);
             event.consume();
         }
     }
@@ -984,12 +520,5 @@ public abstract class AbstractFrameWindowView<VM extends AbstractFrameWindowView
         if (!resizingInProgress) {
             this.titleBar.setCursor(Cursor.DEFAULT);
         }
-    }
-
-    private void calculateMinSize() {
-        var width = windowBox.minWidth(-1) + windowNode.getPadding().getLeft() + windowNode.getPadding().getRight();
-        this.calculatedMinWidth.set(width);
-        var height = windowBox.minHeight(-1) + windowNode.getPadding().getTop() + windowNode.getPadding().getBottom();
-        this.calculatedMinHeight.set(height);
     }
 }

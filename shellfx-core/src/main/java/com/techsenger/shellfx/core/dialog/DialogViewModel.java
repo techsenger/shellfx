@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.core.dialog;
 
+import com.techsenger.shellfx.core.window.FrameWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
-import com.techsenger.shellfx.core.window.WindowViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogViewModel<C extends WindowComposer> extends WindowViewModel<C>, DialogPort {
+public interface DialogViewModel<C extends WindowComposer> extends FrameWindowViewModel<C>, DialogPort {
 
 }

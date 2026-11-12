@@ -21,7 +21,7 @@ package com.techsenger.shellfx.core.window;
  *
  * @author Pavel Castornii
  */
-public interface ContainerWindowPort extends FrameWindowPort {
+public interface ContainerWindowPort extends WindowPort {
 
     /**
      * Sets whether this window is active within its container.

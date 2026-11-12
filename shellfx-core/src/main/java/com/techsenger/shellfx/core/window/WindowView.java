@@ -25,7 +25,7 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.input.InputEvent;
 import javafx.scene.layout.Region;
-import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  *
@@ -85,13 +85,13 @@ public interface WindowView<VM extends WindowViewModel<?>> extends ChildView<VM>
     @Unmodifiable List<Stylesheet> getStylesheets();
 
     /**
-     * Returns the {@link Stage} that backs this window.
+     * Returns the JavaFX window that backs this window component.
      *
      * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
      *
-     * @return the {@link Stage} of this window
+     * @return the JavaFX window of this window
      */
-    Stage getStage();
+    Window getWindow();
 
     /**
      * Returns the input event (key, mouse, etc.) this window is dispatching right now, so code that only sees a

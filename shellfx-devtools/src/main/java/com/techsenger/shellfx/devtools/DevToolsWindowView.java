@@ -48,11 +48,11 @@ public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends A
         protected DevToolsTabDockView<?> createTabDock() {
             var shell = this.view.shell;
             var context = shell.getContext();
-            var connector = new LocalConnector(shell.getStage(), null);
+            var connector = new LocalConnector(shell.getWindow(), null);
             var configManager = getViewModel().getConfigManager();
             var config = configManager.getOrCreateConfig(DevToolsTabDockConfig.class, DevToolsTabDockConfig::new);
             var params = new DevToolsTabDockParams(config, DevToolsHostType.WINDOW, context.getSettings(),
-                    connector, shell.getStage().hashCode());
+                    connector, shell.getWindow().hashCode());
             var tabDockViewModel = new DevToolsTabDockViewModel<>(params);
             var tabDockView = new DevToolsTabDockView<>(tabDockViewModel, shell, null);
             tabDockView.initialize();
@@ -87,11 +87,5 @@ public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends A
     @Override
     protected Composer createComposer() {
         return new Composer();
-    }
-
-    @Override
-    protected void build() {
-        super.build();
-        getStage().setAlwaysOnTop(true);
     }
 }

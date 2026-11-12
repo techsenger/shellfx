@@ -130,7 +130,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
     private final HBox popupHBox = new HBox(shellPopupButton, tabPopupButton);
 
     private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooDisabledCheckBox, barIncludedCheckBox,
-            barDisabledCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
+            barDisabledCheckBox, new Label("Nested Dialogs:"), dialogHBox, new Label("Nested Popups:"), popupHBox);
 
     private final StackPane stackPane = new StackPane(vBox);
 

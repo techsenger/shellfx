@@ -48,7 +48,7 @@ public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogVi
             if (params.getWindowType() == WindowType.NESTED) {
                 getParent().getComposer().addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getStage());
+                dialog.getWindow().initOwner(getWindow());
             }
             return dialog.getViewModel();
         }

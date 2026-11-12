@@ -58,6 +58,7 @@ public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractF
         setIcon(DevToolsIcons.TOOLS);
         setMaximizable(true);
         setMinimizable(true);
+        setAlwaysOnTop(true);
     }
 
     @Override

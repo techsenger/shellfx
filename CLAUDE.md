@@ -83,7 +83,7 @@ lookups silently fall back to defaults and mask regressions.
   concrete class, matching the platform's own convention (`ShellView`, not `DefaultShellView`).
 - **ViewModel is a Port.** Every `*ViewModel<C>` interface extends both a `patternfx-mvvm` interface
   (`ChildViewModel`/`ParentViewModel`/etc.) and the component's own `*Port` interface (e.g. `WindowViewModel<C>
-  extends ChildViewModel<C>, FrameWindowPort`) — anything declared on the Port is automatically part of the
+  extends ChildViewModel<C>, WindowPort`) — anything declared on the Port is automatically part of the
   ViewModel's contract too. When deciding whether to promote a member from a concrete `Abstract*ViewModel` onto
   its Port: only promote what is already `public` on the ViewModel, mirror its exact shape (readonly vs.
   writable, single value vs. `ObservableList`) as-is, then add `@Override` on the implementation — don't invent
@@ -293,7 +293,7 @@ PatternFX — PatternFX has no persistence. Configs replaced the former `*Histor
   non-null parameter checked with `Objects.requireNonNull(getConfig())` in `validate()`; an optional one is
   `@Nullable` and callers pass `null`. A `Params` subclass with its own config type overrides `getConfig()` with a
   covariant return type (the cast in the override is accepted instead of generics), and so does its ViewModel.
-- **ViewModel.** `AbstractAreaViewModel`, `AbstractTabViewModel` and `AbstractFrameWindowViewModel` hold the config and
+- **ViewModel.** `AbstractAreaViewModel`, `AbstractTabViewModel` and `AbstractWindowViewModel` hold the config and
   expose it through a `protected` `getConfig()`. From `postInitialize()`, only when the config isn't `null`, they
   call `loadStateFromConfig()` (copy config values into the ViewModel state) and then `observeStateForConfig()`
   (listeners that write every change into the config and call `notifyListeners()` right away, not at

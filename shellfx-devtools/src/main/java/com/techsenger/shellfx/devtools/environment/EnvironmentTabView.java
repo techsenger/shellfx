@@ -73,7 +73,7 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
             if (params.getWindowType() == WindowType.NESTED) {
                 view.windowContainer.addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getWindow().initOwner(getNode().getContent().getScene().getWindow());
             }
             return dialog.getViewModel();
         }

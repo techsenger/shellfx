@@ -86,11 +86,11 @@ public class DevToolsItemHandler extends AbstractItemHandler {
     protected DevToolsTabDockView<?> createDevToolsDock() {
         var shell = getComponent();
         var context = shell.getContext();
-        var connector = new LocalConnector(shell.getStage(), null);
+        var connector = new LocalConnector(shell.getWindow(), null);
         var config = context.getConfigManager().getOrCreateConfig(DevToolsTabDockConfig.class,
                 DevToolsTabDockConfig::new);
         var params = new DevToolsTabDockParams(config, DevToolsHostType.SPLIT_SPACE,
-                context.getSettings(), connector, shell.getStage().hashCode());
+                context.getSettings(), connector, shell.getWindow().hashCode());
         var viewModel = new DevToolsTabDockViewModel<>(params);
         var view = new DevToolsTabDockView<>(viewModel, shell, resolveDialogContainer());
         view.initialize();

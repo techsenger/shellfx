@@ -1,0 +1,490 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.shellfx.core.window;
+
+import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
+import com.techsenger.patternfx.mvvm.ViewModel;
+import com.techsenger.shellfx.core.config.ConfigUtils;
+import com.techsenger.shellfx.core.settings.SettingsListener;
+import com.techsenger.shellfx.core.settings.ShellSettings;
+import com.techsenger.shellfx.material.RequestSetter;
+import com.techsenger.shellfx.material.style.Density;
+import com.techsenger.shellfx.material.theme.Theme;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.text.Font;
+
+/**
+ * The base view model of a window: it keeps the type, the position, the size, the visibility and the state that is
+ * stored in the config. The title bar and the buttons belong to {@code AbstractFrameWindowViewModel}.
+ *
+ * @param <C> the composer of the window
+ * @author Pavel Castornii
+ */
+public abstract class AbstractWindowViewModel<C extends WindowComposer> extends AbstractChildViewModel<C>
+        implements WindowViewModel<C> {
+
+    private final WindowType windowType;
+
+    private final boolean modal;
+
+    private final BooleanProperty alwaysOnTop = new SimpleBooleanProperty();
+
+    private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
+
+    private final ObservableSource<Double> widthSource = new SimpleObservableSource<>();
+
+    private final ReadOnlyDoubleWrapper height = new ReadOnlyDoubleWrapper();
+
+    private final ObservableSource<Double> heightSource = new SimpleObservableSource<>();
+
+    private final DoubleProperty minWidth = new SimpleDoubleProperty();
+
+    private final DoubleProperty minHeight = new SimpleDoubleProperty();
+
+    private final DoubleProperty maxWidth = new SimpleDoubleProperty(Double.MAX_VALUE);
+
+    private final DoubleProperty maxHeight = new SimpleDoubleProperty(Double.MAX_VALUE);
+
+    private final ReadOnlyObjectWrapper<Density> density = new ReadOnlyObjectWrapper<>(Density.DEFAULT);
+
+    private final ReadOnlyObjectWrapper<Theme> theme = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<Font> regularFont = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<Font> monospaceFont = new ReadOnlyObjectWrapper<>();
+
+    private final ShellSettings settings;
+
+    private final @Nullable WindowConfig config;
+
+    private final SettingsListener settingsListener = this::applySettings;
+
+    private Runnable onCloseRequest = () -> closeSafely();
+
+    private Runnable onClosed;
+
+    private final ReadOnlyBooleanWrapper active = new ReadOnlyBooleanWrapper();
+
+    private final BooleanProperty visible = new SimpleBooleanProperty();
+
+    private final ReadOnlyDoubleWrapper x = new ReadOnlyDoubleWrapper();
+
+    private final ObservableSource<Double> xSource = new SimpleObservableSource<>();
+
+    private final ReadOnlyDoubleWrapper y = new ReadOnlyDoubleWrapper();
+
+    private final ObservableSource<Double> ySource = new SimpleObservableSource<>();
+
+    private final ObservableSource<Void> closeWindowSource = new SimpleObservableSource<>();
+
+    public AbstractWindowViewModel(WindowParams params) {
+        super(params);
+        this.windowType = params.getWindowType();
+        this.modal = params.isModal();
+        this.settings = params.getSettings();
+        this.config = params.getConfig();
+    }
+
+    @Override
+    public WindowPort.ComposerAccess getComposerAccess() {
+        return getComposer();
+    }
+
+    @Override
+    public WindowType getWindowType() {
+        return this.windowType;
+    }
+
+    @Override
+    public boolean isModal() {
+        return modal;
+    }
+
+    @Override
+    public boolean isAlwaysOnTop() {
+        return alwaysOnTop.get();
+    }
+
+    @Override
+    public void setAlwaysOnTop(boolean alwaysOnTop) {
+        this.alwaysOnTop.set(alwaysOnTop);
+    }
+
+    @Override
+    public BooleanProperty alwaysOnTopProperty() {
+        return alwaysOnTop;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active.get();
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active.set(active);
+    }
+
+    @Override
+    public ReadOnlyBooleanProperty activeProperty() {
+        return active.getReadOnlyProperty();
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible.get();
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        this.visible.set(visible);
+    }
+
+    @Override
+    public BooleanProperty visibleProperty() {
+        return visible;
+    }
+
+    @Override
+    public double getWidth() {
+        return width.get();
+    }
+
+    @Override
+    @RequestSetter
+    public void setWidth(double width) {
+        widthSource.next(width);
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty widthProperty() {
+        return width.getReadOnlyProperty();
+    }
+
+    @Override
+    public double getHeight() {
+        return height.get();
+    }
+
+    @Override
+    @RequestSetter
+    public void setHeight(double height) {
+        heightSource.next(height);
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty heightProperty() {
+        return height.getReadOnlyProperty();
+    }
+
+    @Override
+    public Runnable getOnCloseRequest() {
+        return this.onCloseRequest;
+    }
+
+    @Override
+    public void setOnCloseRequest(Runnable runnable) {
+        this.onCloseRequest = runnable;
+    }
+
+    @Override
+    public void close() {
+        if (getWindowType() == WindowType.NESTED) {
+            getComposer().close();
+        } else {
+            var iterator = getComposer().breadthFirstPortIterator();
+            while (iterator.hasNext()) {
+                var c = iterator.next();
+                if (iterator.getDepth() > 0) {
+                    ((ViewModel) c).deinitialize();
+                }
+            }
+            deinitialize();
+            closeWindowSource.next(null);
+        }
+        if (this.onClosed != null) {
+            this.onClosed.run();
+        }
+    }
+
+    @Override
+    public Runnable getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
+    }
+
+    @Override
+    public double getMinWidth() {
+        return minWidth.get();
+    }
+
+    @Override
+    public void setMinWidth(double minWidth) {
+        this.minWidth.set(minWidth);
+    }
+
+    @Override
+    public DoubleProperty minWidthProperty() {
+        return minWidth;
+    }
+
+    @Override
+    public double getMinHeight() {
+        return minHeight.get();
+    }
+
+    @Override
+    public void setMinHeight(double minHeight) {
+        this.minHeight.set(minHeight);
+    }
+
+    @Override
+    public DoubleProperty minHeightProperty() {
+        return minHeight;
+    }
+
+    @Override
+    public double getMaxWidth() {
+        return maxWidth.get();
+    }
+
+    @Override
+    public void setMaxWidth(double maxWidth) {
+        this.maxWidth.set(maxWidth);
+    }
+
+    @Override
+    public DoubleProperty maxWidthProperty() {
+        return maxWidth;
+    }
+
+    @Override
+    public double getMaxHeight() {
+        return maxHeight.get();
+    }
+
+    @Override
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight.set(maxHeight);
+    }
+
+    @Override
+    public DoubleProperty maxHeightProperty() {
+        return maxHeight;
+    }
+
+    @Override
+    public double getX() {
+        return this.x.get();
+    }
+
+    @Override
+    @RequestSetter
+    public void setX(double x) {
+        xSource.next(x);
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty xProperty() {
+        return x.getReadOnlyProperty();
+    }
+
+    @Override
+    public double getY() {
+        return this.y.get();
+    }
+
+    @Override
+    @RequestSetter
+    public void setY(double y) {
+        ySource.next(y);
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty yProperty() {
+        return y.getReadOnlyProperty();
+    }
+
+    protected void onCloseRequest() {
+        if (this.onCloseRequest != null) {
+            this.onCloseRequest.run();
+        }
+    }
+
+    @Override
+    protected void preInitialize() {
+        super.preInitialize();
+        if (this.windowType == WindowType.TOP_LEVEL) {
+            applySettings();
+            this.settings.addListener(this.settingsListener);
+        }
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        if (config != null) {
+            loadStateFromConfig();
+            observeStateForConfig();
+        }
+    }
+
+    @Override
+    protected void postDeinitialize() {
+        super.postDeinitialize();
+        if (this.windowType == WindowType.TOP_LEVEL) {
+            this.settings.removeListener(this.settingsListener);
+        }
+    }
+
+    /**
+     * Applies the values stored in the config to the state of this component. Called once from
+     * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
+     */
+    protected void loadStateFromConfig() {
+        if (config.getHeight() >= 0) {
+            setHeight(config.getHeight());
+        }
+        if (config.getWidth() >= 0) {
+            setWidth(config.getWidth());
+        }
+    }
+
+    /**
+     * Registers listeners that write changes of the state of this component into the config and notify the config
+     * listeners. Called once after {@link #loadStateFromConfig()}; overriding methods must call {@code super}.
+     */
+    protected void observeStateForConfig() {
+        ConfigUtils.observe(this.width, config, WindowConfig::setWidth);
+        ConfigUtils.observe(this.height, config, WindowConfig::setHeight);
+    }
+
+    protected @Nullable WindowConfig getConfig() {
+        return config;
+    }
+
+    protected ShellSettings getSettings() {
+        return settings;
+    }
+
+    protected Density getDensity() {
+        return this.density.get();
+    }
+
+    protected void setDensity(Density density) {
+        this.density.set(density);
+    }
+
+    protected ReadOnlyObjectProperty<Density> densityProperty() {
+        return density.getReadOnlyProperty();
+    }
+
+    protected Theme getTheme() {
+        return this.theme.get();
+    }
+
+    protected void setTheme(Theme theme) {
+        this.theme.set(theme);
+    }
+
+    protected ReadOnlyObjectProperty<Theme> themeProperty() {
+        return theme.getReadOnlyProperty();
+    }
+
+    protected Font getRegularFont() {
+        return this.regularFont.get();
+    }
+
+    protected void setRegularFont(Font font) {
+        this.regularFont.set(font);
+    }
+
+    protected ReadOnlyObjectProperty<Font> regularFontProperty() {
+        return regularFont.getReadOnlyProperty();
+    }
+
+    protected Font getMonospaceFont() {
+        return this.monospaceFont.get();
+    }
+
+    protected void setMonospaceFont(Font font) {
+        this.monospaceFont.set(font);
+    }
+
+    protected ReadOnlyObjectProperty<Font> monospaceFontProperty() {
+        return monospaceFont.getReadOnlyProperty();
+    }
+
+    ObservableSource<Void> closeWindowSource() {
+        return closeWindowSource;
+    }
+
+    ReadOnlyDoubleWrapper widthWrapper() {
+        return width;
+    }
+
+    ObservableSource<Double> widthSource() {
+        return widthSource;
+    }
+
+    ReadOnlyDoubleWrapper heightWrapper() {
+        return height;
+    }
+
+    ObservableSource<Double> heightSource() {
+        return heightSource;
+    }
+
+    ReadOnlyDoubleWrapper xWrapper() {
+        return x;
+    }
+
+    ObservableSource<Double> xSource() {
+        return xSource;
+    }
+
+    ReadOnlyDoubleWrapper yWrapper() {
+        return y;
+    }
+
+    ObservableSource<Double> ySource() {
+        return ySource;
+    }
+
+    private void applySettings() {
+        setDensity(this.settings.getAppearance().getDensity());
+        setRegularFont(this.settings.getAppearance().getRegularFont());
+        setMonospaceFont(this.settings.getAppearance().getMonospaceFont());
+        setTheme(this.settings.getAppearance().getTheme());
+    }
+}

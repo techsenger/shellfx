@@ -531,7 +531,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     @Override
     public void addWindow(WindowView<?> windowView) {
-        if (windowView instanceof AbstractFrameWindowView<?> fxView) {
+        if (windowView instanceof AbstractWindowView<?> fxView) {
             fxView.setWindowManager(this);
         }
         modifiableWindows.add(windowView);
@@ -546,7 +546,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         if (modifiableWindows.remove(windowView)) {
             this.restoreInfosByWindow.remove(windowView);
             doRemove(windowView, windowView.getViewModel().isModal());
-            if (windowView instanceof AbstractFrameWindowView<?> fxView) {
+            if (windowView instanceof AbstractWindowView<?> fxView) {
                 fxView.setWindowManager(null);
             }
             if (this.windows.size() == 0) {
@@ -584,11 +584,13 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         for (var i = 0; i < bounds.size(); i++) {
             var bound = bounds.get(i);
             var window = windowsByZOder.get(i);
-            if (window.getViewModel().isMaximized()) {
-                window.getViewModel().setMaximized(false);
-            }
-            if (window.getViewModel().isMinimized()) {
-                window.getViewModel().setMinimized(false);
+            if (window.getViewModel() instanceof FrameWindowViewModel<?> frame) {
+                if (frame.isMaximized()) {
+                    frame.setMaximized(false);
+                }
+                if (frame.isMinimized()) {
+                    frame.setMinimized(false);
+                }
             }
             window.getNode().setLayoutX(bound.x);
             window.getNode().setLayoutY(bound.y);
@@ -707,7 +709,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
         }
         var allMinimizedWindowBounds = this.windows.stream()
-                .filter(w -> w.getViewModel().isMinimized() && w != window)
+                .filter(w -> w != window && w.getViewModel() instanceof FrameWindowViewModel<?> f && f.isMinimized())
                 .map(w -> {
                     var n = w.getNode();
                     return new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());

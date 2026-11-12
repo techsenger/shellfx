@@ -27,7 +27,7 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.config.ConfigData;
 import com.techsenger.shellfx.core.config.DefaultConfigManager;
-import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
+import com.techsenger.shellfx.core.window.AbstractWindowView;
 import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
 import static com.techsenger.shellfx.demo.ApplicationType.IDE;
 import static com.techsenger.shellfx.demo.ApplicationType.MDI;
@@ -118,7 +118,7 @@ public class Demo extends Application {
         var defaultIconFont = Fonts.MATERIAL_DESIGN_ICONS;
         FontIconView.setDefaultIconFamily(defaultIconFont.getFamily());
         var stylesheetRegistry = context.getStylesheetRegistry();
-        stylesheetRegistry.register(AbstractFrameWindowView.createDefaultStylesheets());
+        stylesheetRegistry.register(AbstractWindowView.createDefaultStylesheets());
         stylesheetRegistry.register(IconStylesheetFactory.forDefaultFont(defaultIconFont));
         stylesheetRegistry.register(IconStylesheetFactory.forAllModules());
 

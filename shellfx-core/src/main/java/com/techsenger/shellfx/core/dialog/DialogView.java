@@ -16,14 +16,14 @@
 
 package com.techsenger.shellfx.core.dialog;
 
-import com.techsenger.shellfx.core.window.WindowView;
+import com.techsenger.shellfx.core.window.FrameWindowView;
 import javafx.scene.layout.Region;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView<VM extends DialogViewModel<?>> extends WindowView<VM> {
+public interface DialogView<VM extends DialogViewModel<?>> extends FrameWindowView<VM> {
 
     @Override
     Region getNode();

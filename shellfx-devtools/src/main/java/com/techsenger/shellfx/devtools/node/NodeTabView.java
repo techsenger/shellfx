@@ -525,7 +525,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getWindow().initOwner(getNode().getContent().getScene().getWindow());
             }
             return dialog.getViewModel();
         }
@@ -543,7 +543,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addDialog(dialog);
             } else {
-                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getWindow().initOwner(getNode().getContent().getScene().getWindow());
             }
             return dialog.getViewModel();
         }
@@ -863,7 +863,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
 
     private void updateNodeRoot() {
         if (this.window == null) {
-            this.window = getComposer().getShell().getStage();
+            this.window = getComposer().getShell().getWindow();
         }
         var root = LocalElement.of(window, new EventSource(null, window.hashCode(), true));
         var rootItem = createNodeItem(root);
