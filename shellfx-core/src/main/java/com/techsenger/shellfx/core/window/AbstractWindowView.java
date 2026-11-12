@@ -300,7 +300,6 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             this.fontApplier = new FontApplier(windowNode);
             ViewUtils.setView(scene, this);
         } else {
-            this.windowBox.getStyleClass().add(StyleClasses.CORNERS_ALL);
             this.windowNode.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             this.windowNode.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             this.windowNode.setLayoutX(0.0);

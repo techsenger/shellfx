@@ -18,7 +18,6 @@ package com.techsenger.shellfx.demo.popup;
 
 import com.techsenger.shellfx.core.popup.AbstractPopupView;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.material.style.StyleClasses;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -47,7 +46,6 @@ public class DemoPopupView<VM extends DemoPopupViewModel<?>> extends AbstractPop
         getContentBox().getChildren().addAll(label, closeButton);
         getContentBox().setSpacing(20);
         getContentBox().setStyle("-fx-padding: 20;");
-        getContentBox().getStyleClass().add(StyleClasses.CORNERS_ALL);
     }
 
     @Override
