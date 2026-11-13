@@ -27,8 +27,27 @@ import com.techsenger.shellfx.core.window.WindowType;
  */
 public class DialogParams extends FrameWindowParams {
 
+    /**
+     * Creates the parameters of a modal dialog.
+     *
+     * @param config the config of the dialog, or {@code null} for none
+     * @param type the type of the dialog window
+     * @param settings the settings of the shell
+     */
     public DialogParams(@Nullable DialogConfig config, WindowType type, ShellSettings settings) {
-        super(config, type, true, settings);
+        this(config, type, settings, true);
+    }
+
+    /**
+     * Creates the parameters of a dialog that is modal or not, as given.
+     *
+     * @param config the config of the dialog, or {@code null} for none
+     * @param type the type of the dialog window
+     * @param settings the settings of the shell
+     * @param modal whether the dialog blocks the window that owns it while it is visible
+     */
+    public DialogParams(@Nullable DialogConfig config, WindowType type, ShellSettings settings, boolean modal) {
+        super(config, type, settings, modal);
     }
 
     @Override

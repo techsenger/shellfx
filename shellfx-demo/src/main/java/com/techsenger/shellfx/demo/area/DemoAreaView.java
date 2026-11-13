@@ -24,6 +24,7 @@ import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupParams;
 import com.techsenger.shellfx.core.popup.PopupPort;
 import com.techsenger.shellfx.core.window.WindowContainerView;
+import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.dialog.DemoDialogView;
 import com.techsenger.shellfx.demo.dialog.DemoDialogViewModel;
 import com.techsenger.shellfx.demo.popup.DemoPopupView;
@@ -83,7 +84,7 @@ public class DemoAreaView<VM extends DemoAreaViewModel<?>> extends AbstractAreaV
 
         @Override
         public PopupPort openDemoPopup(OverlayScope scope) {
-            var params = new PopupParams(null, false, shell.getContext().getSettings());
+            var params = new PopupParams(null, WindowType.NESTED, shell.getContext().getSettings());
             var viewModel = new DemoPopupViewModel<>(params);
             var popupView = new DemoPopupView<>(viewModel, shell.getContext().getStylesheetRegistry());
             popupView.initialize();

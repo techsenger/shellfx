@@ -50,13 +50,6 @@ public interface WindowPort extends ChildPort, CloseAwarePort {
     WindowType getWindowType();
 
     /**
-     * Returns whether this window is modal.
-     *
-     * @return {@code true} if this window is modal; {@code false} otherwise
-     */
-    boolean isModal();
-
-    /**
      * Returns whether this window is always on top.
      *
      * @return {@code true} if this window is always on top; {@code false} otherwise
@@ -95,8 +88,9 @@ public interface WindowPort extends ChildPort, CloseAwarePort {
      * the stage; a minimized window is still visible. Hiding is not closing: the window stays in the component tree,
      * and {@link #close()} still has to be called to remove it.
      *
-     * <p>Showing a window gives it the focus. A top-level window gets it from the platform, so a nested window behaves
-     * the same way. {@code requestFocus()} brings the focus back to the window later.
+     * <p>Showing a nested window gives it the focus only if it is modal, as it blocks everything else; the focus of
+     * any other nested window stays where it is until {@code requestFocus()} is called. A top-level window gets the
+     * focus from the platform.
      *
      * <p>The visibility can also be changed by the user or the platform, for example when the owner of a top-level
      * window is closed; observe {@link #visibleProperty()} for the actual value.

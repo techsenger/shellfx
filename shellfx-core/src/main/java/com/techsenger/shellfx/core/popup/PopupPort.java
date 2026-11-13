@@ -18,13 +18,27 @@ package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.shellfx.core.traits.Waitable;
 import com.techsenger.shellfx.core.window.WindowPort;
+import javafx.beans.property.BooleanProperty;
 
 /**
  * Provides full access to the client API of a popup: a bare window without a title bar, which never takes the focus
- * itself, may be modal, and can be shown and hidden without being closed.
+ * itself, and can be shown and hidden without being closed.
  *
  * @author Pavel Castornii
  */
 public interface PopupPort extends WindowPort, Waitable {
+
+    /**
+     * Returns whether the popup hides itself when the user presses the mouse or scrolls outside it, presses Escape or
+     * leaves the window. The popup is only made invisible, never closed, so the client watches {@code visible}. The
+     * default is {@code false}.
+     *
+     * @return {@code true} if the popup hides itself
+     */
+    boolean isAutoHide();
+
+    void setAutoHide(boolean autoHide);
+
+    BooleanProperty autoHideProperty();
 
 }

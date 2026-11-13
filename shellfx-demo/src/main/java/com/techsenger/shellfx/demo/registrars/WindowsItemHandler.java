@@ -40,7 +40,7 @@ public class WindowsItemHandler extends AbstractItemHandler {
         DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
             var settings = getComponent().getContext().getSettings();
-            var params = new FrameWindowParams(null, WindowType.NESTED, false, settings);
+            var params = new FrameWindowParams(null, WindowType.NESTED, settings, false);
             var viewModel = new DemoWindowViewModel<>(params, i);
             view = new DemoWindowView<>(viewModel, getComponent().getContext().getStylesheetRegistry());
             view.initialize();

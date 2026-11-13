@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.shellfx.core.window.WindowView;
+import javafx.stage.Popup;
 
 /**
  * The view of a popup.
@@ -26,4 +27,12 @@ import com.techsenger.shellfx.core.window.WindowView;
  */
 public interface PopupView<VM extends PopupViewModel<?>> extends WindowView<VM> {
 
+    /**
+     * Returns the JavaFX popup that backs a top-level popup.
+     *
+     * @return the popup
+     * @throws UnsupportedOperationException if the popup is nested
+     */
+    @Override
+    Popup getWindow();
 }

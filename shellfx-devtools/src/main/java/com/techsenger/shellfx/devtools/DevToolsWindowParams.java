@@ -31,7 +31,7 @@ public class DevToolsWindowParams extends FrameWindowParams {
     private final ConfigManager configManager;
 
     public DevToolsWindowParams(DevToolsWindowConfig config, ShellSettings setting, ConfigManager configManager) {
-        super(config, WindowType.TOP_LEVEL, false, setting);
+        super(config, WindowType.TOP_LEVEL, setting, false);
         this.configManager = configManager;
     }
 

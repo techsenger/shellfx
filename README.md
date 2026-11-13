@@ -400,17 +400,18 @@ As a result, components built on top of `Window` (such as dialogs, wizards, or u
 either inside the application or in separate system windows without any changes to application code. This allows
 window-based components to be implemented once and reused with any window type.
 
-A window is created invisible. The client fills the window in and makes it visible with `setVisible(true)` of the
-window `Port`, so the window appears with its final content, not an empty one that is filled in afterwards. A window
-that becomes visible gets the focus; `requestFocus()` of the `Port` brings the focus back to the window later. Making a
-window invisible is not closing it: an invisible window stays in the component tree and has to be closed to be removed.
-What happens when a window becomes visible depends on its type.
+A window is created invisible. The client fills the window in and makes it visible with `setVisible(true)` of the window
+`Port`, so the window appears with its final content, not an empty one that is filled in afterwards. A window that
+becomes visible gets the focus only if it is modal; `requestFocus()` of the `Port` gives the focus to any other window
+later. Making a window invisible is not closing it: an invisible window stays in the component tree and has to be closed
+to be removed. What happens when a window becomes visible depends on its type.
 
-A `NESTED` window passes two independent phases. First the `Composer` adds it to the window manager, which puts its
-node into the container; the window is a part of the component tree but is invisible. Then it is made visible or
-invisible with `setVisible`. A window that is not visible takes no part in z-order, focus and modality: a modal window
-blocks its container only while it is visible. Removing a visible window ends both phases at once, so it does not have
-to be made invisible first. When the window becomes visible, the window manager gives it the focus.
+A `NESTED` window passes two independent phases. First the `Composer` adds it to the window manager, which puts its node
+into the container; the window is a part of the component tree but is invisible. Then it is made visible or invisible
+with `setVisible`. A window that is not visible takes no part in z-order, focus and modality: a modal window (only a
+window with a title bar can be modal) blocks its container only while it is visible. Removing a visible window ends both
+phases at once, so it does not have to be made invisible first. When a modal window becomes visible, the window manager
+gives it the focus; any other window leaves the focus where it is.
 
 A `TOP_LEVEL` window gets its `Stage` from the `Composer`, and the stage is not visible yet. `setVisible` is `show()`
 and `hide()` of the stage. The stage is sized when it becomes visible, so the content has to be there before. A
@@ -509,14 +510,13 @@ list or a hint near the edge of the screen. Both variants are accessed through t
 implemented once and can be shown either inside the application or in a separate native window.
 
 Nested popups can be displayed in any implementation of `WindowContainer`. The platform provides two implementations:
-`HostWindow` and `HostTab`. This gives a nested popup one of two scopes, and the scope affects what is blocked when a
-modal popup is open. `Popup`s in the `Tab` scope are added to a specific tab and are visible only while that tab is
-open. `Popup`s in the `Window` scope are added to the window and remain visible even when all tabs are closed.
+`HostWindow` and `HostTab`. This gives a nested popup one of two scopes. `Popup`s in the `Tab` scope are added to a
+specific tab and are visible only while that tab is open. `Popup`s in the `Window` scope are added to the window and
+remain visible even when all tabs are closed.
 
 Like any window, a popup is created invisible: the client fills it in and calls `setVisible(true)` of its `Port`. An
-invisible popup is a part of the component tree, but takes no part in z-order and modality: a modal popup blocks its
-container only while it is visible. Making a popup invisible is not closing it: it stays in the component tree and has
-to be closed, like any window, to be removed.
+invisible popup is a part of the component tree, but takes no part in z-order. Making a popup invisible is not closing
+it: it stays in the component tree and has to be closed, like any window, to be removed.
 
 A popup shows content and has no result of its own. Opening it does not block the application's execution flow, and
 the client or the user closes it when the content is no longer needed. While the popup waits for something, its
@@ -528,9 +528,16 @@ anchored (it keeps its distances from the edges of the container, see `Anchors`)
 Any manual positioning of a window makes it floating again. Nested popups are normally anchored, for example to the
 bottom-right corner for notifications. A top-level popup is placed in screen coordinates instead.
 
-A popup differs from a window in one more respect: it is always shown above the windows of its container, a modal
-popup above all the others, and it never takes the focus automatically, because notifications must not interrupt the
+A popup differs from a window in one more respect: it is always shown above the windows of its container, and it
+never takes the focus automatically, because notifications must not interrupt the
 user. The focus moves to a popup only when the client calls `requestFocus()` or the user clicks it.
+
+A popup can hide itself: with `autoHide` set in its `Port`, it becomes invisible when the user presses the mouse or
+scrolls outside it, presses Escape or leaves the window. The event that hides it goes no further, and a click on the
+control the popup is anchored to is no exception. A popup is hidden, never closed, so the client watches `visible` and
+closes the popup if it is not needed any more. A top-level popup is backed by a JavaFX
+`Popup` that `getWindow()` returns, and it relies on the auto hiding of that `Popup`; a nested popup is hidden by the
+window manager of its container.
 
 ### Area <a name="core-area"></a>
 

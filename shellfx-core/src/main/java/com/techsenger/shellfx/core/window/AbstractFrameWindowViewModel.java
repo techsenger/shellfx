@@ -41,6 +41,8 @@ import javafx.beans.property.StringProperty;
 public abstract class AbstractFrameWindowViewModel<C extends WindowComposer> extends AbstractWindowViewModel<C>
         implements FrameWindowViewModel<C> {
 
+    private final boolean modal;
+
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private final BooleanProperty outOfBoundsAllowed = new SimpleBooleanProperty();
@@ -69,6 +71,12 @@ public abstract class AbstractFrameWindowViewModel<C extends WindowComposer> ext
 
     public AbstractFrameWindowViewModel(FrameWindowParams params) {
         super(params);
+        this.modal = params.isModal();
+    }
+
+    @Override
+    public boolean isModal() {
+        return modal;
     }
 
     @Override

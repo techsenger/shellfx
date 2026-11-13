@@ -22,7 +22,7 @@ import com.techsenger.shellfx.core.settings.ShellSettings;
 import java.util.Objects;
 
 /**
- * The parameters of a window: its type, modality, settings and the config that stores its state.
+ * The parameters of a window: its type, settings and the config that stores its state.
  *
  * @author Pavel Castornii
  */
@@ -30,25 +30,18 @@ public class WindowParams extends ComponentParams {
 
     private final WindowType windowType;
 
-    private final boolean modal;
-
     private final ShellSettings settings;
 
     private final @Nullable WindowConfig config;
 
-    public WindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, ShellSettings settings) {
+    public WindowParams(@Nullable WindowConfig config, WindowType type, ShellSettings settings) {
         this.config = config;
         this.windowType = type;
-        this.modal = modal;
         this.settings = settings;
     }
 
     public WindowType getWindowType() {
         return windowType;
-    }
-
-    public boolean isModal() {
-        return modal;
     }
 
     public ShellSettings getSettings() {

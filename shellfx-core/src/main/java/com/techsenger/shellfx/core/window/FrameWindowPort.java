@@ -33,6 +33,14 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 public interface FrameWindowPort extends WindowPort, Titled, Closable, Iconed, Blockable {
 
     /**
+     * Returns whether this window is modal: it blocks the window that owns it while it is visible. Only a window with
+     * a title bar can be modal, as a top-level window is made modal by its JavaFX stage.
+     *
+     * @return {@code true} if this window is modal; {@code false} otherwise
+     */
+    boolean isModal();
+
+    /**
      * Returns whether the window is currently maximized.
      *
      * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for

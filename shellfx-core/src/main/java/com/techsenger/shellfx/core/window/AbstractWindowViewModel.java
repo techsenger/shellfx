@@ -51,8 +51,6 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final WindowType windowType;
 
-    private final boolean modal;
-
     private final BooleanProperty alwaysOnTop = new SimpleBooleanProperty();
 
     private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
@@ -106,7 +104,6 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     public AbstractWindowViewModel(WindowParams params) {
         super(params);
         this.windowType = params.getWindowType();
-        this.modal = params.isModal();
         this.settings = params.getSettings();
         this.config = params.getConfig();
     }
@@ -119,11 +116,6 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     @Override
     public WindowType getWindowType() {
         return this.windowType;
-    }
-
-    @Override
-    public boolean isModal() {
-        return modal;
     }
 
     @Override

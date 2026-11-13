@@ -20,13 +20,20 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 
 /**
- * The parameters of a window with a title bar.
+ * The parameters of a window with a title bar: its type, modality, settings and the config that stores its state.
  *
  * @author Pavel Castornii
  */
 public class FrameWindowParams extends WindowParams {
 
-    public FrameWindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, ShellSettings settings) {
-        super(config, type, modal, settings);
+    private final boolean modal;
+
+    public FrameWindowParams(@Nullable WindowConfig config, WindowType type, ShellSettings settings, boolean modal) {
+        super(config, type, settings);
+        this.modal = modal;
+    }
+
+    public boolean isModal() {
+        return modal;
     }
 }

@@ -32,6 +32,8 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
 
     private final BooleanProperty waiting = new SimpleBooleanProperty();
 
+    private final BooleanProperty autoHide = new SimpleBooleanProperty();
+
     public AbstractPopupViewModel(PopupParams params) {
         super(params);
     }
@@ -49,6 +51,21 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
     @Override
     public BooleanProperty waitingProperty() {
         return waiting;
+    }
+
+    @Override
+    public boolean isAutoHide() {
+        return autoHide.get();
+    }
+
+    @Override
+    public void setAutoHide(boolean autoHide) {
+        this.autoHide.set(autoHide);
+    }
+
+    @Override
+    public BooleanProperty autoHideProperty() {
+        return autoHide;
     }
 
     @Override

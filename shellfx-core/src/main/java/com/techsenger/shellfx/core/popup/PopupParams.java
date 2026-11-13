@@ -22,14 +22,14 @@ import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 
 /**
- * The parameters of a popup, which is always a {@link WindowType#NESTED} window.
+ * The parameters of a popup, which is a {@link WindowType#NESTED} window unless another type is given.
  *
  * @author Pavel Castornii
  */
 public class PopupParams extends WindowParams {
 
-    public PopupParams(@Nullable PopupConfig config, boolean modal, ShellSettings settings) {
-        super(config, WindowType.NESTED, modal, settings);
+    public PopupParams(@Nullable PopupConfig config, WindowType type, ShellSettings settings) {
+        super(config, type, settings);
     }
 
     @Override

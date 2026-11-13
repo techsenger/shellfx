@@ -29,7 +29,7 @@ public class DefaultShellParams extends FrameWindowParams {
     private final ShellContextAccess contextAccess;
 
     public DefaultShellParams(ShellConfig config, ShellContextAccess contextAccess) {
-        super(config, WindowType.TOP_LEVEL, false, contextAccess.getSettings());
+        super(config, WindowType.TOP_LEVEL, contextAccess.getSettings(), false);
         this.contextAccess = contextAccess;
     }
 

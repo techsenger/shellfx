@@ -43,6 +43,11 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -177,6 +182,11 @@ public abstract class AbstractWindowManager implements WindowManager {
         } else {
             return null;
         }
+    }
+
+    private static boolean isModal(WindowView<?> window) {
+        // only a window with a title bar can be modal
+        return window.getViewModel() instanceof FrameWindowPort frame && frame.isModal();
     }
 
     /**
@@ -512,9 +522,6 @@ public abstract class AbstractWindowManager implements WindowManager {
     // The last window in z-order.
     private WindowView<?> lastWindow;
 
-    // The last popup in z-order.
-    private WindowView<?> lastPopup;
-
     // The anchors set by the client; kept apart from the AnchorPane constraints, which a maximized or minimized window
     // replaces, and independent of whether the window has been added to the manager yet.
     private final Map<WindowView<?>, Anchors> anchorsByWindow = new HashMap<>();
@@ -525,7 +532,23 @@ public abstract class AbstractWindowManager implements WindowManager {
         }
     };
 
+    // A press or a scroll outside an auto-hiding popup hides it, and the event goes no further.
+    private final EventHandler<Event> autoHidePointerFilter = event -> {
+        if (hideAutoHidePopups(event, false)) {
+            event.consume();
+        }
+    };
+
+    // Escape hides the topmost auto-hiding popup.
+    private final EventHandler<KeyEvent> autoHideKeyFilter = event -> {
+        if (event.getCode() == KeyCode.ESCAPE && hideAutoHidePopups(event, true)) {
+            event.consume();
+        }
+    };
+
     private final Map<WindowView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
+
+    private @Nullable Scene autoHideScene;
 
     private final Supplier<ReadOnlyObjectProperty<@Nullable ParentView<?>>> focused;
 
@@ -546,6 +569,8 @@ public abstract class AbstractWindowManager implements WindowManager {
                 if (lastWindow != null && focused.get().get() == lastWindow) {
                     activateWindow(lastWindow);
                 }
+            } else {
+                getAutoHidePopups().forEach(popup -> popup.getViewModel().setVisible(false));
             }
         };
     }
@@ -556,9 +581,14 @@ public abstract class AbstractWindowManager implements WindowManager {
             fxView.setWindowManager(this);
         }
         modifiableWindows.add(windowView);
-        doAddWindow(windowView, windowView.getViewModel().isModal());
+        doAddWindow(windowView, isModal(windowView));
         if (this.windows.size() == 1) {
-            getStackPane().get().getScene().getWindow().focusedProperty().addListener(focusedListener);
+            var scene = getStackPane().get().getScene();
+            scene.getWindow().focusedProperty().addListener(focusedListener);
+            scene.addEventFilter(MouseEvent.MOUSE_PRESSED, autoHidePointerFilter);
+            scene.addEventFilter(ScrollEvent.SCROLL, autoHidePointerFilter);
+            scene.addEventFilter(KeyEvent.KEY_PRESSED, autoHideKeyFilter);
+            this.autoHideScene = scene;
         }
     }
 
@@ -567,12 +597,18 @@ public abstract class AbstractWindowManager implements WindowManager {
         if (modifiableWindows.remove(windowView)) {
             this.restoreInfosByWindow.remove(windowView);
             this.anchorsByWindow.remove(windowView);
-            doRemoveWindow(windowView, windowView.getViewModel().isModal());
+            doRemoveWindow(windowView, isModal(windowView));
             if (windowView instanceof AbstractWindowView<?> fxView) {
                 fxView.setWindowManager(null);
             }
             if (this.windows.size() == 0) {
                 getStackPane().get().getScene().getWindow().focusedProperty().removeListener(focusedListener);
+                if (this.autoHideScene != null) {
+                    this.autoHideScene.removeEventFilter(MouseEvent.MOUSE_PRESSED, autoHidePointerFilter);
+                    this.autoHideScene.removeEventFilter(ScrollEvent.SCROLL, autoHidePointerFilter);
+                    this.autoHideScene.removeEventFilter(KeyEvent.KEY_PRESSED, autoHideKeyFilter);
+                    this.autoHideScene = null;
+                }
             }
         }
     }
@@ -905,7 +941,7 @@ public abstract class AbstractWindowManager implements WindowManager {
             bgPane.setVisible(true);
             bgPane.setManaged(true);
         }
-        if (window.getViewModel().isModal()) {
+        if (isModal(window)) {
             onModalAdded();
         }
         // The pending action (centering a dialog) needs the window to be laid out, so it runs after the pane is shown.
@@ -916,8 +952,9 @@ public abstract class AbstractWindowManager implements WindowManager {
             aligner.run();
         }
         reorderAll();
-        // A popup never takes the focus itself: the client calls requestFocus() or the user clicks it.
-        if (!(window instanceof PopupView<?>)) {
+        // Only a modal window takes the focus itself, as it blocks everything else; the client calls requestFocus() to
+        // give the focus to any other window, a popup included, or the user clicks it.
+        if (isModal(window)) {
             focusLast();
         }
     }
@@ -928,7 +965,7 @@ public abstract class AbstractWindowManager implements WindowManager {
             bgPane.setVisible(false);
             bgPane.setManaged(false);
         }
-        if (window.getViewModel().isModal()) {
+        if (isModal(window)) {
             onModalRemoved();
         }
         reorderAll();
@@ -1008,38 +1045,18 @@ public abstract class AbstractWindowManager implements WindowManager {
     }
 
     private void reorderPopups() {
-        this.lastPopup = null;
-        List<WindowView<?>> modalPopups = new ArrayList<>();
         for (var popup : windows) {
-            if (!(popup instanceof PopupView<?>) || !popup.getViewModel().isVisible()) {
-                continue;
-            }
-            this.lastPopup = popup;
-            var pane = getWindowPane(popup);
-            if (pane != null) {
-                pane.toFront();
-                if (popup.getViewModel().isModal()) {
-                    modalPopups.add(popup);
+            if (popup instanceof PopupView<?> && popup.getViewModel().isVisible()) {
+                var pane = getWindowPane(popup);
+                if (pane != null) {
+                    pane.toFront();
                 }
             }
-        }
-
-        for (var popup : modalPopups) {
-            var pane = getWindowPane(popup);
-            if (pane != null) {
-                pane.toFront();
-            }
-        }
-        if (!modalPopups.isEmpty()) {
-            this.lastPopup = modalPopups.getLast();
         }
     }
 
     private @Nullable ChildView<?> getLastModal() {
-        if (this.lastPopup != null && this.lastPopup.getViewModel().isModal()) {
-            return this.lastPopup;
-        }
-        if (this.lastWindow != null && this.lastWindow.getViewModel().isModal()) {
+        if (this.lastWindow != null && isModal(this.lastWindow)) {
             return this.lastWindow;
         }
         return null;
@@ -1047,13 +1064,14 @@ public abstract class AbstractWindowManager implements WindowManager {
 
     private boolean isEventTargetInsideModal(Event event) {
         ChildView<?> modalComponent = getLastModal();
-        if (modalComponent == null) {
-            return false;
-        }
+        return modalComponent != null && isEventTargetInside(event, modalComponent.getNode());
+    }
+
+    private boolean isEventTargetInside(Event event, Object node) {
         if (event.getTarget() instanceof Node target) {
             Node current = target;
             while (current != null) {
-                if (current == modalComponent.getNode()) {
+                if (current == node) {
                     return true;
                 }
                 current = current.getParent();
@@ -1062,12 +1080,59 @@ public abstract class AbstractWindowManager implements WindowManager {
         return false;
     }
 
+    /**
+     * Returns the visible popups that hide themselves, in z-order from the lowest to the topmost.
+     */
+    private List<PopupView<?>> getAutoHidePopups() {
+        var result = new ArrayList<PopupView<?>>();
+        for (var window : windows) {
+            if (window instanceof PopupView<?> popup && popup.getViewModel().isVisible()
+                    && popup.getViewModel().isAutoHide()) {
+                result.add(popup);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Hides the auto-hiding popups the event happened outside of; a popup is not hidden by an event inside it or
+     * inside a popup above it, which may have been opened from it.
+     *
+     * @param topmostOnly whether to hide only the topmost of them, for an event that has no place, like a key press
+     * @return whether a popup has been hidden
+     */
+    private boolean hideAutoHidePopups(Event event, boolean topmostOnly) {
+        var popups = getAutoHidePopups();
+        if (popups.isEmpty()) {
+            return false;
+        }
+        if (topmostOnly) {
+            popups.getLast().getViewModel().setVisible(false);
+            return true;
+        }
+        var hidden = false;
+        for (var popup : popups) {
+            var inside = false;
+            for (var above : windows.subList(windows.indexOf(popup), windows.size())) {
+                if (above instanceof PopupView<?> && above.getViewModel().isVisible()
+                        && isEventTargetInside(event, above.getNode())) {
+                    inside = true;
+                    break;
+                }
+            }
+            if (!inside) {
+                popup.getViewModel().setVisible(false);
+                hidden = true;
+            }
+        }
+        return hidden;
+    }
+
     // Z-order:
     // Regular windows
     // Always-on-top windows
     // Modal windows
-    // Regular popups (notifications, tooltips)
-    // Modal popups — always on top of everything
+    // Popups (notifications, tooltips) — always on top of everything
     private void reorderAll() {
         reorderWindows();
         reorderPopups();
@@ -1085,7 +1150,7 @@ public abstract class AbstractWindowManager implements WindowManager {
                     bgPane.toFront();
                 }
             }
-            if (w.getViewModel().isModal() && bgPane != null) {
+            if (isModal(w) && bgPane != null) {
                 modalWindows.add(w);
             }
         }
