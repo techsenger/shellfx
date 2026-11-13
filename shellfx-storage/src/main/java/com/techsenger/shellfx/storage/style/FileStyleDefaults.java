@@ -102,43 +102,43 @@ public final class FileStyleDefaults {
     private static void cupertinoLight(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xAD6200FF, null));
         scheme.setOther(style(0x434345FF, null));
-        scheme.setError(style(0xA41E1EFF, 0xA41E1EFF));
+        scheme.setError(style(0xA41E1EFF, null));
     }
 
     private static void cupertinoDark(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xD18125FF, null));
         scheme.setOther(style(0x838388FF, null));
-        scheme.setError(style(0xE0535EFF, 0xE0535EFF));
+        scheme.setError(style(0xE0535EFF, null));
     }
 
     private static void primerLight(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xAB6101FF, null));
         scheme.setOther(style(0x475059FF, null));
-        scheme.setError(style(0xA41E25FF, 0xA41E25FF));
+        scheme.setError(style(0xA41E25FF, null));
     }
 
     private static void primerDark(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xC67B24FF, null));
         scheme.setOther(style(0x747D87FF, null));
-        scheme.setError(style(0xDD4352FF, 0xDD4352FF));
+        scheme.setError(style(0xDD4352FF, null));
     }
 
     private static void nordLight(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xAA6204FF, null));
         scheme.setOther(style(0x4B5569FF, null));
-        scheme.setError(style(0xA41E1FFF, 0xA41E1FFF));
+        scheme.setError(style(0xA41E1FFF, null));
     }
 
     private static void nordDark(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xD98A2EFF, null));
         scheme.setOther(style(0x949CABFF, null));
-        scheme.setError(style(0xE77D79FF, 0xE77D79FF));
+        scheme.setError(style(0xE77D79FF, null));
     }
 
     private static void dracula(FileStyleScheme scheme) {
         scheme.setDirectory(style(0xCF7F25FF, null));
         scheme.setOther(style(0x909197FF, null));
-        scheme.setError(style(0xE46C68FF, 0xE46C68FF));
+        scheme.setError(style(0xE46C68FF, null));
     }
 
     private FileStyleDefaults() {
