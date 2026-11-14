@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import java.net.URI;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -123,21 +122,6 @@ public interface StorageFile {
      * @return {@code true} if virtual, {@code false} if backed by a real storage entry
      */
     boolean isVirtual();
-
-    /**
-     * Returns the icon and the style this entry is shown with. The storage does not provide them: the client gives
-     * them to the file that it is about to show, using the resolvers of the files.
-     *
-     * @return the decoration, or {@code null} if the file has not been decorated yet or has to be decorated again
-     */
-    @Nullable IconStyleDecoration getDecoration();
-
-    /**
-     * Returns the property of the decoration, which changes when the file is decorated, when the second loading phase
-     * or the client makes it outdated. It is changed on the UI thread once the file is shown, so the elements that
-     * show the file can observe it.
-     */
-    ReadOnlyObjectProperty<IconStyleDecoration> decorationProperty();
 
     /**
      * Returns {@code true} if this entry is a directory.

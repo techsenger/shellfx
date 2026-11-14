@@ -38,7 +38,6 @@ import com.techsenger.shellfx.material.table.TableColumnManager;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableViewUtils;
 import com.techsenger.shellfx.storage.Comparators;
-import com.techsenger.shellfx.storage.DefaultStorageFile;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.style.FileStyleDefaults;
 import com.techsenger.shellfx.storage.style.FileStyleScheme;
@@ -145,7 +144,8 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         private final FontIconView iconView = new FontIconView();
 
         private final FileCellUpdater<T> updater =
-                new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(this, iconView, file));
+                new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(
+                    this, iconView, decorator.getDecoration(file)));
 
         private DialogTextFieldColumnListCell(StringConverter converter) {
             super(converter);
@@ -180,7 +180,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
                 setText(null);
             } else {
                 decorator.decorate(item);
-                updater.observe(item, StorageFile::decorationProperty);
+                updater.observe(item, decorator::decorationValue);
                 if (item.getEntryType() != null) {
                     setGraphic(iconView);
                 } else {
@@ -320,13 +320,13 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
         locationComboBox.setCellFactory(cb -> {
-            var cell = new LocationCell<T>(false, this::decorateLocation);
+            var cell = new LocationCell<T>(false, decorator);
             cell.setOnMousePressed(e -> {
                 getViewModel().onLocationRequested(cell.getItem());
             });
             return cell;
         });
-        locationComboBox.setButtonCell(new LocationCell<T>(true, this::decorateLocation));
+        locationComboBox.setButtonCell(new LocationCell<T>(true, decorator));
         locationComboBox.getStyleClass().add("location");
         levelUpButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
@@ -458,6 +458,11 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         viewModel.selectFileSource().addListener((index) -> updateSelectFile(index));
         viewModel.scrollToFileSource().addListener((index) -> updateScrollToFile(index));
         viewModel.editFileSource().addListener((index) -> updateEditFile(index));
+        viewModel.getModifiableFiles().addListener((ListChangeListener<T>) change -> {
+            while (change.next()) {
+                decorator.reset(change.getRemoved());
+            }
+        });
         viewModel.decorateSource().addListener((files) -> updateDecoration(files, false));
         viewModel.restyleSource().addListener((files) -> updateDecoration(files, true));
     }
@@ -583,23 +588,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         } else {
             TableViewUtils.forEachItem(fileTableView, true, decorator::decorate);
         }
-        getViewModel().getLocations().forEach(this::decorateLocation);
-    }
-
-    /**
-     * Decorates a location like a file, except for a root, which stands for its storage and so gets the decoration of
-     * the storage.
-     */
-    private void decorateLocation(T location) {
-        if (!location.isRoot()) {
-            decorator.decorate(location);
-            return;
-        }
-        var decoration = location.getDecoration();
-        if (decoration == null || decoration.style() == null) {
-            var theme = getViewModel().getAppearanceSettings().getTheme();
-            DefaultStorageFile.cast(location).setDecoration(location.getStorage().getDecorator().decorate(theme));
-        }
+        getViewModel().getLocations().forEach(decorator::decorate);
     }
 
     private void updateFilesChanged() {

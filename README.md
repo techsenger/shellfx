@@ -1426,7 +1426,7 @@ sequenceDiagram
     S-->>C: the update sets the text
     VM->>V: decorateSource with the refined files
     V->>D: reset the refined files
-    Note right of D: the decoration of the files becomes null
+    Note right of D: the decorations of the files are dropped
     D-->>S: the decoration of the file changes
     Note right of S: the update ignores a decoration that is not complete
     V->>D: decorate the files of the cells that exist in the virtual flow
@@ -1437,14 +1437,17 @@ sequenceDiagram
 
 ### Appearance <a name="storage-appearance"></a>
 
-A file carries its decoration, `IconStyleDecoration`, as an observable property: the icon and the style (the inline styles
-of the icon and of the texts) that are given to the file in one step, so a cell that shows it is told once. They are
+A file has no decoration of its own: the view keeps the decorations, `IconStyleDecoration`, of the files it shows in its
+`FileDecorator`, in an observable map by file instance, so a file is never shared between views and a view drops its
+decorations (`reset`, `clear`) when it stops showing the files. A decoration is the icon and the style (the inline styles
+of the icon and of the texts) that are given to the file in one step, so a cell that shows it is told once. A root
+stands for its storage, so the decorator gives it the decoration of the storage instead of resolving it. They are
 resolved by two independent resolvers, `FileIconResolver` and `FileStyleResolver`, which are passed to the view and
 replaced when an application knows more kinds of files than the defaults. A resolver gets the `FileDecorationType` of
 the file, `TEMP` while the file is still to be refined and `FINAL` otherwise, which is how the pending icon becomes the
 real one.
 
-Decoration is lazy. A cell decorates a file only if its decoration is not complete (`FileDecorator`): it is `null`, or
+Decoration is lazy. A cell decorates a file only if its decoration is not complete (`FileDecorator`): it is absent, or
 it has no style, in which case the icon is kept and only the style is resolved again. So only the files that are shown
 are decorated, however many the directory has. When the decoration of a file becomes outdated (the second phase refined
 it, the theme changed, the file was marked), the view resets it and decorates again the files of the cells that exist in
@@ -1454,9 +1457,9 @@ the palette of a theme is created when it is first needed.
 
 A cell decorates the file it is about to show with the `FileDecorator` of its view, and owns a `FileCellUpdater`. The
 updater knows nothing about decoration or about what a cell shows: the cell gives it its update and, when it shows a
-file, the file and the properties it is bound to as method references (`StorageFile::decorationProperty`, and
-`StorageFile::sizeProperty` or the like if the cell shows a value). The updater takes the properties out of the file,
-runs the update for the file when it starts observing and whenever one of the properties changes, and stops with
+file, the file and the observable values it is bound to as method references (`decorator::decorationValue`, and
+`StorageFile::sizeProperty` or the like if the cell shows a value). The updater takes the values for the file,
+runs the update for the file when it starts observing and whenever one of the values changes, and stops with
 `unobserve` when the cell becomes empty. The file is given to the updater and not read from the cell, because some
 cells set their item only at the end of `updateItem`. For the icon and the styles the update is
 `DecorationCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a

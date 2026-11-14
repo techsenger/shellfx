@@ -25,9 +25,9 @@ import javafx.beans.value.WeakChangeListener;
 
 /**
  * Keeps a cell that shows a file up to date: runs the update of the cell for the file now, and again whenever one of
- * the properties the cell is bound to changes, such as the decoration of the file or a size. The updater knows nothing
+ * the values the cell is bound to changes, such as the decoration of the file or a size. The updater knows nothing
  * about what the update does and never calls the cell otherwise. A cell owns one updater and gives it the file and
- * the properties it is bound to whenever it gets another item.
+ * the values it is bound to whenever it gets another item.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -60,19 +60,19 @@ public final class FileCellUpdater<F> {
     }
 
     /**
-     * Observes the properties of the file and updates the cell for it now, and again whenever one of the properties
-     * changes. It stops observing the file shown before; nothing is subscribed again for the same file.
+     * Observes the values of the file and updates the cell for it now, and again whenever one of the values changes.
+     * It stops observing the file shown before; nothing is subscribed again for the same file.
      *
      * @param file the file shown in the cell
-     * @param properties give the properties the cell is bound to out of the file, such as its decoration or size
+     * @param values give the values the cell is bound to for the file, such as its decoration or size
      */
     @SafeVarargs
-    public final void observe(F file, Function<? super F, ? extends ObservableValue<?>>... properties) {
+    public final void observe(F file, Function<? super F, ? extends ObservableValue<?>>... values) {
         if (this.file != file) {
             unobserve();
-            this.observed = new ObservableValue<?>[properties.length];
-            for (var i = 0; i < properties.length; i++) {
-                this.observed[i] = properties[i].apply(file);
+            this.observed = new ObservableValue<?>[values.length];
+            for (var i = 0; i < values.length; i++) {
+                this.observed[i] = values[i].apply(file);
                 this.observed[i].addListener(weakListener);
             }
             this.file = file;
@@ -81,11 +81,11 @@ public final class FileCellUpdater<F> {
     }
 
     /**
-     * Stops observing the properties, which a cell does when it becomes empty.
+     * Stops observing the values, which a cell does when it becomes empty.
      */
     public void unobserve() {
-        for (var property : this.observed) {
-            property.removeListener(weakListener);
+        for (var value : this.observed) {
+            value.removeListener(weakListener);
         }
         this.observed = new ObservableValue<?>[0];
         this.file = null;

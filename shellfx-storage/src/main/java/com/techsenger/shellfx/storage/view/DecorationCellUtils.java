@@ -18,7 +18,6 @@ package com.techsenger.shellfx.storage.view;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import javafx.scene.control.Labeled;
 
@@ -30,31 +29,17 @@ import javafx.scene.control.Labeled;
 public final class DecorationCellUtils {
 
     /**
-     * Sets the icon of the cell and applies the style to the cell and its icon from the decoration of the file; does
-     * nothing if the decoration is outdated, which a reset leaves until the file is decorated again.
-     *
-     * @param cell the cell whose texts to style
-     * @param iconView the icon of the cell, or {@code null} if the cell has no icon
-     * @param file the file shown in the cell
-     */
-    public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView, StorageFile file) {
-        var decoration = file.getDecoration();
-        if (decoration != null) {
-            updateDecoration(cell, iconView, decoration);
-        }
-    }
-
-    /**
      * Sets the icon of the cell and applies the style to the cell and its icon from the decoration; does nothing if
-     * the decoration is outdated in its style.
+     * there is no decoration or it is outdated in its style, which a reset leaves until the file is decorated again.
      *
      * @param cell the cell whose texts to style
      * @param iconView the icon of the cell, or {@code null} if the cell has no icon
-     * @param decoration the decoration of what is shown in the cell
+     * @param decoration the decoration of what is shown in the cell, or {@code null} if it has none
      */
-    public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView, IconStyleDecoration decoration) {
-        var style = decoration.style();
-        if (style == null) {
+    public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView,
+            @Nullable IconStyleDecoration decoration) {
+        var style = decoration != null ? decoration.style() : null;
+        if (decoration == null || style == null) {
             return;
         }
         cell.setStyle(style.textStyle());
@@ -65,14 +50,14 @@ public final class DecorationCellUtils {
     }
 
     /**
-     * Applies the styles of the file to the cell and its icon, and clears them if the file has none.
+     * Applies the styles of the decoration to the cell and its icon, and clears them if there are none.
      *
      * @param cell the cell whose texts to style
      * @param iconView the icon of the cell, or {@code null} if the cell has no icon
-     * @param file the file shown in the cell, or {@code null} if the cell is empty
+     * @param decoration the decoration of what is shown in the cell, or {@code null} if the cell is empty
      */
-    public static void updateStyles(Labeled cell, @Nullable FontIconView iconView, @Nullable StorageFile file) {
-        var decoration = file != null ? file.getDecoration() : null;
+    public static void updateStyles(Labeled cell, @Nullable FontIconView iconView,
+            @Nullable IconStyleDecoration decoration) {
         var fileStyle = decoration != null ? decoration.style() : null;
         cell.setStyle(fileStyle != null ? fileStyle.textStyle() : null);
         if (iconView != null) {

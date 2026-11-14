@@ -59,8 +59,8 @@ public class FileColumnBuilder<F extends StorageFile> {
 
             private final FontIconView iconView = new FontIconView();
 
-            private final FileCellUpdater<F> updater =
-                    new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(this, iconView, file));
+            private final FileCellUpdater<F> updater = new FileCellUpdater<>(file ->
+                    DecorationCellUtils.updateDecoration(this, iconView, decorator.getDecoration(file)));
 
             @Override
             public void updateItem(F file, boolean empty) {
@@ -72,7 +72,7 @@ public class FileColumnBuilder<F extends StorageFile> {
                     setText(null);
                 } else {
                     decorator.decorate(file);
-                    updater.observe(file, StorageFile::decorationProperty);
+                    updater.observe(file, decorator::decorationValue);
                     setGraphic(iconView);
                     setText(file.getName());
                 }
@@ -108,7 +108,7 @@ public class FileColumnBuilder<F extends StorageFile> {
         sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
                 private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
-                    DecorationCellUtils.updateDecoration(this, null, file);
+                    DecorationCellUtils.updateDecoration(this, null, decorator.getDecoration(file));
                     setText(file.getSize() != null ? FileUtils.formatSize(file.getSize()) : null);
                 });
 
@@ -121,7 +121,7 @@ public class FileColumnBuilder<F extends StorageFile> {
                         setText(null);
                     } else {
                         decorator.decorate(file);
-                        updater.observe(file, StorageFile::decorationProperty, StorageFile::sizeProperty);
+                        updater.observe(file, decorator::decorationValue, StorageFile::sizeProperty);
                     }
                 }
             }
@@ -147,7 +147,7 @@ public class FileColumnBuilder<F extends StorageFile> {
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
 
             private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
-                DecorationCellUtils.updateDecoration(this, null, file);
+                DecorationCellUtils.updateDecoration(this, null, decorator.getDecoration(file));
                 setText(file.getModifiedTime() != null
                         ? DateTimeUtils.format(file.getModifiedTime(), currentYear) : null);
             });
@@ -161,7 +161,7 @@ public class FileColumnBuilder<F extends StorageFile> {
                     setText(null);
                 } else {
                     decorator.decorate(file);
-                    updater.observe(file, StorageFile::decorationProperty, StorageFile::modifiedTimeProperty);
+                    updater.observe(file, decorator::decorationValue, StorageFile::modifiedTimeProperty);
                 }
             }
         });

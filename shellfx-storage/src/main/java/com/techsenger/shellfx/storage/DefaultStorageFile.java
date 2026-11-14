@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import java.net.URI;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -33,20 +32,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  * @author Pavel Castornii
  */
 public class DefaultStorageFile implements StorageFile {
-
-    /**
-     * Casts the file to a writable one, so that its decoration can be set.
-     *
-     * @param file the file to write to
-     * @return the same file
-     * @throws IllegalArgumentException if the file is not a {@code DefaultStorageFile}
-     */
-    public static DefaultStorageFile cast(StorageFile file) {
-        if (!(file instanceof DefaultStorageFile defaultFile)) {
-            throw new IllegalArgumentException("Only DefaultStorageFile can be written to: " + file);
-        }
-        return defaultFile;
-    }
 
     private FileStorage storage;
 
@@ -69,8 +54,6 @@ public class DefaultStorageFile implements StorageFile {
     private boolean root;
 
     private @Nullable EntryLink link;
-
-    private final ReadOnlyObjectWrapper<IconStyleDecoration> decoration = new ReadOnlyObjectWrapper<>();
 
     /**
      * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
@@ -144,16 +127,6 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
-    public @Nullable IconStyleDecoration getDecoration() {
-        return decoration.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<IconStyleDecoration> decorationProperty() {
-        return decoration.getReadOnlyProperty();
-    }
-
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 29 * hash + Objects.hashCode(this.storage);
@@ -188,15 +161,6 @@ public class DefaultStorageFile implements StorageFile {
         return "DefaultStorageFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
                 + ", size=" + getSize() + ", name=" + name + ", modifiedTime=" + getModifiedTime()
                 + ", createdTime=" + createdTime + ", hidden=" + hidden + ", virtual=" + virtual + ']';
-    }
-
-    /**
-     * Sets the icon and the style this file is shown with. It is changed on the UI thread once the file is shown.
-     *
-     * @param decoration the decoration, or {@code null} to make the file undecorated
-     */
-    public void setDecoration(@Nullable IconStyleDecoration decoration) {
-        this.decoration.set(decoration);
     }
 
     /**

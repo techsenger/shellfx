@@ -20,9 +20,9 @@ import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
+import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.shellfx.storage.view.FileCellUpdater;
 import com.techsenger.shellfx.storage.view.DecorationCellUtils;
-import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -45,7 +45,7 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final boolean valueCell;
 
-    private final Consumer<? super F> decorate;
+    private final FileDecorator<F> decorator;
 
     private final FileCellUpdater<F> updater;
 
@@ -53,12 +53,13 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
      * Creates a cell.
      *
      * @param valueCell whether the cell shows the chosen location rather than an item of the list
-     * @param decorate gives a location its decoration, which the cell shows while it is decorated
+     * @param decorator gives a location its decoration, which the cell shows while it is decorated
      */
-    public LocationCell(boolean valueCell, Consumer<? super F> decorate) {
+    public LocationCell(boolean valueCell, FileDecorator<F> decorator) {
         this.valueCell = valueCell;
-        this.decorate = decorate;
-        this.updater = new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(label, iconView, file));
+        this.decorator = decorator;
+        this.updater = new FileCellUpdater<>(
+                file -> DecorationCellUtils.updateDecoration(label, iconView, decorator.getDecoration(file)));
         this.box.setAlignment(Pos.CENTER_LEFT);
         this.box.getChildren().setAll(this.iconView, this.label);
     }
@@ -87,8 +88,8 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
     }
 
     private void showFile(F item) {
-        decorate.accept(item);
-        updater.observe(item, StorageFile::decorationProperty);
+        decorator.decorate(item);
+        updater.observe(item, decorator::decorationValue);
         if (getGraphic() != this.box) {
             setGraphic(this.box);
         }
