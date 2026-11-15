@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.shared.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,15 +25,15 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface SharedIcons {
 
-    StyleFontIcon CHEVRON_UP = new StyleFontIcon("chevron-up-icon");
+    FontIcon<?> CHEVRON_UP = new StyleFontIcon("chevron-up-icon");
 
-    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("chevron-down-icon");
+    FontIcon<?> CHEVRON_DOWN = new StyleFontIcon("chevron-down-icon");
 
-    StyleFontIcon MATCH_CASE = new StyleFontIcon("match-case-icon");
+    FontIcon<?> MATCH_CASE = new StyleFontIcon("match-case-icon");
 
-    StyleFontIcon WHOLE_WORD = new StyleFontIcon("whole-word-icon");
+    FontIcon<?> WHOLE_WORD = new StyleFontIcon("whole-word-icon");
 
-    StyleFontIcon REG_EXP = new StyleFontIcon("reg-exp-icon");
+    FontIcon<?> REG_EXP = new StyleFontIcon("reg-exp-icon");
 
-    StyleFontIcon HIGHLIGHT = new StyleFontIcon("highlight-icon");
+    FontIcon<?> HIGHLIGHT = new StyleFontIcon("highlight-icon");
 }

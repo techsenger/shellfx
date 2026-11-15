@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,11 +25,11 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface MaterialIcons {
 
-    StyleFontIcon COPY = new StyleFontIcon("copy-icon");
+    FontIcon<?> COPY = new StyleFontIcon("copy-icon");
 
-    StyleFontIcon COPIED = new StyleFontIcon("copied-icon");
+    FontIcon<?> COPIED = new StyleFontIcon("copied-icon");
 
-    StyleFontIcon CHEVRON_UP = new StyleFontIcon("chevron-up-icon");
+    FontIcon<?> CHEVRON_UP = new StyleFontIcon("chevron-up-icon");
 
-    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("chevron-down-icon");
+    FontIcon<?> CHEVRON_DOWN = new StyleFontIcon("chevron-down-icon");
 }

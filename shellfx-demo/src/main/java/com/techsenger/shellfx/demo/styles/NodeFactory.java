@@ -19,8 +19,8 @@ package com.techsenger.shellfx.demo.styles;
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.icon.StyleFontIcon;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.tabpane.SlantedTabPanePro;
@@ -276,7 +276,7 @@ final class NodeFactory {
         return node;
     }
 
-    private static Button createButton(StyleFontIcon icon, String styleClass) {
+    private static Button createButton(FontIcon<?> icon, String styleClass) {
         var button = new Button(null, new FontIconView(icon));
         button.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         if (styleClass != null) {
@@ -294,7 +294,7 @@ final class NodeFactory {
         return button;
     }
 
-    private static ToggleButton createToggleButton(StyleFontIcon icon, String styleClass) {
+    private static ToggleButton createToggleButton(FontIcon<?> icon, String styleClass) {
         var button = new ToggleButton(null, new FontIconView(icon));
         button.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT);
         if (styleClass != null) {
@@ -312,7 +312,7 @@ final class NodeFactory {
         return button;
     }
 
-    private static MenuButton createMenuButton(StyleFontIcon icon, String styleClass) {
+    private static MenuButton createMenuButton(FontIcon<?> icon, String styleClass) {
         var button = new MenuButton(null, new FontIconView(icon));
         button.getStyleClass().add(Styles.FLAT);
         if (styleClass != null) {

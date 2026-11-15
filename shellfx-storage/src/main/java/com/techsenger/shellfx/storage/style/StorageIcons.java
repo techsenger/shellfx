@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,53 +25,53 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface StorageIcons {
 
-    StyleFontIcon OPTICAL_STORAGE = new StyleFontIcon("optical-storage-icon");
+    FontIcon<?> OPTICAL_STORAGE = new StyleFontIcon("optical-storage-icon");
 
-    StyleFontIcon FLOPPY_STORAGE = new StyleFontIcon("floppy-storage-icon");
+    FontIcon<?> FLOPPY_STORAGE = new StyleFontIcon("floppy-storage-icon");
 
-    StyleFontIcon BASE_STORAGE = new StyleFontIcon("base-storage-icon");
+    FontIcon<?> BASE_STORAGE = new StyleFontIcon("base-storage-icon");
 
-    StyleFontIcon HDD_STORAGE = new StyleFontIcon("hdd-storage-icon");
+    FontIcon<?> HDD_STORAGE = new StyleFontIcon("hdd-storage-icon");
 
-    StyleFontIcon SSD_STORAGE = new StyleFontIcon("ssd-storage-icon");
+    FontIcon<?> SSD_STORAGE = new StyleFontIcon("ssd-storage-icon");
 
-    StyleFontIcon REMOVABLE_STORAGE = new StyleFontIcon("removable-storage-icon");
+    FontIcon<?> REMOVABLE_STORAGE = new StyleFontIcon("removable-storage-icon");
 
-    StyleFontIcon NETWORK_STORAGE = new StyleFontIcon("network-storage-icon");
+    FontIcon<?> NETWORK_STORAGE = new StyleFontIcon("network-storage-icon");
 
-    StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
+    FontIcon<?> DIRECTORY = new StyleFontIcon("directory-icon");
 
-    StyleFontIcon FILE = new StyleFontIcon("file-icon");
+    FontIcon<?> FILE = new StyleFontIcon("file-icon");
 
-    StyleFontIcon OTHER = new StyleFontIcon("other-icon");
+    FontIcon<?> OTHER = new StyleFontIcon("other-icon");
 
-    StyleFontIcon DIRECTORY_LINK = new StyleFontIcon("directory-link-icon");
+    FontIcon<?> DIRECTORY_LINK = new StyleFontIcon("directory-link-icon");
 
-    StyleFontIcon FILE_LINK = new StyleFontIcon("file-link-icon");
+    FontIcon<?> FILE_LINK = new StyleFontIcon("file-link-icon");
 
-    StyleFontIcon OTHER_LINK = new StyleFontIcon("other-link-icon");
+    FontIcon<?> OTHER_LINK = new StyleFontIcon("other-link-icon");
 
-    StyleFontIcon ERROR_DIRECTORY = new StyleFontIcon("error-directory-icon");
+    FontIcon<?> ERROR_DIRECTORY = new StyleFontIcon("error-directory-icon");
 
-    StyleFontIcon ERROR_FILE = new StyleFontIcon("error-file-icon");
+    FontIcon<?> ERROR_FILE = new StyleFontIcon("error-file-icon");
 
-    StyleFontIcon ERROR_OTHER = new StyleFontIcon("error-other-icon");
+    FontIcon<?> ERROR_OTHER = new StyleFontIcon("error-other-icon");
 
-    StyleFontIcon ERROR_DIRECTORY_LINK = new StyleFontIcon("error-directory-link-icon");
+    FontIcon<?> ERROR_DIRECTORY_LINK = new StyleFontIcon("error-directory-link-icon");
 
-    StyleFontIcon ERROR_FILE_LINK = new StyleFontIcon("error-file-link-icon");
+    FontIcon<?> ERROR_FILE_LINK = new StyleFontIcon("error-file-link-icon");
 
-    StyleFontIcon ERROR_OTHER_LINK = new StyleFontIcon("error-other-link-icon");
+    FontIcon<?> ERROR_OTHER_LINK = new StyleFontIcon("error-other-link-icon");
 
-    StyleFontIcon PENDING_DIRECTORY = new StyleFontIcon("pending-directory-icon");
+    FontIcon<?> PENDING_DIRECTORY = new StyleFontIcon("pending-directory-icon");
 
-    StyleFontIcon PENDING_FILE = new StyleFontIcon("pending-file-icon");
+    FontIcon<?> PENDING_FILE = new StyleFontIcon("pending-file-icon");
 
-    StyleFontIcon PENDING_OTHER = new StyleFontIcon("pending-other-icon");
+    FontIcon<?> PENDING_OTHER = new StyleFontIcon("pending-other-icon");
 
-    StyleFontIcon PENDING_DIRECTORY_LINK = new StyleFontIcon("pending-directory-link-icon");
+    FontIcon<?> PENDING_DIRECTORY_LINK = new StyleFontIcon("pending-directory-link-icon");
 
-    StyleFontIcon PENDING_FILE_LINK = new StyleFontIcon("pending-file-link-icon");
+    FontIcon<?> PENDING_FILE_LINK = new StyleFontIcon("pending-file-link-icon");
 
-    StyleFontIcon PENDING_OTHER_LINK = new StyleFontIcon("pending-other-link-icon");
+    FontIcon<?> PENDING_OTHER_LINK = new StyleFontIcon("pending-other-link-icon");
 }

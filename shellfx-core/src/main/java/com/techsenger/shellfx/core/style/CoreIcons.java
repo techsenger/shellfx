@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,11 +25,11 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface CoreIcons {
 
-    StyleFontIcon WINDOW_MINIMIZE = new StyleFontIcon("window-minimize-icon");
+    FontIcon<?> WINDOW_MINIMIZE = new StyleFontIcon("window-minimize-icon");
 
-    StyleFontIcon WINDOW_MAXIMIZE = new StyleFontIcon("window-maximize-icon");
+    FontIcon<?> WINDOW_MAXIMIZE = new StyleFontIcon("window-maximize-icon");
 
-    StyleFontIcon WINDOW_RESTORE = new StyleFontIcon("window-restore-icon");
+    FontIcon<?> WINDOW_RESTORE = new StyleFontIcon("window-restore-icon");
 
-    StyleFontIcon WINDOW_CLOSE = new StyleFontIcon("window-close-icon");
+    FontIcon<?> WINDOW_CLOSE = new StyleFontIcon("window-close-icon");
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.layout.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,17 +25,17 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface LayoutIcons {
 
-    StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
+    FontIcon<?> DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
 
-    StyleFontIcon RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
+    FontIcon<?> RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
 
-    StyleFontIcon CHEVRON_DOUBLE_RIGHT = new StyleFontIcon("chevron-double-right-icon");
+    FontIcon<?> CHEVRON_DOUBLE_RIGHT = new StyleFontIcon("chevron-double-right-icon");
 
-    StyleFontIcon REMOVE = new StyleFontIcon("remove-icon");
+    FontIcon<?> REMOVE = new StyleFontIcon("remove-icon");
 
-    StyleFontIcon CHEVRON_RIGHT = new StyleFontIcon("chevron-right-icon");
+    FontIcon<?> CHEVRON_RIGHT = new StyleFontIcon("chevron-right-icon");
 
-    StyleFontIcon CHEVRON_LEFT = new StyleFontIcon("chevron-left-icon");
+    FontIcon<?> CHEVRON_LEFT = new StyleFontIcon("chevron-left-icon");
 
-    StyleFontIcon CLOSE = new StyleFontIcon("close-icon");
+    FontIcon<?> CLOSE = new StyleFontIcon("close-icon");
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,29 +25,29 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface DevToolsIcons {
 
-    StyleFontIcon SELECT = new StyleFontIcon("select-icon");
+    FontIcon<?> SELECT = new StyleFontIcon("select-icon");
 
-    StyleFontIcon SELECTION = new StyleFontIcon("selection-icon");
+    FontIcon<?> SELECTION = new StyleFontIcon("selection-icon");
 
-    StyleFontIcon RECORD_START = new StyleFontIcon("record-start-icon");
+    FontIcon<?> RECORD_START = new StyleFontIcon("record-start-icon");
 
-    StyleFontIcon RECORD_STOP = new StyleFontIcon("record-stop-icon");
+    FontIcon<?> RECORD_STOP = new StyleFontIcon("record-stop-icon");
 
-    StyleFontIcon FILTER = new StyleFontIcon("filter-icon");
+    FontIcon<?> FILTER = new StyleFontIcon("filter-icon");
 
-    StyleFontIcon SELECTED_ONLY = new StyleFontIcon("selected-only-icon");
+    FontIcon<?> SELECTED_ONLY = new StyleFontIcon("selected-only-icon");
 
-    StyleFontIcon OPEN_IN_NEW = new StyleFontIcon("open-in-new-icon");
+    FontIcon<?> OPEN_IN_NEW = new StyleFontIcon("open-in-new-icon");
 
-    StyleFontIcon DOTS_VERTICAL = new StyleFontIcon("dots-vertical-icon");
+    FontIcon<?> DOTS_VERTICAL = new StyleFontIcon("dots-vertical-icon");
 
-    StyleFontIcon CLEAR = new StyleFontIcon("clear-icon");
+    FontIcon<?> CLEAR = new StyleFontIcon("clear-icon");
 
-    StyleFontIcon REFRESH = new StyleFontIcon("refresh-icon");
+    FontIcon<?> REFRESH = new StyleFontIcon("refresh-icon");
 
-    StyleFontIcon TOOLS = new StyleFontIcon("tools-icon");
+    FontIcon<?> TOOLS = new StyleFontIcon("tools-icon");
 
-    StyleFontIcon EDIT = new StyleFontIcon("edit-icon");
+    FontIcon<?> EDIT = new StyleFontIcon("edit-icon");
 
-    StyleFontIcon VIEW = new StyleFontIcon("view-icon");
+    FontIcon<?> VIEW = new StyleFontIcon("view-icon");
 }

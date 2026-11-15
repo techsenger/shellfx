@@ -25,5 +25,5 @@ import com.techsenger.shellfx.material.icon.PlainFontIcon;
  */
 public interface DemoIcons {
 
-    FontIcon MAIN_TAB = new PlainFontIcon(0xF04E9);
+    FontIcon<?> MAIN_TAB = new PlainFontIcon(0xF04E9);
 }

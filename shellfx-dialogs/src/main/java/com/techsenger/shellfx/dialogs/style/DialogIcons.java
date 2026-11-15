@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.style;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
@@ -24,27 +25,27 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface DialogIcons {
 
-    StyleFontIcon INFO = new StyleFontIcon("info-icon");
+    FontIcon<?> INFO = new StyleFontIcon("info-icon");
 
-    StyleFontIcon ERROR = new StyleFontIcon("error-icon");
+    FontIcon<?> ERROR = new StyleFontIcon("error-icon");
 
-    StyleFontIcon WARNING = new StyleFontIcon("warning-icon");
+    FontIcon<?> WARNING = new StyleFontIcon("warning-icon");
 
-    StyleFontIcon QUESTION = new StyleFontIcon("question-icon");
+    FontIcon<?> QUESTION = new StyleFontIcon("question-icon");
 
-    StyleFontIcon DIRECTORY_UP = new StyleFontIcon("directory-up-icon");
+    FontIcon<?> DIRECTORY_UP = new StyleFontIcon("directory-up-icon");
 
-    StyleFontIcon HOME = new StyleFontIcon("home-icon");
+    FontIcon<?> HOME = new StyleFontIcon("home-icon");
 
-    StyleFontIcon ADD_DIRECTORY = new StyleFontIcon("add-directory-icon");
+    FontIcon<?> ADD_DIRECTORY = new StyleFontIcon("add-directory-icon");
 
-    StyleFontIcon LIST_VIEW = new StyleFontIcon("list-view-icon");
+    FontIcon<?> LIST_VIEW = new StyleFontIcon("list-view-icon");
 
-    StyleFontIcon GRID_VIEW = new StyleFontIcon("grid-view-icon");
+    FontIcon<?> GRID_VIEW = new StyleFontIcon("grid-view-icon");
 
-    StyleFontIcon OPEN = new StyleFontIcon("open-icon");
+    FontIcon<?> OPEN = new StyleFontIcon("open-icon");
 
-    StyleFontIcon SAVE_AS = new StyleFontIcon("save-as-icon");
+    FontIcon<?> SAVE_AS = new StyleFontIcon("save-as-icon");
 }
 
 
