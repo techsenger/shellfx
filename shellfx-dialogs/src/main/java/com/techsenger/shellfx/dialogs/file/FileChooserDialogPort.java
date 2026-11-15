@@ -19,7 +19,7 @@ package com.techsenger.shellfx.dialogs.file;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.material.RequestSetter;
-import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageFile;
 import java.net.URI;
 import java.util.List;
 import javafx.beans.property.ReadOnlyIntegerProperty;

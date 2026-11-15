@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -7,74 +8,15 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.techsenger.shellfx</groupId>
+    <groupId>com.techsenger.shellfx.storage</groupId>
     <artifactId>shellfx-storage</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <name>ShellFX - Storage</name>
-    <description>Classes for file storage</description>
+    <description>File storage API, its implementations and UI helpers</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.annotations</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.toolkit</groupId>
-            <artifactId>toolkit-fx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.drivekit</groupId>
-            <artifactId>drivekit-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.shellfx</groupId>
-            <artifactId>shellfx-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.shellfx</groupId>
-            <artifactId>shellfx-material</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.toolkit</groupId>
-            <artifactId>toolkit-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-        </dependency>
-        <!-- testing -->
-        <dependency>
-            <groupId>com.google.jimfs</groupId>
-            <artifactId>jimfs</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
-     </dependencies>
+    <modules>
+        <module>shellfx-storage-base</module>
+        <module>shellfx-storage-system</module>
+        <module>shellfx-storage-ui</module>
+    </modules>
 </project>

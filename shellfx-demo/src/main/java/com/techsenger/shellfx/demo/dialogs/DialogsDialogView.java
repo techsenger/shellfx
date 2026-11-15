@@ -59,7 +59,7 @@ import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
 import com.techsenger.shellfx.dialogs.text.TextsDialogView;
 import com.techsenger.shellfx.dialogs.text.TextsDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageFile;
 import java.util.Arrays;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;

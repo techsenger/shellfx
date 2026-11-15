@@ -18,12 +18,12 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
-import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.UriUtils;
-import com.techsenger.shellfx.storage.style.FileDecorator;
-import com.techsenger.shellfx.storage.style.StorageDecorator;
-import com.techsenger.shellfx.storage.view.DecorationCellUtils;
-import com.techsenger.shellfx.storage.view.FileCellUpdater;
+import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.base.UriUtils;
+import com.techsenger.shellfx.storage.ui.DecorationCellUtils;
+import com.techsenger.shellfx.storage.ui.FileCellUpdater;
+import com.techsenger.shellfx.storage.ui.style.FileDecorator;
+import com.techsenger.shellfx.storage.ui.style.StorageDecorator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.material.column.ColumnListView;
-import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageFile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 

@@ -16,9 +16,9 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
-import com.techsenger.shellfx.storage.FileStorage;
-import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.async.DefaultFileRefiner;
+import com.techsenger.shellfx.storage.base.FileStorage;
+import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.base.async.DefaultFileRefiner;
 import java.io.IOException;
 import java.util.List;
 

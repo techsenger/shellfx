@@ -19,7 +19,7 @@ package com.techsenger.shellfx.demo.dialogs;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogComposer;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogViewModel;
-import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageFile;
 
 /**
  * A file chooser over the demo storage, whose button refines the pending files, so the state between the two

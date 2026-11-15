@@ -42,8 +42,10 @@ material  (base UI elements, depends on base)
   ├── core      (depends on base; Shell, Window, Tab, Page, Dialog, Popup, registries, settings)
   ├── shared    (depends on core; FindBase/FindPanel used by other modules)
   ├── layout    (depends on core, shared; TabHost, DockHost, PageHost, TreePageHost)
-  ├── storage   (depends on core; file-system abstractions)
-  ├── dialogs   (depends on core, shared, storage; AlertDialog, FileChooserDialog, NameValueDialog)
+  ├── storage-base   (depends on base; file-storage API, no UI: `FileStorage`, `StorageFile`, `async`)
+  ├── storage-system (depends on storage-base, material; storages of the local machine)
+  ├── storage-ui     (depends on storage-base, material; icons, styles and table helpers for files)
+  ├── dialogs   (depends on core, shared, storage-base, storage-ui; AlertDialog, FileChooserDialog, NameValueDialog)
   ├── devtools  (depends on core, shared, dialogs, layout; component-tree/scene-graph inspectors)
   ├── icons     (depends on material; Material Design Icons font + stylesheets)
   └── demo      (depends on everything; showcase app, not published — see publishing.plugin.exclusions)
@@ -64,7 +66,7 @@ mvn test -pl shellfx-material -Dtest=ColumnListViewTest   # run a single test cl
 Checkstyle runs as part of `mvn install`/`mvn verify` (results land in `target/checkstyle-result.xml` per
 module) — a build failure may be a style violation, not just a compile error.
 
-Only some modules currently have tests: `shellfx-material`, `shellfx-layout`, `shellfx-storage`. UI tests that
+Only some modules currently have tests: `shellfx-material`, `shellfx-layout`, `shellfx-storage-system`. UI tests that
 need a real `Stage` (e.g. `shellfx-material/.../column/*Test.java`) run headless via
 `glass.platform=Headless` + `prism.order=sw`, started once through a shared `FxTestSupport`/`FxPlatform.start()`
 helper and executed on the FX Application thread with `FxPlatform.runLaterAndWait`. When such a test asserts on

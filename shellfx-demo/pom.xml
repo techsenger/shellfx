@@ -47,8 +47,16 @@
             <artifactId>shellfx-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.shellfx</groupId>
-            <artifactId>shellfx-storage</artifactId>
+            <groupId>com.techsenger.shellfx.storage</groupId>
+            <artifactId>shellfx-storage-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx.storage</groupId>
+            <artifactId>shellfx-storage-system</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx.storage</groupId>
+            <artifactId>shellfx-storage-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.shellfx</groupId>

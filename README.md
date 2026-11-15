@@ -178,9 +178,9 @@ The platform consists of the following modules:
 * Icons — contains module-specific stylesheets that utilize the Material Design Icons font. The fonts come from the
 [FontJars](https://github.com/techsenger/fontjars) modules, and the license of a font is stored in its module. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
-* Storage — provides abstractions for working with file systems. The module includes a default implementation for the
-local file system. Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
-separately.
+* Storage — provides abstractions for working with file systems. It is split into three modules: `storage-base` (the API),
+`storage-system` (the default implementation for the local file system) and `storage-ui` (icons, styles and table
+helpers). Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented separately.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation, text input and choice etc.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
 * Test — provides shared test support, such as starting the JavaFX toolkit in headless mode and running code on the
@@ -1291,8 +1291,8 @@ The files of the bundle are named by the language, for example `messages.propert
 `FileStorage` is an abstraction layer over any disk. It gives one uniform API for listing, reading, writing, creating
 and renaming entries, no matter where they live: the local file system, an FTP server, a cloud drive, an archive or a
 virtual tree. Entries are addressed by `URI`, every storage has its own root URI, and everything above the layer works
-with `StorageFile` and never with `java.nio.file.Path` or any other technology-specific type. The `storage` module
-contains the layer itself and the default storages for the local file system (`UnixFileStorage`,
+with `StorageFile` and never with `java.nio.file.Path` or any other technology-specific type. The `storage-base` module
+contains the layer itself, and `storage-system` the default storages for the local file system (`UnixFileStorage`,
 `WindowsFileStorage`). Storages for other disks are meant to be implemented separately and plugged in.
 
 Currently the layer is used in ShellFX only by the [FileChooserDialog](#dialog-file-chooser), which is why a
@@ -1300,17 +1300,20 @@ dialog can show Google Drive or an FTP server as easily as the local disk. No ot
 
 ### Packages <a name="storage-packages"></a>
 
-* `storage` — the model (`StorageFile`, `EntryLink`), the storages (`FileStorage` and its base and local
-implementations), `StorageProvider` that tells which storages there are, operation types, listeners and utilities.
-* `storage.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
+* `storage.base` (`storage-base`) — the model (`StorageFile`, `EntryLink`), the storages (`FileStorage` and its base
+implementation), `StorageProvider` that tells which storages there are, operation types, listeners and utilities.
+* `storage.base.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
 default implementations, the cancellable task and the sort policy.
-* `storage.style` — the icon and the style the files and storages are shown with: resolvers of files,
+* `storage.system` (`storage-system`) — the storages of the local machine (`UnixFileStorage`, `WindowsFileStorage`), their
+icons and the utilities that turn the drives of the machine into storages.
+* `storage.ui` (`storage-ui`) — the helpers of the views that show files: the columns, `FileCellUpdater` and
+`DecorationCellUtils` that keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a
+storage failed.
+* `storage.ui.style` — the icon and the style the files and storages are shown with: resolvers of files,
 `StorageDecorator` that gives a storage its `IconStyleDecoration` (icon and style) and `FileDecorator` that gives
-files theirs (the two know nothing of each other), the icon sets and the types of decoration.
-* `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
-scheme, with the default schemes of the themes.
-* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `DecorationCellUtils`
-that keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a storage failed.
+files theirs (the two know nothing of each other), the icon sets and the types of decoration. It also holds the
+settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a scheme, with the default
+schemes of the themes.
 
 ### Core Concepts <a name="storage-concepts"></a>
 

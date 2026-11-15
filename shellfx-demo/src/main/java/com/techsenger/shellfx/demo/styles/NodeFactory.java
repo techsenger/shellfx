@@ -25,7 +25,7 @@ import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.tabpane.SlantedTabPanePro;
 import com.techsenger.shellfx.shared.style.SharedIcons;
-import com.techsenger.shellfx.storage.style.StorageIcons;
+import com.techsenger.shellfx.storage.ui.style.StorageIcons;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import java.util.List;
 import java.util.stream.IntStream;

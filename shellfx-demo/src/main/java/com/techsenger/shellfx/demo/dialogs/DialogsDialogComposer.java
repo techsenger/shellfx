@@ -35,7 +35,7 @@ import com.techsenger.shellfx.dialogs.text.TextDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextDialogPort;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
-import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageFile;
 
 /**
  *

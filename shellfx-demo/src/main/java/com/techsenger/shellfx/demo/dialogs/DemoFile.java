@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.demo.dialogs;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.DefaultStorageFile;
-import com.techsenger.shellfx.storage.FileEntryType;
-import com.techsenger.shellfx.storage.FileStorage;
+import com.techsenger.shellfx.storage.base.DefaultStorageFile;
+import com.techsenger.shellfx.storage.base.FileEntryType;
+import com.techsenger.shellfx.storage.base.FileStorage;
 import java.net.URI;
 
 /**
@@ -49,11 +49,6 @@ final class DemoFile extends DefaultStorageFile {
             setSize(size);
             setModifiedTime(modifiedTime);
         }
-    }
-
-    @Override
-    protected void setRoot(boolean root) {
-        super.setRoot(root);
     }
 
     boolean isPending() {

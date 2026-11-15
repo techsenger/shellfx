@@ -27,7 +27,9 @@ module com.techsenger.shellfx.demo {
     requires com.techsenger.shellfx.layout;
     requires com.techsenger.shellfx.shared;
     requires com.techsenger.shellfx.devtools;
-    requires com.techsenger.shellfx.storage;
+    requires com.techsenger.shellfx.storage.base;
+    requires com.techsenger.shellfx.storage.system;
+    requires com.techsenger.shellfx.storage.ui;
     requires com.techsenger.shellfx.dialogs;
     requires com.techsenger.shellfx.icons;
     requires com.techsenger.tabpanepro.core;

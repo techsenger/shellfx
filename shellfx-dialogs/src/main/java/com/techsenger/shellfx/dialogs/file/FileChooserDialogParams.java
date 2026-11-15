@@ -20,11 +20,11 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.StorageProvider;
-import com.techsenger.shellfx.storage.async.FileProvider;
-import com.techsenger.shellfx.storage.async.FileRefiner;
-import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
+import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.base.StorageProvider;
+import com.techsenger.shellfx.storage.base.async.FileProvider;
+import com.techsenger.shellfx.storage.base.async.FileRefiner;
+import com.techsenger.shellfx.storage.base.async.TwoPhaseSortPolicy;
 import java.net.URI;
 import java.util.Objects;
 

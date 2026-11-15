@@ -17,14 +17,14 @@
 package com.techsenger.shellfx.demo.dialogs;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.AbstractFileStorage;
-import com.techsenger.shellfx.storage.FileEntryType;
-import com.techsenger.shellfx.storage.FileOperations;
-import com.techsenger.shellfx.storage.FileStorageType;
-import com.techsenger.shellfx.storage.FileStorageUtils;
-import com.techsenger.shellfx.storage.OperationType;
-import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.style.DefaultStorageIconProvider;
+import com.techsenger.shellfx.storage.base.AbstractFileStorage;
+import com.techsenger.shellfx.storage.base.FileEntryType;
+import com.techsenger.shellfx.storage.base.FileOperations;
+import com.techsenger.shellfx.storage.base.FileStorageType;
+import com.techsenger.shellfx.storage.base.FileStorageUtils;
+import com.techsenger.shellfx.storage.base.OperationType;
+import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.system.DefaultStorageIconProvider;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.NoSuchFileException;
