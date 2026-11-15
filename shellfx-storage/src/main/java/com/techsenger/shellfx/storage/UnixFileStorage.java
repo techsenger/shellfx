@@ -17,8 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.drivekit.core.DriveDetector;
-import com.techsenger.shellfx.storage.style.DefaultStorageDecorator;
-import com.techsenger.shellfx.storage.style.StorageDecorator;
+import com.techsenger.shellfx.storage.style.DefaultStorageIconProvider;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
@@ -66,7 +65,7 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
                     drive.getRoot().toUri(),
                     drive.getId(),
                     fileFactory,
-                    new DefaultStorageDecorator(type));
+                    new DefaultStorageIconProvider(type));
             result.add(storage);
         }
         return result;
@@ -75,8 +74,8 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     private final boolean posixSupported;
 
     public UnixFileStorage(FileStorageType type, String name, URI rootUri, String id,
-            Factory<? extends DefaultStorageFile> fileFactory, StorageDecorator decorator) {
-        super(type, name, rootUri, id, fileFactory, decorator);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageIconProvider iconProvider) {
+        super(type, name, rootUri, id, fileFactory, iconProvider);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 

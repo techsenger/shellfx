@@ -17,23 +17,47 @@
 package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.shellfx.material.theme.Theme;
+import com.techsenger.shellfx.storage.FileStorage;
+import java.util.function.Supplier;
 
 /**
- * Decorates a storage with the icon and the style it is shown with. The decorator is given to the storage when it is
- * created, by the one who knows the kinds and the states of the storage, and it takes both from one state of the
- * storage, so they never disagree.
+ * Decorates a storage with the icon and the style it is shown with. A component that shows a storage itself, such as
+ * a root of a tree or a segment of a location bar, owns one decorator. It is independent of the file decorator: it is
+ * the component that decides whether a root is shown as a storage or as a file. All methods must be called on the UI
+ * thread.
  *
  * @author Pavel Castornii
  */
-@FunctionalInterface
-public interface StorageDecorator {
+public final class StorageDecorator {
+
+    private final StorageIconResolver iconResolver;
+
+    private final StorageStyleResolver styleResolver;
+
+    private final Supplier<Theme> themeSupplier;
 
     /**
-     * Decorates the storage for a theme.
+     * Creates a decorator.
      *
-     * @param theme the theme the storage is shown in
-     * @return the icon and the style of the storage in its current state, never {@code null}; the style is never
-     *     {@code null} either, and a style without values clears the styles of the storage
+     * @param iconResolver determines the icon of a storage
+     * @param styleResolver determines the style of a storage
+     * @param themeSupplier supplies the theme the storages are styled for
      */
-    IconStyleDecoration decorate(Theme theme);
+    public StorageDecorator(StorageIconResolver iconResolver, StorageStyleResolver styleResolver,
+            Supplier<Theme> themeSupplier) {
+        this.iconResolver = iconResolver;
+        this.styleResolver = styleResolver;
+        this.themeSupplier = themeSupplier;
+    }
+
+    /**
+     * Decorates the storage in its current state for the current theme.
+     *
+     * @param storage the storage to decorate
+     * @return the icon and the style of the storage, never {@code null}
+     */
+    public IconStyleDecoration decorate(FileStorage<?> storage) {
+        return new IconStyleDecoration(iconResolver.resolve(storage),
+                styleResolver.resolve(storage, themeSupplier.get()));
+    }
 }

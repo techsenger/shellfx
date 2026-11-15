@@ -24,9 +24,7 @@ import com.techsenger.shellfx.storage.FileStorageType;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.style.IconStyleDecoration;
-import com.techsenger.shellfx.storage.style.IconTextStyle;
-import com.techsenger.shellfx.storage.style.StorageIcons;
+import com.techsenger.shellfx.storage.style.DefaultStorageIconProvider;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.NoSuchFileException;
@@ -44,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
 
     private record Entry(String name, boolean directory, @Nullable Long size, int days, boolean pending) {
+
     }
 
     private static final long BASE_TIME = 1_735_689_600_000L;
@@ -69,7 +68,7 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
 
     DemoFileStorage() {
         super(FileStorageType.NETWORK, "Demo", URI.create("demo:///"), "demo",
-                theme -> new IconStyleDecoration(StorageIcons.BASE_STORAGE, IconTextStyle.foreground(theme)));
+                new DefaultStorageIconProvider(FileStorageType.NETWORK));
     }
 
     /**

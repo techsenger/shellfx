@@ -1305,8 +1305,8 @@ implementations), `StorageProvider` that tells which storages there are, operati
 * `storage.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
 default implementations, the cancellable task and the sort policy.
 * `storage.style` — the icon and the style the files and storages are shown with: resolvers of files,
-`StorageDecorator` that gives a storage its `IconStyleDecoration` (icon and style), `FileDecorator` that gives files
-theirs, the icon set and the types of decoration.
+`StorageDecorator` that gives a storage its `IconStyleDecoration` (icon and style) and `FileDecorator` that gives
+files theirs (the two know nothing of each other), the icon sets and the types of decoration.
 * `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
 scheme, with the default schemes of the themes.
 * `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `DecorationCellUtils`
@@ -1337,8 +1337,10 @@ target may lie in another storage.
 plugged in or taken out), so the provider, the refiner and the file chooser do not keep a list of storages: they ask the
 `StorageProvider` each time they need one. A client that works with only some of the storages gives a provider that
 returns just those; the interface has one method, so a lambda is enough.
-* **Appearance of the storage itself** — a storage is loaded dynamically, so only it knows its own icon and style, which
-it provides through its `StorageDecorator`, which gives both in one step from one state of the storage.
+* **Appearance of the storage itself** — a storage is loaded dynamically, so only it knows its own icon, which it
+gives through its `StorageIconProvider`. A view paints it with a `StorageDecorator` (icon and style resolvers), and it
+is the component that decides whether a root is shown as its storage, with the storage decorator, or as a file, with
+the file decorator.
 
 ### Two-Phase Loading <a name="storage-two-phase"></a>
 

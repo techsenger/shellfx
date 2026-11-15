@@ -31,9 +31,10 @@ import javafx.collections.ObservableMap;
 /**
  * Decorates files with an icon and a style lazily, when a file is about to be shown and has none, so only the
  * files that are shown are decorated. The decorations belong to the decorator, not to the files, so a component that
- * shows files owns one decorator and drops the decorations of the files it stops showing. A root stands for its
- * storage and so gets the decoration of the storage. Files are matched by instance, not by {@code equals}, so a
- * method must be given the very files that are shown. All methods must be called on the UI thread.
+ * shows files owns one decorator and drops the decorations of the files it stops showing. The decorator knows
+ * nothing of storages: a component that shows a root as its storage uses a storage decorator for it. Files are
+ * matched by instance, not by {@code equals}, so a method must be given the very files that are shown. All methods
+ * must be called on the UI thread.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -97,10 +98,6 @@ public final class FileDecorator<F extends StorageFile> {
     public void decorate(F file) {
         var decoration = decorations.get(file);
         if (decoration != null && decoration.style() != null) {
-            return;
-        }
-        if (file.isRoot()) {
-            decorations.put(file, file.getStorage().getDecorator().decorate(themeSupplier.get()));
             return;
         }
         var type = typeResolver.apply(file);

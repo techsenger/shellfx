@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.StorageDecorator;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -71,10 +70,10 @@ import java.util.List;
  * {@link FileOperations#RENAME} (for the new URI), {@link FileOperations#READ} and {@link FileOperations#WRITE}.
  * A failed operation is not reported.
  *
- * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows how it looks itself: the icon and the
- * style of the storage and of its root, given by {@link #getDecorator()}, which a view applies where it shows the
- * storage itself, e.g. its root in a tree. The files of every storage share one model and
- * are styled centrally, by file resolvers, which know nothing of the storage.
+ * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows what its icon is, given by
+ * {@link #getIconProvider()}. How the icon is painted and whether a root is shown as the storage is up to the view,
+ * which does it with a storage decorator. The files of every storage share one model and are styled centrally, by
+ * file resolvers, which know nothing of the storage.
  *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
@@ -106,13 +105,12 @@ public interface FileStorage<T extends StorageFile> {
     String getName();
 
     /**
-     * Returns the decorator that gives this storage the icon and the style it is shown with, e.g. in a location bar or
-     * as a root in a directory tree. A view that shows the storage itself applies them; the resolvers of the files do
-     * not.
+     * Returns the provider of the icon of this storage, which a view that shows the storage itself, e.g. in a location
+     * bar or as a root in a directory tree, takes the icon from.
      *
-     * @return the decorator, never {@code null}
+     * @return the provider, never {@code null}
      */
-    StorageDecorator getDecorator();
+    StorageIconProvider getIconProvider();
 
     /**
      * Returns the root directory entry of this storage.

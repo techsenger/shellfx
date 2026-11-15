@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.techsenger.shellfx.storage.style.StorageDecorator;
 import java.net.URI;
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final StorageListenerSupport listenerSupport = new StorageListenerSupport();
 
-    private final StorageDecorator decorator;
+    private final StorageIconProvider iconProvider;
 
     /**
      * Creates a storage.
@@ -46,10 +45,11 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
      * @param uri the root URI
      * @param id the identifier of the volume or the device the storage stands for, which the operating system keeps
      *     across reboots; it tells a provider whether a storage found again is the one it found before
-     * @param decorator the decorator that gives the storage its icon and style
+     * @param iconProvider gives the icon of the storage
      */
-    public AbstractFileStorage(FileStorageType type, String name, URI uri, String id, StorageDecorator decorator) {
-        this.decorator = decorator;
+    public AbstractFileStorage(FileStorageType type, String name, URI uri, String id,
+            StorageIconProvider iconProvider) {
+        this.iconProvider = iconProvider;
         this.type = type;
         this.name = name;
         this.id = id;
@@ -73,8 +73,8 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     }
 
     @Override
-    public StorageDecorator getDecorator() {
-        return decorator;
+    public StorageIconProvider getIconProvider() {
+        return iconProvider;
     }
 
     @Override

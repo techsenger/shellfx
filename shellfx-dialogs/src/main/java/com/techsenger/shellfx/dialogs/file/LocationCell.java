@@ -21,8 +21,9 @@ import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.shellfx.storage.style.FileDecorator;
-import com.techsenger.shellfx.storage.view.FileCellUpdater;
+import com.techsenger.shellfx.storage.style.StorageDecorator;
 import com.techsenger.shellfx.storage.view.DecorationCellUtils;
+import com.techsenger.shellfx.storage.view.FileCellUpdater;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -45,7 +46,9 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final boolean valueCell;
 
-    private final FileDecorator<F> decorator;
+    private final FileDecorator<F> fileDecorator;
+
+    private final StorageDecorator storageDecorator;
 
     private final FileCellUpdater<F> updater;
 
@@ -53,13 +56,15 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
      * Creates a cell.
      *
      * @param valueCell whether the cell shows the chosen location rather than an item of the list
-     * @param decorator gives a location its decoration, which the cell shows while it is decorated
+     * @param fileDecorator gives a location its decoration, which the cell shows while it is decorated
+     * @param storageDecorator gives the decoration of a root, which is shown as its storage
      */
-    public LocationCell(boolean valueCell, FileDecorator<F> decorator) {
+    public LocationCell(boolean valueCell, FileDecorator<F> fileDecorator, StorageDecorator storageDecorator) {
         this.valueCell = valueCell;
-        this.decorator = decorator;
+        this.fileDecorator = fileDecorator;
+        this.storageDecorator = storageDecorator;
         this.updater = new FileCellUpdater<>(
-                file -> DecorationCellUtils.updateDecoration(label, iconView, decorator.getDecoration(file)));
+                file -> DecorationCellUtils.updateDecoration(label, iconView, fileDecorator.getDecoration(file)));
         this.box.setAlignment(Pos.CENTER_LEFT);
         this.box.getChildren().setAll(this.iconView, this.label);
     }
@@ -88,8 +93,13 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
     }
 
     private void showFile(F item) {
-        decorator.decorate(item);
-        updater.observe(item, decorator::decorationValue);
+        if (item.isRoot()) {
+            updater.unobserve();
+            DecorationCellUtils.updateDecoration(label, iconView, storageDecorator.decorate(item.getStorage()));
+        } else {
+            fileDecorator.decorate(item);
+            updater.observe(item, fileDecorator::decorationValue);
+        }
         if (getGraphic() != this.box) {
             setGraphic(this.box);
         }

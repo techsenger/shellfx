@@ -17,35 +17,25 @@
 package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.shellfx.base.icon.FontIcon;
-import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.FileStorageType;
+import com.techsenger.shellfx.storage.StorageIconProvider;
 
 /**
- * Gives a storage the icon of its type and paints the icon and the texts with the default foreground color of the
- * theme. It is the default of the storages of the local machine.
+ * Gives a storage the icon of its type. It is the default of the storages of the local machine.
  *
  * @author Pavel Castornii
  */
-public final class DefaultStorageDecorator implements StorageDecorator {
+public final class DefaultStorageIconProvider implements StorageIconProvider {
 
-    private final FileStorageType type;
+    private final FontIcon<?> baseIcon;
 
     /**
-     * Creates a decorator.
+     * Creates a provider.
      *
      * @param type the type of the storage
      */
-    public DefaultStorageDecorator(FileStorageType type) {
-        this.type = type;
-    }
-
-    @Override
-    public IconStyleDecoration decorate(Theme theme) {
-        return new IconStyleDecoration(resolveIcon(), IconTextStyle.foreground(theme));
-    }
-
-    private FontIcon<?> resolveIcon() {
-        return switch (type) {
+    public DefaultStorageIconProvider(FileStorageType type) {
+        this.baseIcon = switch (type) {
             case BASE, VIRTUAL -> StorageIcons.BASE_STORAGE;
             case HDD -> StorageIcons.HDD_STORAGE;
             case SSD -> StorageIcons.SSD_STORAGE;
@@ -54,5 +44,10 @@ public final class DefaultStorageDecorator implements StorageDecorator {
             case FLOPPY -> StorageIcons.FLOPPY_STORAGE;
             case OPTICAL -> StorageIcons.OPTICAL_STORAGE;
         };
+    }
+
+    @Override
+    public FontIcon<?> getBaseIcon() {
+        return baseIcon;
     }
 }
