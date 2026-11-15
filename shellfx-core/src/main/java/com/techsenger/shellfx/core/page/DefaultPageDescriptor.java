@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.page;
 
-import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.shellfx.base.icon.Icon;
 
 /**
  *

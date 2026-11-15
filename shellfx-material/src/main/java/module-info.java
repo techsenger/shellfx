@@ -15,6 +15,7 @@
  */
 
 module com.techsenger.shellfx.material {
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvvm;

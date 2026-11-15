@@ -23,6 +23,7 @@ module com.techsenger.shellfx.devtools {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.annotations;
     requires com.techsenger.tabpanepro.core;
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.shared;
     requires com.techsenger.shellfx.layout;

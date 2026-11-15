@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.icon;
+package com.techsenger.shellfx.base.icon;
 
 /**
- * All icons are immutable.
  *
  * @author Pavel Castornii
  */
-public interface Icon<T> {
+public abstract class AbstractImageIcon<T> extends AbstractIcon<T> implements ImageIcon<T> {
 
-    /**
-     * Returns the content this icon (image, codePoint, styleClass).
-     *
-     * @return
-     */
-    T getContent();
+    public AbstractImageIcon(T content) {
+        super(content);
+    }
 }

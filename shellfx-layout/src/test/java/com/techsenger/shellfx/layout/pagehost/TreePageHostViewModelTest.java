@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
+import com.techsenger.shellfx.base.icon.Icon;
 import com.techsenger.shellfx.core.page.TreePageItem;
-import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.shared.find.TextMatcherFactory;
 import java.util.ArrayList;
 import java.util.Arrays;

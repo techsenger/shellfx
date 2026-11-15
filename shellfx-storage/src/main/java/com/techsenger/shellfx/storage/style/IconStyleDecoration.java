@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.base.icon.FontIcon;
 
 /**
  * The icon and the style an element, such as a file or a storage, is shown with. The element gets both in one step,

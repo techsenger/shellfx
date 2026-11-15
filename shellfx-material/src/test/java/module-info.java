@@ -19,6 +19,7 @@ open module com.techsenger.shellfx.material {
     requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.shellfx.base;
     requires org.slf4j;
     requires javafx.base;
     requires javafx.graphics;

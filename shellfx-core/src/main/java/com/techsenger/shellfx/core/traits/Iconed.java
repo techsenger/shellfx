@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.traits;
 
-import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.shellfx.base.icon.Icon;
 import javafx.beans.property.ObjectProperty;
 
 /**

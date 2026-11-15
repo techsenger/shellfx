@@ -20,6 +20,7 @@ module com.techsenger.shellfx.storage {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.drivekit.core;
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.shellfx.material;
     requires javafx.controls;
     requires javafx.swing;

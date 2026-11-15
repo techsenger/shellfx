@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.shellfx.base.icon.AbstractImageIcon;
+
 /**
  * This class uses style class as content.
  *

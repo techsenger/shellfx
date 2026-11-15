@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.alert;
 
+import com.techsenger.shellfx.base.icon.Icon;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
@@ -25,7 +26,6 @@ import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.INFO;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.WARNING;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
-import com.techsenger.shellfx.material.icon.Icon;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

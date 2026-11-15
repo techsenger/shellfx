@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.shellfx.base.icon.AbstractImageIcon;
 import javafx.scene.image.Image;
 
 /**

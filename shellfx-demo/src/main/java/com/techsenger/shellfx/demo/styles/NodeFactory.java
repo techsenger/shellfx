@@ -18,8 +18,8 @@ package com.techsenger.shellfx.demo.styles;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.base.icon.FontIcon;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
-import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;

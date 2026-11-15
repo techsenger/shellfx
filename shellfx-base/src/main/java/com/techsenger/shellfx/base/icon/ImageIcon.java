@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.icon;
+package com.techsenger.shellfx.base.icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractImageIcon<T> extends AbstractIcon<T> implements ImageIcon<T> {
+public interface ImageIcon<T> extends Icon<T> {
 
-    public AbstractImageIcon(T content) {
-        super(content);
-    }
 }

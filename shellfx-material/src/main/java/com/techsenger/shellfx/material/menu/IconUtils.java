@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.material.menu;
 
+import com.techsenger.shellfx.base.icon.FontIcon;
+import com.techsenger.shellfx.base.icon.Icon;
+import com.techsenger.shellfx.base.icon.ImageIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.icon.ImageIconView;
 import javafx.scene.control.MenuItem;
-import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.material.icon.ImageIcon;
 
 /**
  *

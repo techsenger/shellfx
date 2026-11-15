@@ -16,9 +16,9 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.shellfx.base.icon.Icon;
 import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.material.RequestSetter;
-import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.Objects;

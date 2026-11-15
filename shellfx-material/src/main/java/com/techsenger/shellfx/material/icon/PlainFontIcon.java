@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.material.icon;
 
 import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.base.icon.AbstractFontIcon;
 
 /**
  *

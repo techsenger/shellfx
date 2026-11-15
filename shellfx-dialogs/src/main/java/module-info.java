@@ -20,6 +20,7 @@ module com.techsenger.shellfx.dialogs {
     requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvvm;
+    requires com.techsenger.shellfx.base;
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.shared;

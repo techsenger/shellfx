@@ -20,6 +20,7 @@ module com.techsenger.shellfx.base {
     requires org.slf4j;
 
     exports com.techsenger.shellfx.base.bundle;
+    exports com.techsenger.shellfx.base.icon;
     exports com.techsenger.shellfx.base.registrar;
     exports com.techsenger.shellfx.base.registry;
 }

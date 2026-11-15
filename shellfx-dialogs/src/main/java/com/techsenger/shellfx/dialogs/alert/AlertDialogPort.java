@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.dialogs.alert;
 
+import com.techsenger.shellfx.base.icon.Icon;
 import com.techsenger.shellfx.core.dialog.DialogPort;
-import com.techsenger.shellfx.material.icon.Icon;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 

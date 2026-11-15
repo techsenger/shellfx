@@ -18,8 +18,8 @@ package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
+import com.techsenger.shellfx.base.icon.Icon;
 import com.techsenger.shellfx.core.ShellContextAccess;
-import com.techsenger.shellfx.material.icon.Icon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;

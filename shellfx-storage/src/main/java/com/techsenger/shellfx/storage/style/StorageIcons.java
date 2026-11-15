@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.storage.style;
 
-import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.base.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
 /**
