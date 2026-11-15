@@ -32,7 +32,8 @@ import javafx.collections.ObservableMap;
  * Decorates files with an icon and a style lazily, when a file is about to be shown and has none, so only the
  * files that are shown are decorated. The decorations belong to the decorator, not to the files, so a component that
  * shows files owns one decorator and drops the decorations of the files it stops showing. A root stands for its
- * storage and so gets the decoration of the storage. All methods must be called on the UI thread.
+ * storage and so gets the decoration of the storage. Files are matched by instance, not by {@code equals}, so a
+ * method must be given the very files that are shown. All methods must be called on the UI thread.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -113,7 +114,7 @@ public final class FileDecorator<F extends StorageFile> {
      * are decorated when they are shown. A component also calls it for the files it stops showing, so they are not
      * held any longer.
      *
-     * @param files the files whose icon and style are outdated
+     * @param files the shown instances whose icon and style are outdated; an equal but other instance is not matched
      */
     public void reset(Collection<? extends F> files) {
         for (var file : files) {
