@@ -51,13 +51,14 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [FindPanel](#shared-find-panel)
 * [Dialog Components](#dialog)
     * [AlertDialog](#dialog-alert)
-    * [FileChooserDialog](#dialog-file-chooser)
     * [NameValueDialog](#dialog-name-value)
     * [ProgressDialog](#dialog-progress)
     * [TextDialog](#dialog-text)
     * [TextsDialog](#dialog-texts)
     * [LongTextDialog](#dialog-long-text)
     * [TextChoiceDialog](#dialog-text-choice)
+* [Storage Components](#storage-components)
+    * [FileChooserDialog](#storage-file-chooser)
 * [DevTools Components](#devtools)
     * [DevToolsTabDock](#devtools-tab-dock)
     * [ComponentTab](#devtools-component-tab)
@@ -178,11 +179,13 @@ The platform consists of the following modules:
 * Icons — contains module-specific stylesheets that utilize the Material Design Icons font. The fonts come from the
 [FontJars](https://github.com/techsenger/fontjars) modules, and the license of a font is stored in its module. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
-* Storage — provides abstractions for working with file systems. It is split into three modules: `storage-base` (the API),
-`storage-system` (the default implementation for the local file system) and `storage-ui` (icons, styles and table
-helpers). Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented separately.
-* Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation, text input and choice etc.
+* Dialogs — provides ready-to-use dialogs: alert, confirmation, text input and choice etc. (the file chooser is in
+`storage-ui`, see [Storage Components](#storage-components)).
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
+* Storage — provides abstractions for working with file systems. It is split into three modules: `storage-base` (the API),
+`storage-system` (the default implementation for the local file system) and `storage-ui` (icons, styles, table
+helpers and the file chooser). Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
+separately.
 * Test — provides shared test support, such as starting the JavaFX toolkit in headless mode and running code on the
 JavaFX Application Thread. It is used by the tests of other modules and is not published.
 * Demo — showcases ShellFX's core functionality, provides examples for building custom components, and
@@ -657,15 +660,6 @@ commonly used dialogs.
 `AlertDialog` is a dialog for common user notification scenarios such as informational messages, warnings, errors,
 and confirmation requests.
 
-### FileChooserDialog <a name="dialog-file-chooser"></a>
-
-`FileChooserDialog` is a dialog for selecting a file when opening or saving. The dialog type is defined using the
-`FileChooserType` enumeration. It is a smart dialog (see [Dialog](#core-dialog)).
-
-It is important to note that this dialog works with files provided by classes from the `storage` module. This makes
-it possible to use the dialog with virtually any file storage implementation, provided that an appropriate `FileStorage`
-implementation is supplied.
-
 ### NameValueDialog <a name="dialog-name-value"></a>
 
 `NameValueDialog` is a simple dialog for displaying name–value pairs. The parameter name is shown in a `TextField`,
@@ -704,6 +698,22 @@ length of the text.
 `TextChoiceDialog` is a dialog for choosing one of the given texts in a non-editable `ComboBox`; nothing can be typed.
 The texts belong to the client and can be changed while the dialog is open. It is a dumb dialog (see
 [Dialog](#core-dialog)).
+
+## Storage Components <a name="storage-components"></a>
+
+In this section, the components of the `storage-ui` module are described. They work with the storage model (see
+[FileStorage](#storage)) and therefore are not in the `dialogs` module: this keeps the storage dependencies out of the
+common dialogs, and the components are added to an application separately, together with `storage-ui`.
+
+### FileChooserDialog <a name="storage-file-chooser"></a>
+
+`FileChooserDialog` (package `storage.ui.chooser`) is a dialog for selecting a file when opening or saving. The dialog
+type is defined using the `FileChooserType` enumeration. It is a smart dialog (see [Dialog](#core-dialog)).
+
+It needs the special, non-standard model for working with files (`FileStorage`, `StorageFile`) and works with files
+provided by classes from the `storage` module. This makes it possible to use the dialog with virtually any file storage
+implementation, provided that an appropriate `FileStorage` implementation is supplied. For example, it can be FTP,
+Samba or even archives.
 
 ## DevTools Components <a name="devtools"></a>
 
@@ -1295,7 +1305,7 @@ with `StorageFile` and never with `java.nio.file.Path` or any other technology-s
 contains the layer itself, and `storage-system` the default storages for the local file system (`UnixFileStorage`,
 `WindowsFileStorage`). Storages for other disks are meant to be implemented separately and plugged in.
 
-Currently the layer is used in ShellFX only by the [FileChooserDialog](#dialog-file-chooser), which is why a
+Currently the layer is used in ShellFX only by the [FileChooserDialog](#storage-file-chooser), which is why a
 dialog can show Google Drive or an FTP server as easily as the local disk. No other component depends on it.
 
 ### Packages <a name="storage-packages"></a>
@@ -1309,6 +1319,7 @@ icons and the utilities that turn the drives of the machine into storages.
 * `storage.ui` (`storage-ui`) — the helpers of the views that show files: the columns, `FileCellUpdater` and
 `DecorationCellUtils` that keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a
 storage failed.
+* `storage.ui.chooser` — `FileChooserDialog`, the dialog for selecting a file when opening or saving.
 * `storage.ui.style` — the icon and the style the files and storages are shown with: resolvers of files,
 `StorageDecorator` that gives a storage its `IconStyleDecoration` (icon and style) and `FileDecorator` that gives
 files theirs (the two know nothing of each other), the icon sets and the types of decoration. It also holds the

@@ -22,8 +22,6 @@ import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
-import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
-import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogPort;
@@ -36,6 +34,8 @@ import com.techsenger.shellfx.dialogs.text.TextDialogPort;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
 import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.ui.chooser.FileChooserDialogParams;
+import com.techsenger.shellfx.storage.ui.chooser.FileChooserDialogPort;
 
 /**
  *

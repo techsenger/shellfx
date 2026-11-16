@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
+
+import com.techsenger.shellfx.material.button.DefaultResultButtonName;
+import com.techsenger.shellfx.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum FileChooserType {
+public interface FileChooserDialogButtons {
 
-    OPEN, SAVE_AS
+    ResultButtonName OK = new DefaultResultButtonName();
+
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 }

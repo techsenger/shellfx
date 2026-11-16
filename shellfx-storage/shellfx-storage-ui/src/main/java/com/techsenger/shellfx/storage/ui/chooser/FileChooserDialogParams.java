@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;

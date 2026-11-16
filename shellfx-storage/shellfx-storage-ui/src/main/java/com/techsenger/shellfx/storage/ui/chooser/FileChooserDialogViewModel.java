@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
@@ -26,8 +26,6 @@ import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.SettingsListener;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.UiExecutor;
@@ -54,6 +52,8 @@ import com.techsenger.shellfx.storage.base.async.FileRefinement;
 import com.techsenger.shellfx.storage.base.async.FileRefiner;
 import com.techsenger.shellfx.storage.base.async.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.ui.StorageErrors;
+import static com.techsenger.shellfx.storage.ui.chooser.FileChooserType.OPEN;
+import static com.techsenger.shellfx.storage.ui.chooser.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.storage.ui.style.FileDecorationType;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;

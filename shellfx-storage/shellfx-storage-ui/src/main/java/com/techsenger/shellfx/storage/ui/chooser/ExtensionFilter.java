@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.util.ArrayList;

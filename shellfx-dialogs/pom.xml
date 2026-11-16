@@ -35,14 +35,6 @@
             <artifactId>shellfx-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.shellfx.storage</groupId>
-            <artifactId>shellfx-storage-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.shellfx.storage</groupId>
-            <artifactId>shellfx-storage-ui</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.techsenger.toolkit</groupId>
             <artifactId>toolkit-fx</artifactId>
         </dependency>

@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
-
-import com.techsenger.shellfx.material.column.ColumnListView;
-import com.techsenger.shellfx.storage.base.StorageFile;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 /**
  *
  * @author Pavel Castornii
  */
-class FileListView<T extends StorageFile> extends ColumnListView<T> {
+public enum FileChooserType {
 
-    FileListView(ObservableList<T> files, ContextMenu cellContextMenu) {
-        setItems(files);
-        setManualRefresh(true);
-        setEditable(true);
-    }
+    OPEN, SAVE_AS
 }

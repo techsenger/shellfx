@@ -11,9 +11,13 @@
     <artifactId>shellfx-storage-ui</artifactId>
     <packaging>jar</packaging>
     <name>ShellFX - Storage UI</name>
-    <description>Icons, styles and table helpers that show files of storages</description>
+    <description>Icons, styles, table helpers and the file chooser dialog that show files of storages</description>
 
     <dependencies>
+        <dependency>
+            <groupId>com.techsenger.patternfx</groupId>
+            <artifactId>patternfx-mvvm</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.techsenger.annotations</groupId>
             <artifactId>annotations</artifactId>
@@ -32,6 +36,14 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.shellfx</groupId>
+            <artifactId>shellfx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx</groupId>
+            <artifactId>shellfx-dialogs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.shellfx</groupId>
             <artifactId>shellfx-material</artifactId>
         </dependency>
         <dependency>
@@ -39,8 +51,16 @@
             <artifactId>shellfx-storage-base</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.mkpaz</groupId>
+            <artifactId>atlantafx-base</artifactId>
         </dependency>
     </dependencies>
 </project>

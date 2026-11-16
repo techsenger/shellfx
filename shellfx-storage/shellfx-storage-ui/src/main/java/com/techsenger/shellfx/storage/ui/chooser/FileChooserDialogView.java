@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;

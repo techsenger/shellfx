@@ -17,8 +17,8 @@
 package com.techsenger.shellfx.demo.dialogs;
 
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
-import com.techsenger.shellfx.dialogs.file.FileChooserDialogView;
 import com.techsenger.shellfx.storage.base.StorageFile;
+import com.techsenger.shellfx.storage.ui.chooser.FileChooserDialogView;
 import javafx.scene.control.Button;
 
 /**

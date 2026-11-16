@@ -24,8 +24,6 @@ module com.techsenger.shellfx.dialogs {
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.shared;
-    requires com.techsenger.shellfx.storage.base;
-    requires com.techsenger.shellfx.storage.ui;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -33,7 +31,6 @@ module com.techsenger.shellfx.dialogs {
     requires atlantafx.base;
 
     exports com.techsenger.shellfx.dialogs.alert;
-    exports com.techsenger.shellfx.dialogs.file;
     exports com.techsenger.shellfx.dialogs.namevalue;
     exports com.techsenger.shellfx.dialogs.progress;
     exports com.techsenger.shellfx.dialogs.style;

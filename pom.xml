@@ -181,12 +181,12 @@
         <module>shellfx-material</module>
         <module>shellfx-core</module>
         <module>shellfx-layout</module>
-        <module>shellfx-storage</module>
         <module>shellfx-icons</module>
         <module>shellfx-shared</module>
         <module>shellfx-dialogs</module>
-        <module>shellfx-demo</module>
+        <module>shellfx-storage</module>
         <module>shellfx-devtools</module>
+        <module>shellfx-demo</module>
     </modules>
 
     <build>

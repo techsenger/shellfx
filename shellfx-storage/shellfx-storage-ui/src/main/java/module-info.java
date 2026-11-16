@@ -18,11 +18,18 @@ module com.techsenger.shellfx.storage.ui {
     requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.base;
+    requires com.techsenger.shellfx.core;
+    requires com.techsenger.shellfx.dialogs;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.storage.base;
+    requires atlantafx.base;
     requires javafx.controls;
+    requires org.slf4j;
 
     exports com.techsenger.shellfx.storage.ui;
+    exports com.techsenger.shellfx.storage.ui.chooser;
     exports com.techsenger.shellfx.storage.ui.style;
 }

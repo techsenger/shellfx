@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage.ui.chooser;
 
-import com.techsenger.shellfx.material.button.DefaultResultButtonName;
-import com.techsenger.shellfx.material.button.ResultButtonName;
+import com.techsenger.shellfx.material.column.ColumnListView;
+import com.techsenger.shellfx.storage.base.StorageFile;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ContextMenu;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogButtons {
+class FileListView<T extends StorageFile> extends ColumnListView<T> {
 
-    ResultButtonName OK = new DefaultResultButtonName();
-
-    ResultButtonName CANCEL = new DefaultResultButtonName();
+    FileListView(ObservableList<T> files, ContextMenu cellContextMenu) {
+        setItems(files);
+        setManualRefresh(true);
+        setEditable(true);
+    }
 }

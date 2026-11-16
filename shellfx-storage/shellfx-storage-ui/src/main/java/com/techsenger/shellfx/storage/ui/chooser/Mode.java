@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
-
-import com.techsenger.shellfx.core.dialog.DialogPort;
-import com.techsenger.shellfx.core.window.WindowComposer;
-import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
+package com.techsenger.shellfx.storage.ui.chooser;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogComposer extends WindowComposer {
+public enum Mode {
 
-    DialogPort addAlertDialog(AlertDialogParams params, String message);
+    LIST, DETAILS
 }
