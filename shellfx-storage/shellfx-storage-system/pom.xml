@@ -10,7 +10,7 @@
     <groupId>com.techsenger.shellfx.storage</groupId>
     <artifactId>shellfx-storage-system</artifactId>
     <packaging>jar</packaging>
-    <name>ShellFX - System Storage</name>
+    <name>ShellFX - Storage System</name>
     <description>File storages of the local machine</description>
 
     <dependencies>
