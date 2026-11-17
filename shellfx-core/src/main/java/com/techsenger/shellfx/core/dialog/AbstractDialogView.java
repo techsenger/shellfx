@@ -137,10 +137,14 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
                 button.setDisable(change.getValueAdded());
             }
         });
-        viewModel.getDefaultByName().addListener((MapChangeListener<ResultButtonName, Boolean>) change -> {
-            var button = this.buttonsByName.get(change.getKey());
-            if (button != null && change.wasAdded()) {
-                button.setDefaultButton(change.getValueAdded());
+        viewModel.defaultButtonProperty().addListener((ov, oldV, newV) -> {
+            var oldButton = oldV == null ? null : this.buttonsByName.get(oldV);
+            if (oldButton != null) {
+                oldButton.setDefaultButton(false);
+            }
+            var newButton = newV == null ? null : this.buttonsByName.get(newV);
+            if (newButton != null) {
+                newButton.setDefaultButton(true);
             }
         });
     }

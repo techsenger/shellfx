@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -54,11 +56,7 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
     private final ObservableMap<ResultButtonName, Boolean> disabledByName =
             FXCollections.unmodifiableObservableMap(modifiableDisabledByName);
 
-    private final ObservableMap<ResultButtonName, Boolean> modifiableDefaultByName =
-            FXCollections.observableHashMap();
-
-    private final ObservableMap<ResultButtonName, Boolean> defaultByName =
-            FXCollections.unmodifiableObservableMap(modifiableDefaultByName);
+    private final ObjectProperty<@Nullable ResultButtonName> defaultButton = new SimpleObjectProperty<>();
 
     private final BooleanProperty waiting = new SimpleBooleanProperty();
 
@@ -124,8 +122,13 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
 
     @Override
     public void setButtonDefault(ResultButtonName name, boolean value) {
-        if (isRegistered(name)) {
-            modifiableDefaultByName.put(name, value);
+        if (!isRegistered(name)) {
+            return;
+        }
+        if (value) {
+            defaultButton.set(name);
+        } else if (name.equals(defaultButton.get())) {
+            defaultButton.set(null);
         }
     }
 
@@ -136,7 +139,10 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
 
     @Override
     public Optional<Boolean> getButtonDefault(ResultButtonName name) {
-        return Optional.ofNullable(defaultByName.get(name));
+        if (!isRegistered(name)) {
+            return Optional.empty();
+        }
+        return Optional.of(name.equals(defaultButton.get()));
     }
 
     @Override
@@ -162,20 +168,24 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
 
     void onButtonRegistered(ResultButtonName name, boolean isDefault, boolean disabled) {
         modifiableDisabledByName.put(name, disabled);
-        modifiableDefaultByName.put(name, isDefault);
+        if (isDefault) {
+            defaultButton.set(name);
+        }
     }
 
     void onButtonUnregistered(ResultButtonName name) {
         modifiableDisabledByName.remove(name);
-        modifiableDefaultByName.remove(name);
+        if (name.equals(defaultButton.get())) {
+            defaultButton.set(null);
+        }
     }
 
     ObservableMap<ResultButtonName, Boolean> getDisabledByName() {
         return disabledByName;
     }
 
-    ObservableMap<ResultButtonName, Boolean> getDefaultByName() {
-        return defaultByName;
+    ObjectProperty<@Nullable ResultButtonName> defaultButtonProperty() {
+        return defaultButton;
     }
 
     private boolean isRegistered(ResultButtonName name) {
