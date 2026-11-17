@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.dialog;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.registries.StylesheetRegistry;
 import com.techsenger.shellfx.core.window.AbstractFrameWindowView;
@@ -215,6 +216,15 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
                 getLeftButtons(resultButtonsOnly).stream(),
                 getRightButtons(resultButtonsOnly).stream())
                 .toList();
+    }
+
+    /**
+     * Returns the default result button currently shown in the button bar.
+     *
+     * @return the default button, or {@code null} if no displayed result button is the default one
+     */
+    protected @Nullable Button getDefaultButton() {
+        return getButtons(true).stream().filter(Button::isDefaultButton).findFirst().orElse(null);
     }
 
     /**

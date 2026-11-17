@@ -73,7 +73,8 @@ public class AlertDialogView<VM extends AlertDialogViewModel<?>> extends Abstrac
 
     @Override
     public void requestFocus() {
-        NodeUtils.requestFocus(getNode());
+        var defaultButton = getDefaultButton();
+        NodeUtils.requestFocus(defaultButton != null ? defaultButton : getNode());
     }
 
     @Override
