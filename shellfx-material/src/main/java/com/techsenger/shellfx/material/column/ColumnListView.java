@@ -82,7 +82,9 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
 
         SCROLL_BAR_VISIBILITY,
 
-        VIRTUAL_FLOW_HEIGHT
+        VIRTUAL_FLOW_HEIGHT,
+
+        WIDTH
     }
 
     private static class ColumnListViewColumn<T> extends IndexedCell<Integer>  {
@@ -425,6 +427,14 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
         this.widthProperty().addListener((ov, oldV, newV) -> {
             if (this.visibleColumnCount.get() > 0) {
                 updateColumnWidths();
+                // the columns got other widths, so the scroll position no longer is on a column boundary; during
+                // a resize announced by the owner its first visible column is kept, otherwise it is kept here
+                pendingTriggers.add(RequestLayoutTrigger.WIDTH);
+                if (isResizing()) {
+                    requestLayout();
+                } else {
+                    requestLayoutPreservingPosition();
+                }
             }
         });
         this.virtualFlow.getHBar().heightProperty().addListener((ov, oldV, newV) ->
@@ -650,6 +660,12 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
                     updateOffsets(newRowCount);
                     // after the offsets: a column rebuilt before them has been built from the old ones
                     contentVersion++;
+                    scrollToFirstColumn(getFirstVisibleCellIndex());
+                } else if (triggers.contains(RequestLayoutTrigger.WIDTH)) {
+                    // only the column widths changed, so the offsets stay and the columns are only aligned again,
+                    // but on the geometry of the flow that already has the new width, not on the old one
+                    virtualFlow.resizeRelocate(0, 0, getWidth(), getHeight());
+                    virtualFlow.layout();
                     scrollToFirstColumn(getFirstVisibleCellIndex());
                 }
                 consumeFirstVisibleCellIndexReset();

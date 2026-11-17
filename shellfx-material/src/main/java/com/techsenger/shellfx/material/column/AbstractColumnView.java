@@ -109,6 +109,12 @@ public abstract class AbstractColumnView<T> extends Region {
      */
     private boolean resetFirstVisibleCellIndexAfterLayout;
 
+    /**
+     * Whether a resize announced by {@link #onResizeStarted()} is going on, i.e. {@link #firstVisibleCellIndex}
+     * is held by the owner of the resize until {@link #onResizeFinished()}.
+     */
+    private boolean resizing;
+
     protected AbstractColumnView() {
         setFocusTraversable(true);
         addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
@@ -235,12 +241,14 @@ public abstract class AbstractColumnView<T> extends Region {
     }
 
     public void onResizeStarted() {
+        this.resizing = true;
         this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
         logger.debug("onResizeStarted: firstVisibleCellIndex={}, height={}, width={}", this.firstVisibleCellIndex,
                 getHeight(), getWidth());
     }
 
     public void onResizeFinished() {
+        this.resizing = false;
         this.firstVisibleCellIndex = 0;
         logger.debug("onResizeFinished: height={}, width={}", getHeight(), getWidth());
     }
@@ -271,6 +279,10 @@ public abstract class AbstractColumnView<T> extends Region {
 
     void setRowCount(int rowCount) {
         this.rowCount.set(rowCount);
+    }
+
+    boolean isResizing() {
+        return resizing;
     }
 
     int getFirstVisibleCellIndex() {
